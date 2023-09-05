@@ -1,22 +1,37 @@
 class Parser
 {
     /**
-     * @param url Ссылка на сайт
-     * @param id ID записи в базе данных
+     * @param {string} url Ссылка на сайт
+     * @param {number} id ID записи в базе данных
      */
     constructor(url, id = 0) {
         this.url = url;
         this.id = id;
     }
 
+    /**
+     * Получение ссылки на сайт
+     *
+     * @returns {string}
+     */
     getUrl() {
         return this.url;
     }
 
+    /**
+     * Получение домена (без протокола)
+     *
+     * @returns {string}
+     */
     getDomain() {
         return this.url.split('://').pop();
     }
 
+    /**
+     * Получение id записи из базы данных
+     *
+     * @returns {number}
+     */
     getId() {
         return this.id;
     }
@@ -55,62 +70,151 @@ class Parser
         const finances = innList.length !== 0 ? await this.findFinanceInfo(innList) : {};
     }
 
+    /**
+     * Запрос по протоколу HTTP
+     *
+     * @param domain Домен
+     * @returns {Promise<void>}
+     */
     async makeHttpRequest(domain) {
 
     }
 
+    /**
+     * Запрос по протоколу HTTPS
+     *
+     * @param domain Домен
+     * @returns {Promise<void>}
+     */
     async makeHttpsRequest(domain) {
 
     }
 
+    /**
+     * Получение http-кода ответа
+     *
+     * @param response
+     * @returns {number}
+     */
     getStatusCode(response) {
 
     }
 
+    /**
+     * Получение настоящей ссылки (после всех редирект ов)
+     *
+     * @param response
+     * @returns {string}
+     */
     getRealUrl(response) {
 
     }
 
+    /**
+     * Получение html из ответа
+     *
+     * @param response
+     */
     getHtml(response) {
 
     }
 
+    /**
+     * Получение заголовка сайта
+     *
+     * @param html
+     * @returns {string}
+     */
     getTitle(html) {
 
     }
 
+    /**
+     * Получение описания сайта
+     *
+     * @param html
+     * @returns {string}
+     */
     getDescription(html) {
 
     }
 
+    /**
+     * Получение ключевых слов сайта
+     *
+     * @param html
+     * @returns {string}
+     */
     getKeywords(html) {
 
     }
 
+    /**
+     * Получение названия используемой CMS, если она используется
+     *
+     * @param html
+     * @returns {string}
+     */
     guessCms(html) {
 
     }
 
+    /**
+     * Поиск ИНН'ов
+     *
+     * @param html
+     * @returns {string[]}
+     */
     findInns(html) {
 
     }
 
+    /**
+     * Поиск номеров телефонов
+     *
+     * @param html
+     * @returns {string[]}
+     */
     findPhones(html) {
 
     }
 
+    /**
+     * Поиск электронных почт
+     *
+     * @param html
+     * @returns {string[]}
+     */
     findEmails(html) {
 
     }
 
+    /**
+     * Поиск адресов
+     *
+     * @param html
+     * @returns {string[]}
+     */
     findAddresses(html) {
 
     }
 
+    /**
+     * Получение категории сайта
+     *
+     * @param html
+     * @returns {string}
+     */
     guessCategory(html) {
 
     }
 
+    /**
+     * Получение финансовых данных по ИНН
+     *
+     * @param {string[]} innList
+     * @return {Promise<Awaited<unknown>[]>}
+     */
     async findFinanceInfo(innList) {
         const requests = [];
         for(const inn of innList) {
@@ -120,6 +224,12 @@ class Parser
         return await Promise.all(requests);
     }
 
+    /**
+     * Получение финансовых данных по ИНН
+     *
+     * @param {string} inn
+     * @return {Promise<Awaited<unknown>[]>}
+     */
     async findFinanceInfoByInn(inn) {
 
     }
