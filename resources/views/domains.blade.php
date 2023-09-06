@@ -53,7 +53,7 @@
     @foreach($searchParser as $row)
         <tr>
             <td>
-                <a href="//{{($row->real_domain)}}">{{$row->real_domain}}</a>
+                <a href="{{($row->real_domain)}}">{{str_replace('http://', '', trim($row->real_domain, '/'))}}</a>
             </td>
             <td style="width: 17%;">
                 {{$row->title}}
