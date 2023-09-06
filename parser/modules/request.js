@@ -129,6 +129,17 @@ class Request
             };
         }
 
+        Object.assign(config, {
+            'Sec-Ch-Ua-Mobile': '?0',
+            'Sec-Ch-Ua-Platform': "Windows",
+            'Sec-Fetch-Dest': 'document',
+            'Sec-Fetch-Mode': 'navigate',
+            'Sec-Fetch-Site': 'none',
+            'Sec-Fetch-User': '?1',
+            'Upgrade-Insecure-Requests': 1,
+            'Dnt': 1
+        });
+
        return this.axios.create(config);
     }
 

@@ -158,7 +158,7 @@ class Parser
      * @returns {HTMLElement}
      */
     getHtml(response) {
-        return parse(response.data);
+        return parse(response ? response.data : '');
     }
 
     /**
@@ -233,7 +233,48 @@ class Parser
      * @returns {string}
      */
     guessCms(html) {
+        const cmsExamples = {
+            'src="/bitrix/': 'bitrix',
+            'href="/bitrix': 'bitrix',
+            'bitrix/templates/': 'bitrix',
+            'bitrix/cache/': 'bitrix',
+            'wp-content/': 'wordpress',
+            'wp-includes/': 'wordpress',
+            '<meta name="modxru': 'modx',
+            '<script type="text/javascript" src="/netcat': 'netcat',
+            '<script src="/phpshop': 'phpshop',
+            '<script type="text/x-magento-init': 'magento',
+            '/wa-data/': 'shop-script',
+            'catalog/view/': 'opencart',
+            'data-drupal-': 'drupal',
+            'name="generator" content="Joomla': 'joomla',
+            '/media/system': 'joomla',
+            'var dle_admin': 'datalife engine',
+            'UCOZ-JS': 'ucoz',
+            'ucoz.net/': 'ucoz',
+            '<script src="https://static.tilda': 'tilda',
+            '<meta name="generator" content="Wix': 'wix',
+            'type="wix/htmlEmbeds"': 'wix',
+            'nethouse.ru/': 'nethouse',
+            'data-muse-uid': 'adobe muse',
+            'museutils': 'adobe muse',
+            'xmlns:umi="http://www.umi-cms.ru': 'umi',
+            'img src="/images/cms/': 'umi',
+            '-= Amiro.CMS (c) =-': 'amiro',
+            'amiro_sys_': 'amiro',
+            'content="CMS EDGESTILE SiteEdit">': 'siteedit',
+            'meta name="generator" content="OkayCMS': 'okay',
+            '/_nuxt': 'nuxt'
+        };
 
+        for(const string in cmsExamples) {
+            const cms = cmsExamples[string];
+            if(html.innerHTML.includes(string.replace('/\//g', '\/'))) {
+                return cms;
+            }
+        }
+
+        return '';
     }
 
     /**
