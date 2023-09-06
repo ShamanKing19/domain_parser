@@ -14,6 +14,8 @@ const testUrl1 = urlList[0];
 const testUrl2 = urlList[1];
 const testUrl3 = urlList[2];
 
+const unipumpUrl = 'https://unipump.ru';
+
 
 test('parser instance is created', () => {
 
@@ -45,26 +47,23 @@ test('get id', () => {
     expect(parser2.getId()).toBe(0);
 });
 
-
-
-test('get title', () => {
-
+test('get title', async() => {
+    const parser = new Parser(unipumpUrl);
+    const response = await parser.makeHttpsRequest(parser.getDomain());
+    const html = parser.getHtml(response);
+    expect(parser.getTitle(html)).toBe('Насосы и насосное оборудование от производителя UNIPUMP');
 });
 
-test('get description', () => {
-
+test('get description', async () => {
+    const parser = new Parser(unipumpUrl);
+    const response = await parser.makeHttpsRequest(parser.getDomain());
+    const html = parser.getHtml(response);
+    expect(parser.getDescription(html)).toBe('Компания UNIPUMP занимается производством насосов и насосного оборудования для водоснабжения, отопления, дренажа и канализации.');
 });
 
-test('get keywords', () => {
-
+test('get keywords', async () => {
+    const parser = new Parser(unipumpUrl);
+    const response = await parser.makeHttpsRequest(parser.getDomain());
+    const html = parser.getHtml(response);
+    expect(parser.getKeywords(html)).toBe('Keywords'); // Да, оно у них не заполнено)))
 });
-
-
-// test('parser got response', async () => {
-//     for(const url of urlList) {
-//         const parser = new Parser(url);
-//         const html = parser.sendRequest();
-//         expect()
-//     }
-// });
-

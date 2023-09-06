@@ -1,4 +1,5 @@
 const {AxiosResponse} = require('axios');
+const { parse } = require('node-html-parser');
 
 class Parser
 {
@@ -154,46 +155,81 @@ class Parser
      * Получение html из ответа
      *
      * @param {AxiosResponse} response
-     * @returns {string}
+     * @returns {HTMLElement}
      */
     getHtml(response) {
-        return response.data
+        return parse(response.data);
     }
 
     /**
      * Получение заголовка сайта
      *
-     * @param html
+     * @param {HTMLElement} html
      * @returns {string}
      */
     getTitle(html) {
+        let title = html.querySelector('title');
+        if(title && title.innerText) {
+            return title.innerText;
+        }
 
+        title = html.querySelector('meta[property="title"]');
+        if(title) {
+            return title.getAttribute('content');
+        }
+
+        title = html.querySelector('meta[property="og:title"]');
+        if(title) {
+            return title.getAttribute('content');
+        }
+
+        return '';
     }
 
     /**
      * Получение описания сайта
      *
-     * @param html
+     * @param {HTMLElement} html
      * @returns {string}
      */
     getDescription(html) {
+        let description = html.querySelector('meta[name="description"]');
+        if(description) {
+            return description.getAttribute('content');
+        }
 
+        description = html.querySelector('meta[property="og:description"]');
+        if(description) {
+            return description.getAttribute('content');
+        }
+
+        return '';
     }
 
     /**
      * Получение ключевых слов сайта
      *
-     * @param html
+     * @param {HTMLElement} html
      * @returns {string}
      */
     getKeywords(html) {
+        let keywords = html.querySelector('meta[name="keywords"]');
+        if(keywords) {
+            return keywords.getAttribute('content');
+        }
 
+        keywords = html.querySelector('meta[property="og:keywords"]');
+        if(keywords) {
+            return keywords.getAttribute('content');
+        }
+
+        return '';
     }
 
     /**
      * Получение названия используемой CMS, если она используется
      *
-     * @param html
+     * @param {HTMLElement} html
      * @returns {string}
      */
     guessCms(html) {
@@ -203,7 +239,7 @@ class Parser
     /**
      * Поиск ИНН'ов
      *
-     * @param html
+     * @param {HTMLElement} html
      * @returns {string[]}
      */
     findInns(html) {
@@ -213,7 +249,7 @@ class Parser
     /**
      * Поиск номеров телефонов
      *
-     * @param html
+     * @param {HTMLElement} html
      * @returns {string[]}
      */
     findPhones(html) {
@@ -223,7 +259,7 @@ class Parser
     /**
      * Поиск электронных почт
      *
-     * @param html
+     * @param {HTMLElement} html
      * @returns {string[]}
      */
     findEmails(html) {
@@ -233,7 +269,7 @@ class Parser
     /**
      * Поиск адресов
      *
-     * @param html
+     * @param {HTMLElement} html
      * @returns {string[]}
      */
     findAddresses(html) {
@@ -243,7 +279,7 @@ class Parser
     /**
      * Получение категории сайта
      *
-     * @param html
+     * @param {HTMLElement} html
      * @returns {string}
      */
     guessCategory(html) {
