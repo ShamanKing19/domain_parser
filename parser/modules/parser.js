@@ -72,12 +72,12 @@ class Parser
         const keywords = this.getKeywords(html);
 
         const cms = this.guessCms(html);
-        const innList = this.findInns(html);
-        const phoneList = this.findPhones(html);
-        const emailList = this.findEmails(html);
-        const addressList = this.findAddresses(html);
+        const innList = this.findInns(responseData);
+        const phoneList = this.findPhones(responseData);
+        const emailList = this.findEmails(responseData);
+        const addressList = this.findAddresses(responseData);
 
-        const category = this.guessCategory(html);
+        const category = this.guessCategory(responseData);
 
         const finances = innList.length !== 0 ? await this.findFinanceInfo(innList) : {};
     }
@@ -291,50 +291,84 @@ class Parser
     /**
      * Поиск ИНН'ов
      *
-     * @param {HTMLElement} html
+     * @param {string} text
      * @returns {string[]}
      */
-    findInns(html) {
+    findInns(text) {
+        const regexp = "//";
 
+        return [];
+    }
+
+    /**
+     * Валидация корректного ИНН
+     *
+     * @param {string} inn
+     * @return {boolean}
+     */
+    isInnValid(inn) {
+        if(inn.length !== 12 && inn.length !== 10) {
+            return false;
+        }
+
+        const checkDigit = function(inn, coefficients) {
+            let n = 0;
+            for(const i in coefficients) {
+                n += coefficients[i] * inn[i];
+            }
+            return parseInt(n % 11 % 10);
+        };
+
+        if(inn.length === 10) {
+            const n10 = checkDigit(inn, [2, 4, 10, 3, 5, 9, 4, 6, 8]);
+            if(n10 === parseInt(inn[9])) {
+                return true;
+            }
+        }
+
+        const n11 = checkDigit(inn, [7, 2, 4, 10, 3, 5, 9, 4, 6, 8]);
+        const n12 = checkDigit(inn, [3, 7, 2, 4, 10, 3, 5, 9, 4, 6, 8]);
+
+        return (n11 === parseInt(inn[10])) && (n12 === parseInt(inn[11]));
     }
 
     /**
      * Поиск номеров телефонов
      *
-     * @param {HTMLElement} html
+     * @param {string} text
      * @returns {string[]}
      */
-    findPhones(html) {
+    findPhones(text) {
 
     }
 
     /**
      * Поиск электронных почт
      *
-     * @param {HTMLElement} html
+     * @param {string} text
      * @returns {string[]}
      */
-    findEmails(html) {
+    findEmails(text) {
 
     }
 
     /**
      * Поиск адресов
      *
-     * @param {HTMLElement} html
+     * @param {string} text
      * @returns {string[]}
      */
-    findAddresses(html) {
+    findAddresses(text) {
 
     }
 
     /**
      * Получение категории сайта
      *
-     * @param {HTMLElement} html
+     * @param {string} text
      * @returns {string}
      */
-    guessCategory(html) {
+    guessCategory(text) {
 
     }
 
