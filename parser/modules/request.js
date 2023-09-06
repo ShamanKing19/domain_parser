@@ -1,63 +1,144 @@
+const {AxiosResponse, AxiosInstance} = require('axios');
+
 class Request
 {
-    userAgent = require('user-agents');
+    userAgent = require('User-Agents');
     axios = require('axios');
+    Functions = require('./functions');
+
+    sleepTime = 3000;
+
+    constructor() {
+        this.functions = new this.Functions();
+    }
+
+
+    /**
+     * Делает несколько попыток запроса по URL. Если ответ не будет получен возвращает false
+     *
+     * @param url       {string}        Строка запроса
+     * @param config    {Object}        Кастомный конфиг для запроса
+     * @param repeatTimes {int}         Количество повторений (При 10 работает хорошо)
+     * @returns {Promise<AxiosResponse<any>|boolean>}
+     */
+    async tryGet(url, config = {}, repeatTimes = 1) {
+        let response;
+
+        for (let i = 0; i < repeatTimes; i++) {
+            try {
+                response = await this.get(url, config);
+                return response;
+            } catch (e) {
+                await this.functions.sleep(this.sleepTime)
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Делает несколько попыток запроса по URL. Если ответ не будет получен возвращает false
+     *
+     * @param url       {string}        Строка запроса
+     * @param data      {Object}        Тело запроса
+     * @param config    {Object}        Кастомный конфиг для запроса
+     * @param repeatTimes {int}         Количество повторных запросов
+     * @returns {Promise<AxiosResponse<any>|boolean>}
+     */
+    async tryPost(url, data, config = {}, repeatTimes = 100) {
+        let response;
+
+        for (let i = 0; i < repeatTimes; i++) {
+            try {
+                response = await this.post(url, data, config);
+                return response;
+            } catch (e) {
+                await this.functions.sleep(this.sleepTime)
+            }
+        }
+
+        return false;
+    }
 
     /**
      * GET запрос с параметрами и стандартным таймаутом
      *
      * @param {string} url Ссылка
-     * @param {Object} config Конфиг
+     * @param {object} config Конфиг
      *
      * @returns {AxiosResponse<any>}
      */
     async get(url, config = {}) {
-        const instance = this.axios.create();
-        if(!('timeout' in config)) {
-            config['timeout'] = 3000;
-        }
-        if(!('headers' in config)) {
-            config['headers'] = {};
-            if(!('User-agent' in config['headers'])) {
-                config['headers'] = {
-                    'User-agent': this.getUserAgent(),
-                };
+        const client  = this.makeClientInstance();
+
+        try {
+            return await client.get(encodeURI(url), config);
+        } catch (e) {
+            if(e.code === 'ENOTFOUND') {
+                return false;
+            }
+
+            if(e.response) {
+                return e.response;
             }
         }
-        return await instance.get(encodeURI(url), config);
     }
 
     /**
      * POST запрос с параметрами и стандартным таймаутом
      *
      * @param {string} url Ссылка
-     * @param {Object} data Тело запроса
-     * @param {Object} config Конфиг
+     * @param {object} data Тело запроса
+     * @param {object} config Конфиг
      *
-     * @returns {AxiosResponse<any>}
+     * @returns {AxiosResponse|false}
      */
     async post(url, data, config = {}) {
-        const instance = this.axios.create();
+        const client  = this.makeClientInstance();
+
+        try {
+            return await client.post(encodeURI(url), data, config);
+        } catch (e) {
+            if(e.code === 'ENOTFOUND') {
+                return false;
+            }
+
+            if(e.response) {
+                return e.response;
+            }
+        }
+    }
+
+    /**
+     * Создание объекта клиента
+     *
+     * @param {object} config Конфигурация для запроса
+     * @return {AxiosInstance}
+     */
+    makeClientInstance(config = {}) {
         if(!('timeout' in config)) {
             config['timeout'] = 3000;
         }
         if(!('headers' in config)) {
+            config['headers'] = {};
+        }
+
+        if(!('User-Agent' in config['headers'])) {
             config['headers'] = {
-                'User-agent': this.getUserAgent(),
+                'User-Agent': this.getUserAgent(),
             };
         }
 
-        return await instance.post(encodeURI(url), data, config);
+       return this.axios.create(config);
     }
 
     /**
-     * Генерирует случайный User-agent
+     * Генерирует случайный User-Agent
      *
      * @returns {string}
      */
     getUserAgent() {
         return new this.userAgent().toString();
-        // return this.userAgent().toString();
 
     }
 }

@@ -1,5 +1,11 @@
+const {AxiosResponse} = require('axios');
+
 class Parser
 {
+    functions = require('./functions');
+    request = require('./request');
+
+
     /**
      * @param {string} url Ссылка на сайт
      * @param {number} id ID записи в базе данных
@@ -7,6 +13,7 @@ class Parser
     constructor(url, id = 0) {
         this.url = url;
         this.id = id;
+        this.client = new this.request();
     }
 
     /**
@@ -51,6 +58,9 @@ class Parser
         const httpResponse = result[0];
         const httpsResponse = result[1];
 
+        const hasHttpsRedirect = this.checkHttpsRedirect(httpsResponse);
+        const hasSsl = this.checkSsl(httpsResponse);
+
         const status = this.getStatusCode(httpsResponse);
         const realUrl = this.getRealUrl(httpsResponse);
         const html = this.getHtml(httpsResponse);
@@ -74,49 +84,80 @@ class Parser
      * Запрос по протоколу HTTP
      *
      * @param domain Домен
-     * @returns {Promise<void>}
+     * @returns {AxiosResponse|false}
      */
-    async makeHttpRequest(domain) {
-
+    async makeHttpRequest(domain)
+    {
+        return await this.client.get('http://' + domain);
     }
 
     /**
      * Запрос по протоколу HTTPS
      *
      * @param domain Домен
-     * @returns {Promise<void>}
+     * @returns {AxiosResponse|false}
      */
     async makeHttpsRequest(domain) {
+        return await this.client.get('https://' + domain);
+    }
 
+    /**
+     * Проверка: есть ли у сайта SSL сертификат
+     *
+     * @param {AxiosResponse} response
+     * @returns {boolean}
+     */
+    checkSsl(response) {
+        const responseUrl = response.request.res.responseUrl;
+
+        return responseUrl.includes('https://');
+    }
+
+    /**
+     * Проверка: есть ли у сайта редирект на https
+     *
+     * @param {AxiosResponse} response
+     * @returns {boolean}
+     */
+    checkHttpsRedirect(response) {
+        const requestUrl = response.config.url;
+        if(requestUrl.includes('https://')) {
+            return false;
+        }
+
+        const responseUrl = response.request.res.responseUrl;
+
+        return responseUrl.includes('https://');
     }
 
     /**
      * Получение http-кода ответа
      *
-     * @param response
+     * @param {AxiosResponse} response
      * @returns {number}
      */
     getStatusCode(response) {
-
+        return response.status
     }
 
     /**
      * Получение настоящей ссылки (после всех редирект ов)
      *
-     * @param response
+     * @param {AxiosResponse} response
      * @returns {string}
      */
     getRealUrl(response) {
-
+        return response.request.res.responseUrl;
     }
 
     /**
      * Получение html из ответа
      *
-     * @param response
+     * @param {AxiosResponse} response
+     * @returns {string}
      */
     getHtml(response) {
-
+        return response.data
     }
 
     /**
