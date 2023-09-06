@@ -64,7 +64,8 @@ class Parser
 
         const status = this.getStatusCode(httpsResponse);
         const realUrl = this.getRealUrl(httpsResponse);
-        const html = this.getHtml(httpsResponse);
+        const responseData = this.getResponseData(httpsResponse);
+        const html = this.getHtml(responseData)
 
         const title = this.getTitle(html);
         const description = this.getDescription(html);
@@ -152,13 +153,23 @@ class Parser
     }
 
     /**
-     * Получение html из ответа
+     * Получение тела ответа
      *
      * @param {AxiosResponse} response
+     * @return {string}
+     */
+    getResponseData(response) {
+        return response ? response.data ?? '' : '';
+    }
+
+    /**
+     * Получение html из ответа
+     *
+     * @param {string} text Document text
      * @returns {HTMLElement}
      */
-    getHtml(response) {
-        return parse(response ? response.data : '');
+    getHtml(text) {
+        return parse(text ?? '');
     }
 
     /**

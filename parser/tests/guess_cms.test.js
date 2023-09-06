@@ -38,11 +38,8 @@ for(const cms in cmsMap) {
                 response = await parser.makeHttpsRequest(parser.getDomain());
             }
 
-            if(url === 'https://24garage.ru/') {
-                console.log(response);
-            }
-
-            const html = parser.getHtml(response);
+            const data = parser.getResponseData(response);
+            const html = parser.getHtml(data);
 
             expect(parser.guessCms(html)).toBe(cms);
         }, 10000);

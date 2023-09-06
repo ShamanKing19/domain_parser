@@ -50,20 +50,20 @@ test('get id', () => {
 test('get title', async() => {
     const parser = new Parser(unipumpUrl);
     const response = await parser.makeHttpsRequest(parser.getDomain());
-    const html = parser.getHtml(response);
+    const html = parser.getHtml(response.data);
     expect(parser.getTitle(html)).toBe('Насосы и насосное оборудование от производителя UNIPUMP');
 });
 
 test('get description', async () => {
     const parser = new Parser(unipumpUrl);
     const response = await parser.makeHttpsRequest(parser.getDomain());
-    const html = parser.getHtml(response);
+    const html = parser.getHtml(response.data);
     expect(parser.getDescription(html)).toBe('Компания UNIPUMP занимается производством насосов и насосного оборудования для водоснабжения, отопления, дренажа и канализации.');
 });
 
 test('get keywords', async () => {
     const parser = new Parser(unipumpUrl);
     const response = await parser.makeHttpsRequest(parser.getDomain());
-    const html = parser.getHtml(response);
+    const html = parser.getHtml(response.data);
     expect(parser.getKeywords(html)).toBe('Keywords'); // Да, оно у них не заполнено)))
 });

@@ -3,6 +3,7 @@ const functions = require('../modules/functions');
 const Client = require('../modules/request');
 const Logger = require('../modules/logger');
 const {AxiosResponse} = require('axios');
+const { HTMLElement } = require('node-html-parser');
 
 const urlList = [
     'https://jestjs.io/docs/getting-started',
@@ -104,10 +105,25 @@ test('parser check SSL', async () => {
     expect(parser2.checkSsl(response2)).toBeTruthy();
 });
 
+test('get response data', async () => {
+    const parser = new Parser(unipumpUrl);
+    const response = await parser.makeHttpsRequest(parser.getDomain());
+    const data = parser.getResponseData(response);
+    expect(data.length).toBeGreaterThan(1000);
+});
+
+test('get empty response data', async () => {
+    const parser = new Parser('');
+    const response = await parser.makeHttpsRequest(parser.getDomain());
+    const data = parser.getResponseData(response);
+    expect(data.length).toBe(0);
+});
+
 test('parser get html', async () => {
     const parser = new Parser(unipumpUrl);
     const response = await parser.makeHttpsRequest(parser.getDomain());
-    expect(parser.getHtml(response).length).toBeGreaterThan(1000);
+    const data = parser.getResponseData(response);
+    expect(parser.getHtml(data)).toBeInstanceOf(HTMLElement);
 });
 
 test('get info from db', async () => {
