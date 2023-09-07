@@ -12,6 +12,9 @@ const testText = `
         7-921-145-54-20
         8 (921) 145-54-20
 
+        <a href="mailto:asd@asd.asd">123email.zxc123@kuku123.xyz</a>
+       fake,email,@asd.asd fake-email@asdasd <b>a@a.a</b>
+
         <section id="requisites" class="requisites">
             <div class="requisites__wrapper">
                 <div class="requisites__header">
@@ -112,6 +115,10 @@ test('find phones', () => {
 test('find emails', () => {
     const parser = new Parser(testUrl);
 
+    const emailList = parser.findEmails(testText);
+    const correctResult = ['asd@asd.asd', '123email.zxc123@kuku123.xyz', 'a@a.a'];
+
+    expect(emailList).toStrictEqual(correctResult);
 });
 
 test('find address', () => {
