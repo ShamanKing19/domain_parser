@@ -372,7 +372,7 @@ class Parser
      * @returns {string}
      */
     guessCategory(text) {
-
+        // TODO: Implement
     }
 
     /**
@@ -397,7 +397,7 @@ class Parser
      * @return {Promise<Awaited<unknown>[]>}
      */
     async findFinanceInfoByInn(inn) {
-
+        // TODO: Implement
     }
 
     /**
@@ -406,7 +406,7 @@ class Parser
      * @returns {Promise<void>}
      */
     async saveToDb() {
-
+        // TODO: Implement
     }
 
     /**
@@ -415,7 +415,7 @@ class Parser
      * @returns {Promise<void>}
      */
     async getFromDb() {
-
+        // TODO: Implement
     }
 
 
