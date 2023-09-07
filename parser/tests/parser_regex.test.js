@@ -121,9 +121,13 @@ test('find emails', () => {
     expect(emailList).toStrictEqual(correctResult);
 });
 
-test('find address', () => {
+test('find company', () => {
     const parser = new Parser(testUrl);
 
+    const emailList = parser.findCompanyName(testText);
+    const correctResult = ['ООО «САБЛАЙН СЕРВИС»', 'ПАО «Сбербанк»'];
+
+    expect(emailList).toStrictEqual(correctResult);
 });
 
 test('guess category', () => {

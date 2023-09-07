@@ -75,7 +75,7 @@ class Parser
         const innList = this.findInns(responseData);
         const phoneList = this.findPhones(responseData);
         const emailList = this.findEmails(responseData);
-        const addressList = this.findAddresses(responseData);
+        const companyList = this.findCompanyName(responseData);
 
         const category = this.guessCategory(responseData);
 
@@ -354,13 +354,15 @@ class Parser
     }
 
     /**
-     * Поиск адресов
+     * Поиск названия компании
+     * TODO: Улучшить
      *
      * @param {string} text
      * @returns {string[]}
      */
-    findAddresses(text) {
-
+    findCompanyName(text) {
+        const regex = /[ОПАЗНК]{2,3}\s+["'«]?[\w\dа-яА-Я\s]+["'»]?/gmu;
+        return text.match(regex);
     }
 
     /**
