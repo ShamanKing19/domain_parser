@@ -82,7 +82,7 @@ test('inn validation', () => {
     const parser = new Parser(testUrl);
 
     const validInnList = ['3906390130', '7730588444', '9500018482', '9500018475', '9500018468', '972714924120', '971511159105'];
-    const invalidInnList = ['3906390131', '3806390130', '38063901300', '123231123', 'adsqwwqdqdqdw'];
+    const invalidInnList = ['3906390131', '3806390130', '38063901300', '123231123', 'adsqwwqdqdqdw', 8950001847];
 
     for(const inn of validInnList) {
         expect(parser.isInnValid(inn)).toBeTruthy();
@@ -98,7 +98,7 @@ test('find inns', () => {
     const parser = new Parser(testUrl);
 
     const innList = parser.findInns(testText);
-    const correctResult = ['3906390130', '9500018475', '7721218278'];
+    const correctResult = ['3906390130', '9500018475', '8950001847', '7721218278'];
 
     expect(innList).toStrictEqual(correctResult);
 });
