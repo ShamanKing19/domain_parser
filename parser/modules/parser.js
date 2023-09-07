@@ -295,9 +295,8 @@ class Parser
      * @returns {string[]}
      */
     findInns(text) {
-        const regexp = "//";
-
-        return [];
+        const regexp = /\b\d{4}\d{6}\d{2}\b|\b\d{4}\d{5}\d{1}\b/gm;
+        return text.match(regexp) ?? [];
     }
 
     /**
@@ -339,7 +338,8 @@ class Parser
      * @returns {string[]}
      */
     findPhones(text) {
-
+        const regex = /\b(\+7|7|8)?[\s\-]?\(?[489][\d]{2}\)?[\s\-]?[0-9]{3}[\s\-]?[0-9]{2}[\s\-]?[0-9]{2}\b/gm;
+        return text.match(regex);
     }
 
     /**
