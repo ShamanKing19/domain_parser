@@ -20,7 +20,6 @@ class Functions
 
     readJson(filepath) {
         const data = this.fs.readFileSync(filepath);
-        console.log(data);
         return JSON.parse(data);
     }
 

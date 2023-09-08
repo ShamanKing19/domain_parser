@@ -1,7 +1,5 @@
 const Parser = require('../modules/parser');
 
-const unipumpUrl = 'https://unipump.ru';
-
 const cmsMap = {
     'bitrix': ['https://unipump.ru', 'https://mnogomeb.ru', 'http://www.230vac.ru/'],
     'wordpress': ['https://23uslugi-yurista.ru/', 'http://24dvs.ru/', 'https://russiandiamonds.ru/'],
@@ -31,7 +29,7 @@ for(const cms in cmsMap) {
     for(const url of urlList) {
         test(`parser guess ${cms}`, async () => {
             const parser = new Parser(url);
-            parser.request.sleepTime = 5000;
+            parser.client.sleepTime = 5000;
 
             let response = await parser.makeHttpRequest(parser.getDomain());
             if(!response) {

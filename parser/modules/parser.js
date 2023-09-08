@@ -1,12 +1,11 @@
 const {AxiosResponse} = require('axios');
 const { parse } = require('node-html-parser');
+const Functions = require('./functions');
+const Client = require('./request');
+const Company = require('./company_parser');
 
 class Parser
 {
-    functions = require('./functions');
-    request = require('./request');
-
-
     /**
      * @param {string} url Ссылка на сайт
      * @param {number} id ID записи в базе данных
@@ -14,7 +13,8 @@ class Parser
     constructor(url, id = 0) {
         this.url = url;
         this.id = id;
-        this.client = new this.request();
+        this.client = new Client();
+        this.functions = new Function();
     }
 
     /**
@@ -90,7 +90,7 @@ class Parser
      */
     async makeHttpRequest(domain)
     {
-        return await this.client.get('http://' + domain);
+        return this.client.get('http://' + domain);
     }
 
     /**
@@ -100,7 +100,7 @@ class Parser
      * @returns {AxiosResponse|false}
      */
     async makeHttpsRequest(domain) {
-        return await this.client.get('https://' + domain);
+        return this.client.get('https://' + domain);
     }
 
     /**
@@ -394,10 +394,12 @@ class Parser
      * Получение финансовых данных по ИНН
      *
      * @param {string} inn
-     * @return {Promise<Awaited<unknown>[]>}
+     * @return {Company}
      */
     async findFinanceInfoByInn(inn) {
-        // TODO: Implement
+        const companyParser = new Company(inn);
+        companyParser.init();
+        return companyParser;
     }
 
     /**
