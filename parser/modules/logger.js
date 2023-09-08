@@ -31,7 +31,11 @@ class Logger
         await this.fs.appendFile(this.errorsPath, formattedMessage, () => {});
     }
 
-    json(filename, data) {
+    async logJsonAsync(filename, data) {
+        this.fs.writeFile(`${this.logsDir}/${filename}.json`, JSON.stringify(data), 'utf-8', () => {});
+    }
+
+    logJson(filename, data) {
         this.fs.writeFileSync(`${this.logsDir}/${filename}.json`, JSON.stringify(data), 'utf-8');
     }
 
