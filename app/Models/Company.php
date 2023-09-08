@@ -2,8 +2,12 @@
 
 namespace App\Models;
 
+use App\Models\Company\FinanceYear;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Company extends Model
 {
@@ -32,4 +36,19 @@ class Company extends Model
         'main_activity',
         'last_finance_year'
     ];
+
+    public function segment() : HasOne
+    {
+        return $this->hasOne(\App\Models\Company\FinanceSegment::class, 'id', 'segment_id');
+    }
+
+    public function financeYears() : HasMany
+    {
+        return $this->hasMany(FinanceYear::class, 'inn_id', 'id');
+    }
+
+    public function domains() : BelongsToMany
+    {
+        return $this->belongsToMany(Domain::class, 'domains_inns', 'inn_id', 'domain_id');
+    }
 }
