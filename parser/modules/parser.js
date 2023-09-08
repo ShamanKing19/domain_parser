@@ -49,7 +49,7 @@ class Parser
      *
      * @returns {Promise<void>}
      */
-    async parse() {
+    async run() {
         const domain = this.getDomain();
 
         const httpRequest = this.makeHttpRequest(domain);
@@ -59,7 +59,12 @@ class Parser
         const httpResponse = result[0];
         const httpsResponse = result[1];
 
-        const hasHttpsRedirect = this.checkHttpsRedirect(httpsResponse);
+        if(!httpsResponse && !httpResponse) {
+            console.log(`Ошибка при запросе ${domain}`);
+            return;
+        }
+
+        const hasHttpsRedirect = this.checkHttpsRedirect(httpResponse);
         const hasSsl = this.checkSsl(httpsResponse);
 
         const status = this.getStatusCode(httpsResponse);
@@ -80,6 +85,8 @@ class Parser
         const category = this.guessCategory(responseData);
 
         const finances = innList.length !== 0 ? await this.findFinanceInfo(innList) : {};
+
+        return cms;
     }
 
     /**
@@ -339,7 +346,7 @@ class Parser
      */
     findPhones(text) {
         const regex = /\b(\+7|7|8)?[\s\-]?\(?[489][\d]{2}\)?[\s\-]?[0-9]{3}[\s\-]?[0-9]{2}[\s\-]?[0-9]{2}\b/gm;
-        return text.match(regex);
+        return text.match(regex) ?? [];
     }
 
     /**
@@ -350,7 +357,7 @@ class Parser
      */
     findEmails(text) {
         const regex = /[a-zA-Z0-9\.\-_]+@[a-zA-Z0-9_\-]+\.[a-zA-Z]+\.?[a-zA-Z]*\.?[a-zA-Z]*/gm;
-        return text.match(regex);
+        return text.match(regex) ?? [];
     }
 
     /**
@@ -362,7 +369,7 @@ class Parser
      */
     findCompanyName(text) {
         const regex = /[ОПАЗНК]{2,3}\s+["'«]?[\w\dа-яА-Я\s]+["'»]?/gmu;
-        return text.match(regex);
+        return text.match(regex) ?? [];
     }
 
     /**
@@ -379,15 +386,15 @@ class Parser
      * Получение финансовых данных по ИНН
      *
      * @param {string[]} innList
-     * @return {Promise<Awaited<unknown>[]>}
+     * @return {Promise[]}
      */
     async findFinanceInfo(innList) {
         const requests = [];
         for(const inn of innList) {
-            innList.push(this.findFinanceInfoByInn(inn));
+            requests.push(this.findFinanceInfoByInn(inn));
         }
 
-        return await Promise.all(requests);
+        return Promise.all(requests);
     }
 
     /**
