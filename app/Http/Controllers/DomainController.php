@@ -17,9 +17,9 @@ class DomainController extends Controller
      *
      * @return Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $itemsPerPage = \App\Models\Domain::getModel()->getPerPage();
+        $itemsPerPage = $request->get('count') ?: \App\Models\Domain::getModel()->getPerPage();
         $domains = \App\Models\Domain::paginate($itemsPerPage, ['id', 'domain']);
 
         return \Response::success('', $domains);
@@ -44,9 +44,9 @@ class DomainController extends Controller
      *
      * @return Response
      */
-    public function viewByCms(string $cms)
+    public function viewByCms(Request $request, string $cms)
     {
-        $itemsPerPage = \App\Models\Domain::getModel()->getPerPage();
+        $itemsPerPage = $request->get('count') ?: \App\Models\Domain::getModel()->getPerPage();
         $domains = \App\Models\Domain::where('cms', '=', $cms)->paginate($itemsPerPage);
 
         return \Response::success('', $domains);
