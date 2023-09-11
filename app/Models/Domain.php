@@ -15,6 +15,8 @@ class Domain extends Model
 
     public $timestamps = false;
 
+    protected $perPage = 500;
+
     protected $fillable = [
         'domain',
         'real_domain',

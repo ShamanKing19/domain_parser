@@ -12,19 +12,44 @@ use Illuminate\Support\Facades\Date;
 class DomainController extends Controller
 {
 
-    public function index(Request $request)
+    /**
+     * Получение списка доменов
+     *
+     * @return Response
+     */
+    public function index()
     {
-        return [];
+        $itemsPerPage = \App\Models\Domain::getModel()->getPerPage();
+        $domains = \App\Models\Domain::paginate($itemsPerPage, ['id', 'domain']);
+
+        return \Response::success('', $domains);
     }
 
+    /**
+     * Детальная информация о домене
+     *
+     * @param Domain $domain
+     *
+     * @return Response
+     */
     public function view(Domain $domain)
     {
-        return $domain;
+        return \Response::success('' , $domain->load(['phones', 'emails', 'inns']));
     }
 
+    /**
+     * Список доменов отфильтрованный по CMS
+     *
+     * @param string $cms Название CMS
+     *
+     * @return Response
+     */
     public function viewByCms(string $cms)
     {
-        return $cms;
+        $itemsPerPage = \App\Models\Domain::getModel()->getPerPage();
+        $domains = \App\Models\Domain::where('cms', '=', $cms)->paginate($itemsPerPage);
+
+        return \Response::success('', $domains);
     }
 
     /**

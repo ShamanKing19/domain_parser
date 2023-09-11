@@ -20,9 +20,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::group(['prefix' => '/domain'], function() {
-    Route::get('/', [DomainController::class, 'index']);
-    Route::get('/{id}', [DomainController::class, 'view']);
-    Route::get('/cms/{cms}', [DomainController::class, 'viewByCms']);
+    Route::get('/', [DomainController::class, 'index'])->whereNumber('page');
+    Route::get('/{domain}', [DomainController::class, 'view'])->whereNumber('domain');
+    Route::get('/cms/{cms}', [DomainController::class, 'viewByCms'])->whereAlpha('cms');
     Route::post('/create', [DomainController::class, 'store']);
     Route::post('/createMany', [DomainController::class, 'storeMany']);
     Route::post('/update', [DomainController::class, 'edit']);
