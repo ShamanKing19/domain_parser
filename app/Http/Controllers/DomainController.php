@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\EditDomainRequest;
 use App\Http\Requests\StoreDomainRequest;
 use App\Models\Domain;
 use Illuminate\Http\Request;
@@ -78,8 +79,42 @@ class DomainController extends Controller
         return \Response::success('Запись создана!');
     }
 
-    public function edit(Request $request)
+    /**
+     * Изменение полей домена
+     *
+     * @param EditDomainRequest $request
+     *
+     * @return Response
+     */
+    public function edit(EditDomainRequest $request)
     {
-        return [];
+        $fields = $request->validated();
+        $fields['updated_at'] = Date::now();
+
+        $domain = \App\Models\Domain::find($request->post('id'));
+        if(isset($fields['phones'])) {
+            $domain->phones()->delete();
+            $phoneRows = collect($fields['phones'])->map(fn($item) => ['phone' => $item]);
+            $domain->phones()->createMany($phoneRows);
+        }
+
+        if(isset($fields['emails'])) {
+            $domain->emails()->delete();
+            $phoneRows = collect($fields['emails'])->map(fn($item) => ['emails' => $item]);
+            $domain->emails()->createMany($phoneRows);
+        }
+
+        if(isset($fields['inn'])) {
+            $domain->inns()->delete();
+            $phoneRows = collect($fields['inn'])->map(fn($item) => ['inn' => $item]);
+            $domain->inns()->createMany($phoneRows);
+        }
+
+        $success = $domain->update($fields);
+        if(!$success) {
+            return \Response::error('Что-то пошло не так при обновлении');
+        }
+
+        return \Response::success('Запись обновлена!', [$domain->getChanges()]);
     }
 }
