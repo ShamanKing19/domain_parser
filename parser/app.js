@@ -33,6 +33,8 @@ class App
                 const pageNumber = currentPage.data['page_number'] ?? currentPage;
                 const now = this.function.getCurrentDate();
                 await this.logger.log(`[${now}]: Порция ${pageNumber} отправлена`);
+
+                console.log(response);
             });
 
             currentPage++;
@@ -50,17 +52,19 @@ class App
      * @return {Promise<AxiosResponse>}
      */
     async sendParsedData(data) {
-        return this.client.post(this.apiUrl + '/some_path', data);
+        return this.client.post(this.apiUrl + '/', data);
     }
 
     /**
      * Номер последней страницы
      *
      * @param {number} itemsPerPage
-     * @return {Promise<AxiosResponse>}
+     * @return {Promise<number>}
      */
     async getLastPageNumber(itemsPerPage) {
-        return
+        const response = await this.sendDomainsRequest(1, itemsPerPage);
+
+        return response['last_page'];
     }
 
     /**
@@ -73,7 +77,7 @@ class App
     async getDomains(pageNumber, itemsPerPage) {
         const data = await this.sendDomainsRequest(pageNumber, itemsPerPage);
 
-        return data['data']['data'];
+        return data['data'];
     }
 
     /**
@@ -91,7 +95,7 @@ class App
             }
         });
 
-        return response.data;
+        return response.data['data'];
     }
 }
 

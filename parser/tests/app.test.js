@@ -15,23 +15,12 @@ const app = new App();
 test('get domains', async () => {
     const domains = await app.getDomains(1, 1);
     expect(domains.length).toBe(1);
+
+    const domains2 = await app.getDomains(1, 12);
+    expect(domains2.length).toBe(12);
 });
 
-test('', () => {
-
+test('get last page number', async () => {
+    const page = await app.getLastPageNumber(1);
+    expect(page).toBeGreaterThanOrEqual(1);
 });
-
-test('', () => {
-
-});
-
-test('', () => {
-
-});
-
-
-test('', () => {
-
-});
-
-
