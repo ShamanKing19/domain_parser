@@ -17,6 +17,7 @@ class DomainController extends Controller
      * Получение списка доменов
      * // TODO: Вынести в репозиторий
      *
+     * @param Request $request
      * @return Response
      */
     public function index(Request $request): Response
@@ -34,7 +35,7 @@ class DomainController extends Controller
      *
      * @return Response
      */
-    public function view(Domain $domain)
+    public function view(Domain $domain): Response
     {
         return \Response::success('' , $domain->load(['phones', 'emails', 'inns']));
     }
@@ -43,6 +44,7 @@ class DomainController extends Controller
      * Список доменов отфильтрованный по CMS
      * // TODO: Вынести в репозиторий
      *
+     * @param Request $request
      * @param string $cms Название CMS
      *
      * @return Response
