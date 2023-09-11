@@ -2,7 +2,7 @@ const {AxiosResponse, AxiosInstance} = require('axios');
 
 class Request
 {
-    userAgent = require('User-Agents');
+    // userAgent = require('User-Agents');
     axios = require('axios');
     Functions = require('./functions');
 
@@ -149,8 +149,8 @@ class Request
      * @returns {string}
      */
     getUserAgent() {
-        return new this.userAgent().toString();
 
+        return 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.90 Safari/537.36';
     }
 }
 

@@ -1,7 +1,6 @@
 class Functions
 {
     fs = require('fs');
-    UserAgent = require('user-agents');
     axios = require('axios');
 
     sleepTime = 500;
