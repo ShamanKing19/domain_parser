@@ -15,6 +15,7 @@ class DomainController extends Controller
 
     /**
      * Получение списка доменов
+     * // TODO: Вынести в репозиторий
      *
      * @return Response
      */
@@ -40,6 +41,7 @@ class DomainController extends Controller
 
     /**
      * Список доменов отфильтрованный по CMS
+     * // TODO: Вынести в репозиторий
      *
      * @param string $cms Название CMS
      *
@@ -55,6 +57,7 @@ class DomainController extends Controller
 
     /**
      * Создание записи с доменом
+     * // TODO: Вынести копипасту в сервис
      *
      * @param StoreDomainRequest $request
      *
@@ -87,6 +90,7 @@ class DomainController extends Controller
 
     /**
      * Создание сразу нескольких записей (для миграции доменов)
+     * // TODO: Добавить валидацию как в editMany
      *
      * @param Request $request
      *
@@ -107,6 +111,7 @@ class DomainController extends Controller
 
     /**
      * Изменение полей домена
+     * // TODO: Вынести копипасту в сервис
      *
      * @param EditDomainRequest $request
      *
@@ -150,6 +155,7 @@ class DomainController extends Controller
 
     /**
      * Изменение полей домена
+     * // TODO: Вынести копипасту в сервис
      *
      * @param EditManyDomainRequest $request
      *
