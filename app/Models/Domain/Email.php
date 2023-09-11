@@ -11,5 +11,7 @@ class Email extends Model
 
     protected $table = 'domain_emails';
 
+    public $timestamps = false;
+
     protected $fillable = ['email'];
 }

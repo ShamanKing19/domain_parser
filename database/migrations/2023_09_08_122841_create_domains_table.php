@@ -25,6 +25,7 @@ class CreateDomainsTable extends Migration
             $table->boolean('has_https_redirect')->default(false);
             $table->boolean('has_catalog')->default(false);
             $table->boolean('has_basket')->default(false);
+            $table->timestamp('updated_at')->nullable();
         });
     }
 

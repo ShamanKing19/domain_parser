@@ -13,6 +13,8 @@ class Domain extends Model
 
     protected $table = 'domains';
 
+    public $timestamps = false;
+
     protected $fillable = [
         'domain',
         'real_domain',
@@ -28,7 +30,8 @@ class Domain extends Model
         'has_ssl',
         'has_https_redirect',
         'has_catalog',
-        'has_basket'
+        'has_basket',
+        'updated_at'
     ];
 
     public function phones() : HasMany

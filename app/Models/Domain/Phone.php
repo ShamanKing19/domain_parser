@@ -11,5 +11,7 @@ class Phone extends Model
 
     protected $table = 'domain_phones';
 
+    public $timestamps = false;
+
     protected $fillable = ['phone'];
 }

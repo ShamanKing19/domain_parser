@@ -15,6 +15,8 @@ class Company extends Model
 
     protected $table = 'company_info';
 
+    public $timestamps = false;
+
     protected $fillable = [
         'inn',
         'name',
@@ -34,7 +36,8 @@ class Company extends Model
         'registry_category',
         'employees_count',
         'main_activity',
-        'last_finance_year'
+        'last_finance_year',
+        'updated_at'
     ];
 
     public function segment() : HasOne

@@ -29,6 +29,7 @@ class CreateCompanyInfoTable extends Migration
             $table->unsignedMediumInteger('employees_count')->nullable();
             $table->mediumText('main_activity')->nullable();
             $table->smallInteger('last_finance_year')->nullable();
+            $table->timestamp('updated_at')->nullable();
         });
     }
 
