@@ -24,6 +24,7 @@ Route::group(['prefix' => '/domain'], function() {
     Route::get('/{domain}', [DomainController::class, 'view'])->whereNumber('domain');
     Route::get('/cms/{cms}', [DomainController::class, 'viewByCms'])->whereAlpha('cms');
     Route::post('/create', [DomainController::class, 'store']);
-    Route::post('/createMany', [DomainController::class, 'storeMany']);
+    Route::post('/create-many', [DomainController::class, 'storeMany']);
     Route::post('/update', [DomainController::class, 'edit']);
+    Route::post('/update-many', [DomainController::class, 'editMany']);
 });

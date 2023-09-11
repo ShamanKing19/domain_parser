@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\EditDomainRequest;
+use App\Http\Requests\EditManyDomainRequest;
 use App\Http\Requests\StoreDomainRequest;
 use App\Models\Domain;
 use Illuminate\Http\Request;
@@ -117,6 +118,10 @@ class DomainController extends Controller
         $fields['updated_at'] = Date::now();
 
         $domain = \App\Models\Domain::find($request->post('id'));
+        if(empty($domain)) {
+            return \Response::error('Запись не найдена');
+        }
+
         if(isset($fields['phones'])) {
             $domain->phones()->delete();
             $phoneRows = collect($fields['phones'])->map(fn($item) => ['phone' => $item]);
@@ -141,5 +146,53 @@ class DomainController extends Controller
         }
 
         return \Response::success('Запись обновлена!', [$domain->getChanges()]);
+    }
+
+    /**
+     * Изменение полей домена
+     *
+     * @param EditManyDomainRequest $request
+     *
+     * @return Response
+     */
+    public function editMany(EditManyDomainRequest $request)
+    {
+        $allFields = $request->validated();
+
+        $changedFields = [];
+        foreach($allFields['domains'] as $fields) {
+            $domainId = $fields['id'];
+            $domain = \App\Models\Domain::find($domainId);
+            if(empty($domain)) {
+                continue;
+            }
+
+            $fields['updated_at'] = Date::now();
+
+            if(isset($fields['phones'])) {
+                $domain->phones()->delete();
+                $phoneRows = collect($fields['phones'])->map(fn($item) => ['phone' => $item]);
+                $domain->phones()->createMany($phoneRows);
+            }
+
+            if(isset($fields['emails'])) {
+                $domain->emails()->delete();
+                $phoneRows = collect($fields['emails'])->map(fn($item) => ['emails' => $item]);
+                $domain->emails()->createMany($phoneRows);
+            }
+
+            if(isset($fields['inn'])) {
+                $domain->inns()->delete();
+                $phoneRows = collect($fields['inn'])->map(fn($item) => ['inn' => $item]);
+                $domain->inns()->createMany($phoneRows);
+            }
+
+            $success = $domain->update($fields);
+            if($success) {
+                $changedFields[$domainId] = $domain->getChanges();
+            }
+        }
+
+        return \Response::success('Записи обновлены!', $changedFields);
     }
 }
