@@ -19,7 +19,7 @@ class DomainController extends Controller
      *
      * @return Response
      */
-    public function index(Request $request)
+    public function index(Request $request): Response
     {
         $itemsPerPage = $request->get('count') ?: \App\Models\Domain::getModel()->getPerPage();
         $domains = \App\Models\Domain::paginate($itemsPerPage, ['id', 'domain']);
@@ -47,7 +47,7 @@ class DomainController extends Controller
      *
      * @return Response
      */
-    public function viewByCms(Request $request, string $cms)
+    public function viewByCms(Request $request, string $cms): Response
     {
         $itemsPerPage = $request->get('count') ?: \App\Models\Domain::getModel()->getPerPage();
         $domains = \App\Models\Domain::where('cms', '=', $cms)->paginate($itemsPerPage);
@@ -63,7 +63,7 @@ class DomainController extends Controller
      *
      * @return Response
      */
-    public function store(StoreDomainRequest $request)
+    public function store(StoreDomainRequest $request): Response
     {
         $fields = $request->validated();
         $fields['updated_at'] = Date::now();
@@ -96,7 +96,7 @@ class DomainController extends Controller
      *
      * @return Response
      */
-    public function storeMany(Request $request)
+    public function storeMany(Request $request): Response
     {
         $fields = $request->all();
         $now = Date::now();
@@ -117,7 +117,7 @@ class DomainController extends Controller
      *
      * @return Response
      */
-    public function edit(EditDomainRequest $request)
+    public function edit(EditDomainRequest $request): Response
     {
         $fields = $request->validated();
         $fields['updated_at'] = Date::now();
@@ -161,7 +161,7 @@ class DomainController extends Controller
      *
      * @return Response
      */
-    public function editMany(EditManyDomainRequest $request)
+    public function editMany(EditManyDomainRequest $request): Response
     {
         $allFields = $request->validated();
 
