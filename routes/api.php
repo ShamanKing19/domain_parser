@@ -24,5 +24,6 @@ Route::group(['prefix' => '/domain'], function() {
     Route::get('/{id}', [DomainController::class, 'view']);
     Route::get('/cms/{cms}', [DomainController::class, 'viewByCms']);
     Route::post('/create', [DomainController::class, 'store']);
+    Route::post('/createMany', [DomainController::class, 'storeMany']);
     Route::post('/update', [DomainController::class, 'edit']);
 });

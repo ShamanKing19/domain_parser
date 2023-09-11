@@ -58,6 +58,26 @@ class DomainController extends Controller
         return \Response::success('Запись создана!', ['id' => $domain->id]);
     }
 
+    /**
+     * Создание сразу нескольких записей (для миграции доменов)
+     *
+     * @param Request $request
+     *
+     * @return Response
+     */
+    public function storeMany(Request $request)
+    {
+        $fields = $request->all();
+        $now = Date::now();
+        foreach($fields as &$field) {
+            $field['updated_at'] = $now;
+        }
+
+        \App\Models\Domain::insert($fields);
+
+        return \Response::success('Запись создана!');
+    }
+
     public function edit(Request $request)
     {
         return [];
