@@ -14,10 +14,10 @@ class CreateDomainEmailsTable extends Migration
     public function up()
     {
         Schema::create('domain_emails', function (Blueprint $table) {
-            $table->id();
             $table->foreignId('domain_id');
             $table->foreign('domain_id')->references('id')->on('domains')->cascadeOnDelete();
             $table->string('email');
+            $table->primary(['domain_id', 'email']);
         });
     }
 
