@@ -7,19 +7,20 @@ const { AxiosResponse } = require('axios');
 class App
 {
     constructor() {
-        this.apiUrl = '/api';
+        // this.apiUrl = '/api/domain';
+        this.apiUrl = 'https://domainsparse.dev.skillline.ru/api/domain';
         this.logger = new Logger();
         this.function = new Functions();
         this.client = new Client();
+        this.itemsPerPage = 300;
     }
 
     async run() {
-        const itemsPerPage = 300;
         let currentPage = 1;
-        const lastPage = await this.getLastPageNumber(itemsPerPage);
+        const lastPage = await this.getLastPageNumber(this.itemsPerPage);
 
         while(currentPage <= lastPage) {
-            const domainList = await this.getDomains(currentPage, itemsPerPage);
+            const domainList = await this.getDomains(currentPage, this.itemsPerPage);
             const parsedData = [];
             for(const domain of domainList) {
                 const parser = new Parser(domain);
@@ -53,32 +54,44 @@ class App
     }
 
     /**
+     * Номер последней страницы
+     *
+     * @param {number} itemsPerPage
+     * @return {Promise<AxiosResponse>}
+     */
+    async getLastPageNumber(itemsPerPage) {
+        return
+    }
+
+    /**
      * Список ссылок
      *
      * @param {number} pageNumber
      * @param {number} itemsPerPage
-     * @return {Promise<string[]>}
+     * @return {Promise<object>}
      */
     async getDomains(pageNumber, itemsPerPage) {
-        return [
-            'https://jestjs.io/docs/getting-started',
-            'https://www.npmjs.com/package/node-html-parser',
-            'https://www.dev-notes.ru/articles/',
-            'https://habr.com/ru/companies/trinion/articles/315538/',
-            'https://www.1c-bitrix.ru/',
-            'https://klgtu.ru/',
-            'https://kantiana.ru/',
-        ];
+        const data = await this.sendDomainsRequest(pageNumber, itemsPerPage);
+
+        return data['data']['data'];
     }
 
     /**
-     * Номер последней страницы
+     * Запрос на получение доменов
      *
-     * @param {number} itemsPerPage
-     * @return {Promise<number>}
+     * @param pageNumber
+     * @param itemsPerPage
+     * @return {Promise<object>}
      */
-    async getLastPageNumber(itemsPerPage) {
-        return 10;
+    async sendDomainsRequest(pageNumber, itemsPerPage) {
+        const response = await this.client.get(this.apiUrl, {
+            params: {
+                'page': pageNumber,
+                'count': itemsPerPage
+            }
+        });
+
+        return response.data;
     }
 }
 

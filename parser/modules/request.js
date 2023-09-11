@@ -81,6 +81,9 @@ class Request
             if(e.response) {
                 return e.response;
             }
+
+            console.log(e);
+            return e.response;
         }
     }
 

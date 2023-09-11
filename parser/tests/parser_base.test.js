@@ -23,6 +23,13 @@ test('parser instance is created', () => {
     expect(parser).toBeInstanceOf(Parser);
 });
 
+test('set domain instead of url', () => {
+    const domain = 'domain.com';
+    const parser = new Parser(domain);
+    expect(parser.getDomain()).toBe(domain);
+    expect(parser.getUrl()).toBe(domain);
+});
+
 test('get url', () => {
     const parser = new Parser(testUrl1);
     expect(parser.getUrl()).toBe('https://jestjs.io/docs/getting-started');
