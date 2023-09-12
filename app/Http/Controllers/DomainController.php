@@ -6,12 +6,19 @@ use App\Http\Requests\EditDomainRequest;
 use App\Http\Requests\EditManyDomainRequest;
 use App\Http\Requests\StoreDomainRequest;
 use App\Models\Domain;
+use App\Services\DomainService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Date;
 
 class DomainController extends Controller
 {
+    private DomainService $service;
+
+    public function __construct(DomainService $service)
+    {
+        $this->service = $service;
+    }
 
     /**
      * Получение списка доменов
@@ -70,22 +77,7 @@ class DomainController extends Controller
         $fields = $request->validated();
         $fields['updated_at'] = Date::now();
 
-        $domain = \App\Models\Domain::create($fields);
-
-        if(isset($fields['phones'])) {
-            $phoneRows = collect($fields['phones'])->map(fn($item) => ['phone' => $item]);
-            $domain->phones()->createMany($phoneRows);
-        }
-
-        if(isset($fields['emails'])) {
-            $emailRows = collect($fields['emails'])->map(fn($item) => ['email' => $item]);
-            $domain->emails()->createMany($emailRows);
-        }
-
-        if(isset($fields['inn'])) {
-            $innRows = collect($fields['inn'])->map(fn($item) => ['inn' => $item]);
-            $domain->inns()->createMany($innRows);
-        }
+        $domain = $this->service->create($fields);
 
         return \Response::success('Запись создана!', ['id' => $domain->id]);
     }
@@ -101,14 +93,12 @@ class DomainController extends Controller
     public function storeMany(Request $request): Response
     {
         $fields = $request->all();
-        $now = Date::now();
-        foreach($fields as &$field) {
-            $field['updated_at'] = $now;
+        $success = $this->service->createMany($fields);
+        if(!$success) {
+            return \Response::error('Что-то пошло не так при создании записей');
         }
 
-        \App\Models\Domain::insert($fields);
-
-        return \Response::success('Запись создана!');
+        return \Response::success('Записи созданы!');
     }
 
     /**
@@ -124,34 +114,8 @@ class DomainController extends Controller
         $fields = $request->validated();
         $fields['updated_at'] = Date::now();
 
-        $domain = \App\Models\Domain::find($request->post('id'));
-        if(empty($domain)) {
-            return \Response::error('Запись не найдена');
-        }
-
-        if(!empty($fields['phones'])) {
-            $domain->phones()->delete();
-            $phoneRows = collect($fields['phones'])->unique()->map(function($item) {
-                return ['phone' => $this->cleanPhoneString($item)];
-            });
-
-            $domain->phones()->createMany($phoneRows);
-        }
-
-        if(!empty($fields['emails'])) {
-            $domain->emails()->delete();
-            $emails = collect($fields['emails'])->unique()->map(fn($item) => ['email' => $item]);
-            $domain->emails()->createMany($emails);
-        }
-
-        if(!empty($fields['inn'])) {
-            $domain->inns()->delete();
-            $inns = collect($fields['inn'])->map(fn($item) => ['inn' => $item]);
-            $domain->inns()->createMany($inns);
-        }
-
-        $success = $domain->update($fields);
-        if(!$success) {
+        $domain = $this->service->update($fields['id'], $fields);
+        if(!$domain->wasChanged()) {
             return \Response::error('Что-то пошло не так при обновлении');
         }
 
@@ -173,61 +137,10 @@ class DomainController extends Controller
         $changedFields = [];
         foreach($allFields['domains'] as $fields) {
             $domainId = $fields['id'];
-            $domain = \App\Models\Domain::find($domainId);
-            if(empty($domain)) {
-                continue;
-            }
-
-            $fields['updated_at'] = Date::now();
-
-            if(!empty($fields['phones'])) {
-                $domain->phones()->delete();
-                $phoneRows = collect($fields['phones'])->unique()->map(function($item) {
-                    return ['phone' => $this->cleanPhoneString($item)];
-                });
-
-                $domain->phones()->createMany($phoneRows);
-            }
-
-            if(!empty($fields['emails'])) {
-                $domain->emails()->delete();
-                $emails = collect($fields['emails'])->unique()->map(fn($item) => ['email' => $item]);
-                $domain->emails()->createMany($emails);
-            }
-
-            if(!empty($fields['inn'])) {
-                $domain->inns()->delete();
-                $inns = collect($fields['inn'])->map(fn($item) => ['inn' => $item]);
-                $domain->inns()->createMany($inns);
-            }
-
-            $success = $domain->update($fields);
-            if($success) {
-                $changedFields[$domainId] = $domain->getChanges();
-            }
+            $domain = $this->service->update($domainId, $fields);
+            $changedFields[$domainId] = $domain->getChanges();
         }
 
         return \Response::success('Записи обновлены!', $changedFields);
-    }
-
-    /**
-     * Чистим номер телефона от всего, кроме цифр
-     * TODO: Перенести в App\Helpers
-     *
-     * @param string $phone Номер телефона в любом формате
-     * @param bool $savePlus Сохранять ли плюс в номере
-     *
-     * @return array|string|null
-     */
-    private function cleanPhoneString(string $phone, bool $savePlus = false) : string
-    {
-        $plus = false;
-        if($savePlus) {
-            $plus = '+';
-        }
-
-        $regex = '/[^0-9'.$plus.'.]+/';
-
-        return preg_replace($regex, '', $phone);
     }
 }
