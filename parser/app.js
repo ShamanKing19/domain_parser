@@ -46,12 +46,14 @@ class App
                 });
 
             await this.logger.log(`Спаршено ${currentPage} из ${lastPage} страниц (${currentPage * this.itemsPerPage}/${domainsCount})`, true);
+            if(requestList.length === 10) {
+                await Promise.all(requestList);
+                requestList = [];
+            }
 
             currentPage++;
             requestList.push(request);
             if(currentPage === lastPage) {
-                await Promise.all(requestList);
-                requestList = [];
                 currentPage = 1;
             }
         }
