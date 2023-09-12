@@ -189,7 +189,8 @@ class Parser
      * @return {string}
      */
     getResponseData(response) {
-        return response ? response.data ?? '' : '';
+        const body = response ? response.data : '';
+        return body ? body : '';
     }
 
     /**

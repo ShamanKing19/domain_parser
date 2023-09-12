@@ -18,6 +18,8 @@ class App
     async run() {
         let currentPage = 1;
         const lastPage = await this.getLastPageNumber(this.itemsPerPage);
+        const domainsCount = await this.getDomainsCount();
+        let requestList = [];
 
         while(currentPage <= lastPage) {
             const domainList = await this.getDomains(currentPage, this.itemsPerPage);
@@ -28,7 +30,7 @@ class App
             }
 
             parsedData = await Promise.all(parsedData);
-            this.sendParsedData({'domains': parsedData})
+            const request = this.sendParsedData({'domains': parsedData})
                 .then(async (response) => {
                     if(!response) {
                         this.logger.logJson('broken_data/' + currentPage, parsedData);
@@ -43,11 +45,13 @@ class App
                     }
                 });
 
-            await this.logger.log(`Спаршено ${currentPage} из ${lastPage} страниц (${currentPage * this.itemsPerPage}/${lastPage * this.itemsPerPage})`, true);
+            await this.logger.log(`Спаршено ${currentPage} из ${lastPage} страниц (${currentPage * this.itemsPerPage}/${domainsCount})`, true);
 
             currentPage++;
+            requestList.push(request);
             if(currentPage === lastPage) {
-                // await response;
+                await Promise.all(requestList);
+                requestList = [];
                 currentPage = 1;
             }
         }
@@ -63,6 +67,17 @@ class App
         return this.client.post(this.apiUrl + '/update-many', data, {
             timeout: 0
         });
+    }
+
+    /**
+     * Количество доменов
+     *
+     * @return {Promise<number>}
+     */
+    async getDomainsCount() {
+        const response = await this.sendDomainsRequest(1, 1);
+
+        return response['total'] ?? 0;
     }
 
     /**

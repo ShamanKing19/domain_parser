@@ -26,3 +26,8 @@ test('get last page number', async () => {
     const page = await app.getLastPageNumber(1);
     expect(page).toBeGreaterThanOrEqual(1);
 });
+
+test('get domains count', async () => {
+    const count = await app.getDomainsCount();
+    expect(count).toBeGreaterThanOrEqual(1);
+});
