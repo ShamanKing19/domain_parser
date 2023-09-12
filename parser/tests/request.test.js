@@ -106,6 +106,10 @@ test('parser check https redirect', async () => {
     const parser2 = new Parser('http://' + unipumpDomain);
     const response2 = await parser2.makeHttpRequest(parser2.getDomain());
     expect(parser2.checkHttpsRedirect(response2)).toBeTruthy();
+
+    const parser3 = new Parser('http://1000miglia-wheels.ru/');
+    const response3 = await parser3.makeHttpRequest(parser3.getDomain());
+    expect(parser3.checkHttpsRedirect(response3)).toBeTruthy();
 });
 
 test('parser check SSL', async () => {

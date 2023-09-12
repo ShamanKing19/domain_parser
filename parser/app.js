@@ -12,7 +12,7 @@ class App
         this.logger = new Logger();
         this.function = new Functions();
         this.client = new Client();
-        this.itemsPerPage = 100;
+        this.itemsPerPage = 10;
     }
 
     async run() {
@@ -21,21 +21,27 @@ class App
 
         while(currentPage <= lastPage) {
             const domainList = await this.getDomains(currentPage, this.itemsPerPage);
-            const parsedData = [];
+            let parsedData = [];
             for(const domainItem of domainList) {
                 const parser = new Parser(domainItem['domain'], domainItem['id']);
                 parsedData.push(parser.run());
             }
 
-            await Promise.all(parsedData);
-
-            // console.log(parsedData);
+            parsedData = await Promise.all(parsedData);
             const response  = await this.sendParsedData({'domains': parsedData});
-            // console.log(response);
+
+            if(!response) {
+                this.logger.logJson('parsedData', parsedData);
+                await this.logger.error(`Ошибка при отправке запроса на api`, true)
+                continue;
+            }
+
+            // this.logger.logJson('responseData', response.data);
+            // this.logger.logJson('sentData', {'domains': parsedData});
+
             const pageNumber = response.data['page_number'] ?? currentPage;
             const now = this.function.getCurrentDate();
-            await this.logger.log(`[${now}]: Порция ${pageNumber} отправлена`);
-            await this.logger.logJsonAsync('test', parsedData);
+            await this.logger.log(`[${now}]: Порция ${pageNumber} отправлена`, true);
 
             currentPage++;
             if(currentPage === lastPage) {
@@ -43,8 +49,6 @@ class App
                 currentPage = 1;
             }
         }
-
-        console.log('Я почему-то вышел из цикла while...', currentPage, lastPage);
     }
 
     /**

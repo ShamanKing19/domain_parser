@@ -59,15 +59,15 @@ class Parser
         const httpResponse = result[0];
         const httpsResponse = result[1];
 
-        if(!httpResponse && !httpsResponse) {
-            return {
-                id: this.id,
-                status: 404
-            };
-        }
-
         const hasHttpsRedirect = httpResponse ? this.checkHttpsRedirect(httpResponse) : false;
         const hasSsl = httpsResponse ? this.checkSsl(httpsResponse) : false;
+
+        if(!httpsResponse) {
+            return {
+                id: this.id,
+                status: 404 // TODO: Возвращать из запроса кастомный ответ
+            }
+        }
 
         const status = this.getStatusCode(httpsResponse);
         const realUrl = this.getRealUrl(httpsResponse);
@@ -89,9 +89,21 @@ class Parser
         const finances = innList.length !== 0 ? this.findFinanceInfo(innList) : {};
 
         return {
-            id: this.id,
-            status: status,
-            cms: cms
+            'id': this.id,
+            'status': status,
+            'real_domain': realUrl,
+            'has_https_redirect': hasHttpsRedirect,
+            'has_ssl': hasSsl,
+            'cms': cms,
+            'title': title,
+            'description': description,
+            'keywords': keywords,
+            'inn': innList,
+            'phones': phoneList,
+            'emails': emailList,
+            'companies': companyList,
+            'category': category,
+            'finances': finances
         };
     }
 
@@ -140,7 +152,7 @@ class Parser
             return false;
         }
 
-        const responseUrl = response.request.res.responseUrl;
+        const responseUrl = this.getRealUrl(response)
 
         return responseUrl.includes('https://');
     }

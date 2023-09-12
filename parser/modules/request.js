@@ -74,21 +74,25 @@ class Request
         try {
             return await client.get(encodeURI(url), config);
         } catch (e) {
-            if(e.code === 'ENOTFOUND') {
-                return false;
-            }
-
-            // timeout
-            if(e.code = 'ECONNABORTED') {
-                return false;
-            }
-
-            if(e.response) {
+            if(e && e.response) {
                 return e.response;
             }
 
-            console.log(e);
-            return e.response;
+            // if(e.code === 'ENOTFOUND') {
+            //     return e.response;
+            // }
+            //
+            // // timeout
+            // if(e.code = 'ECONNABORTED') {
+            //     return e.response;
+            // }
+            //
+            // if(e.response) {
+            //     return e.response;
+            // }
+
+            // console.log(e);
+            return false;
         }
     }
 
@@ -107,13 +111,11 @@ class Request
         try {
             return await client.post(encodeURI(url), data, config);
         } catch (e) {
-            if(e.code === 'ENOTFOUND') {
-                return false;
-            }
-
-            if(e.response) {
+            if(e && e.response) {
                 return e.response;
             }
+
+            return false;
         }
     }
 
