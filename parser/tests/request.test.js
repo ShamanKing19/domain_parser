@@ -57,6 +57,24 @@ test('get 404 response vie GET method', async () => {
     expect(response).toBeInstanceOf(Object);
     expect(response.status).toBe(404);
     expect(response.statusText).toBe('Not Found');
+
+    const url1 = 'https://000SB.RU';
+    const response1 = await client.get(url1);
+    expect(response).toBeInstanceOf(Object);
+    expect(response.status).toBe(404);
+    expect(response.statusText).toBe('Not Found');
+});
+
+test('handle timeout', async () => {
+    const client = new Client();
+
+    const url = 'https://germes-dent.ru/';
+    const response = await client.get(url, {
+        timeout: 100
+    });
+
+    expect(response).toBeInstanceOf(Object);
+    expect(response.status).toBe(408);
 });
 
 test('make request to non-existing url via GET method', async () => {

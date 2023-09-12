@@ -64,7 +64,7 @@ class Parser
         if(!httpResponse && !httpsResponse) {
             return {
                 id: this.id,
-                status: 404 // TODO: Возвращать из запроса кастомный ответ
+                status: 0 // TODO: Возвращать из запроса кастомный ответ
             }
         }
 
@@ -90,7 +90,9 @@ class Parser
 
         const category = this.guessCategory(responseBody);
 
-        const finances = innList.length !== 0 ? this.findFinanceInfo(innList) : {};
+        // TODO: Отправлять поля company
+        // const company = innList.length !== 0 ? await this.findFinanceInfo(innList) : {};
+        const finances = [];
 
         return {
             'id': this.id,

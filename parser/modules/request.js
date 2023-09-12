@@ -1,4 +1,6 @@
 const {AxiosResponse, AxiosInstance} = require('axios');
+const Logger = require("./logger");
+const {Agent} = require("https");
 
 class Request
 {
@@ -10,6 +12,7 @@ class Request
 
     constructor() {
         this.functions = new this.Functions();
+        this.logger = new Logger();
     }
 
 
@@ -63,6 +66,8 @@ class Request
     /**
      * GET запрос с параметрами и стандартным таймаутом
      *
+     * ECONNABORTED - таймаут
+     *
      * @param {string} url Ссылка
      * @param {object} config Конфиг
      *
@@ -74,24 +79,30 @@ class Request
         try {
             return await client.get(encodeURI(url), config);
         } catch (e) {
-            if(e && e.response) {
+            // if(!e) {
+            //     return {
+            //         status: 404,
+            //         statusText: 'Not Found'
+            //     }
+            // }
+
+            if(e.response) {
+                await this.logger.log(`${e.code}: ${url}`, false, 'shit.txt')
                 return e.response;
             }
 
-            // if(e.code === 'ENOTFOUND') {
-            //     return e.response;
-            // }
-            //
-            // // timeout
-            // if(e.code = 'ECONNABORTED') {
-            //     return e.response;
-            // }
-            //
-            // if(e.response) {
-            //     return e.response;
+            // if(e.code === 'ECONNABORTED') {
+            //     return {
+            //         status: 408,
+            //         statusText: 'Timed Out'
+            //     };
             // }
 
-            // console.log(e);
+            // return {
+            //     status: 0,
+            //     statusText: 'Unhandled error'
+            // };
+
             return false;
         }
     }
@@ -139,7 +150,7 @@ class Request
             };
         }
 
-        Object.assign(config, {
+        Object.assign(config['headers'], {
             'Sec-Ch-Ua-Mobile': '?0',
             'Sec-Ch-Ua-Platform': "Windows",
             'Sec-Fetch-Dest': 'document',
@@ -148,6 +159,10 @@ class Request
             'Sec-Fetch-User': '?1',
             'Upgrade-Insecure-Requests': 1,
             'Dnt': 1
+        });
+
+        config['httpsAgent'] = new Agent({
+            rejectUnauthorized: false,
         });
 
        return this.axios.create(config);

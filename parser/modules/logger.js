@@ -11,14 +11,19 @@ class Logger
         }
     }
 
-    async log(message, consoleLog = false) {
-        if(consoleLog) {
-            console.log(message);
-        }
-
+    async log(message, consoleLog = false, filepath = this.logsPath) {
         const now = this.getCurrentTime();
         const formattedMessage = `[${now}]: ${message}\n`;
-        this.fs.appendFile(this.logsPath, formattedMessage, () => {});
+
+        if(consoleLog) {
+            console.log(formattedMessage);
+        }
+
+        if(filepath === this.logsPath) {
+            this.fs.appendFile(this.logsPath, formattedMessage, () => {});
+        } else {
+            this.fs.appendFile(filepath, formattedMessage, () => {});
+        }
     }
 
     async error(message, consoleLog = false) {
