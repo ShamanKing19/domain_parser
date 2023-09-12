@@ -16,8 +16,8 @@ const Client = require('./parser/modules/request');
         sendData.push({'domain': domain.replace('\r', '')});
 
         domainNumber--;
-        if(sendData.length === 1000) {
-            const response = await client.post('https://domainsparse.dev.skillline.ru/api/domain/createMany', sendData);
+        if(sendData.length === 10000) {
+            const response = await client.post('https://domainsparse.dev.skillline.ru/api/domain/create-many', sendData);
             if(response.status !== 200) {
                 console.log(response.data);
             }
@@ -27,7 +27,7 @@ const Client = require('./parser/modules/request');
         }
     }
 
-    const response = await client.post('https://domainsparse.dev.skillline.ru/api/domain/createMany', sendData);
+    const response = await client.post('https://domainsparse.dev.skillline.ru/api/domain/create-many', sendData);
     console.log('ВСЁЁЁЁЁЁЁЁЁЁ');
 
 })();
