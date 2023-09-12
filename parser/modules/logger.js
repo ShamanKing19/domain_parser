@@ -17,8 +17,8 @@ class Logger
         }
 
         const now = this.getCurrentTime();
-        const formattedMessage = now + ': ' + message + '\n';
-        await this.fs.appendFile(this.logsPath, formattedMessage, () => {});
+        const formattedMessage = `[${now}]: ${message}\n`;
+        this.fs.appendFile(this.logsPath, formattedMessage, () => {});
     }
 
     async error(message, consoleLog = false) {
@@ -27,8 +27,8 @@ class Logger
         }
 
         const now = this.getCurrentTime();
-        const formattedMessage = now + ': ' + message + '\n';
-        await this.fs.appendFile(this.errorsPath, formattedMessage, () => {});
+        const formattedMessage = `[${now}]: ${message}\n`;
+        this.fs.appendFile(this.errorsPath, formattedMessage, () => {});
     }
 
     async logJsonAsync(filename, data) {
@@ -49,7 +49,8 @@ class Logger
      * @return {string}
      */
     getCurrentTime() {
-        return new Date().toISOString().split('T').join(' ');
+        const now = new Date();
+        return now.toLocaleString();
     }
 }
 

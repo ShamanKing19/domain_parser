@@ -12,7 +12,7 @@ class App
         this.logger = new Logger();
         this.function = new Functions();
         this.client = new Client();
-        this.itemsPerPage = 10;
+        this.itemsPerPage = 50;
     }
 
     async run() {
@@ -36,12 +36,14 @@ class App
                 continue;
             }
 
-            // this.logger.logJson('responseData', response.data);
-            // this.logger.logJson('sentData', {'domains': parsedData});
+            if(!response || !response.data) {
+                await this.logger.logJson('api_error_data', parsedData);
+                await this.logger.error('Ошибка при получении ответа от api');
+                continue;
+            }
 
             const pageNumber = response.data['page_number'] ?? currentPage;
-            const now = this.function.getCurrentDate();
-            await this.logger.log(`[${now}]: Порция ${pageNumber} отправлена`, true);
+            await this.logger.log(`Порция ${pageNumber} отправлена`, true);
 
             currentPage++;
             if(currentPage === lastPage) {
@@ -82,6 +84,9 @@ class App
      */
     async getDomains(pageNumber, itemsPerPage) {
         const data = await this.sendDomainsRequest(pageNumber, itemsPerPage);
+        if(!data) {
+            return [];
+        }
 
         return data['data'];
     }
@@ -91,7 +96,7 @@ class App
      *
      * @param pageNumber
      * @param itemsPerPage
-     * @return {Promise<object>}
+     * @return {Promise<object>|false}
      */
     async sendDomainsRequest(pageNumber, itemsPerPage) {
         const response = await this.client.get(this.apiUrl, {
@@ -101,7 +106,7 @@ class App
             }
         });
 
-        return response.data['data'];
+        return response ? response.data['data'] : false;
     }
 }
 
