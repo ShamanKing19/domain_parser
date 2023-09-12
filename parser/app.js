@@ -12,7 +12,7 @@ class App
         this.logger = new Logger();
         this.function = new Functions();
         this.client = new Client();
-        this.itemsPerPage = 50;
+        this.itemsPerPage = 1000;
     }
 
     async run() {
@@ -28,22 +28,22 @@ class App
             }
 
             parsedData = await Promise.all(parsedData);
-            const response  = await this.sendParsedData({'domains': parsedData});
+            this.sendParsedData({'domains': parsedData})
+                .then(async (response) => {
+                    if(!response) {
+                        this.logger.logJson('broken_data/' + currentPage, parsedData);
+                        await this.logger.error(`Ошибка при отправке запроса на api`, true)
+                        // continue;
+                    }
 
-            if(!response) {
-                this.logger.logJson('parsedData', parsedData);
-                await this.logger.error(`Ошибка при отправке запроса на api`, true)
-                continue;
-            }
+                    if(!response || !response.data) {
+                        await this.logger.logJson('broken_api_data/' + currentPage, parsedData);
+                        await this.logger.error('Ошибка при получении ответа от api');
+                        // continue;
+                    }
+                });
 
-            if(!response || !response.data) {
-                await this.logger.logJson('api_error_data', parsedData);
-                await this.logger.error('Ошибка при получении ответа от api');
-                continue;
-            }
-
-            const pageNumber = response.data['page_number'] ?? currentPage;
-            await this.logger.log(`Порция ${pageNumber} отправлена`, true);
+            await this.logger.log(`Спаршено ${currentPage} из ${lastPage} страниц (${currentPage * this.itemsPerPage}/${lastPage * this.itemsPerPage})`, true);
 
             currentPage++;
             if(currentPage === lastPage) {
@@ -60,7 +60,9 @@ class App
      * @return {Promise<AxiosResponse>}
      */
     async sendParsedData(data) {
-        return this.client.post(this.apiUrl + '/update-many', data);
+        return this.client.post(this.apiUrl + '/update-many', data, {
+            timeout: 0
+        });
     }
 
     /**

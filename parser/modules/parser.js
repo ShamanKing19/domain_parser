@@ -57,20 +57,24 @@ class Parser
 
         const result = await Promise.all([httpRequest, httpsRequest]);
         const httpResponse = result[0];
-        const httpsResponse = result[1];
+        let httpsResponse = result[1];
 
         const hasHttpsRedirect = httpResponse ? this.checkHttpsRedirect(httpResponse) : false;
-        const hasSsl = httpsResponse ? this.checkSsl(httpsResponse) : false;
 
-        if(!httpsResponse) {
+        if(!httpResponse && !httpsResponse) {
             return {
                 id: this.id,
                 status: 404 // TODO: Возвращать из запроса кастомный ответ
             }
         }
 
+        if(httpResponse && !httpsResponse) {
+            httpsResponse = httpResponse;
+        }
+
         const status = this.getStatusCode(httpsResponse);
         const realUrl = this.getRealUrl(httpsResponse);
+        const hasSsl = this.checkSsl(httpsResponse);
         const responseBody = this.getResponseData(httpsResponse);
         const html = this.getHtml(responseBody)
 
