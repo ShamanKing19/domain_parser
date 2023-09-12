@@ -177,19 +177,22 @@ class DomainController extends Controller
 
             $fields['updated_at'] = Date::now();
 
-            if(isset($fields['phones'])) {
+            if(!empty($fields['phones'])) {
                 $domain->phones()->delete();
-                $phoneRows = collect($fields['phones'])->map(fn($item) => ['phone' => $item]);
+                $phoneRows = collect($fields['phones'])->map(function($item) {
+                    return ['phone' => $this->cleanPhoneString($item)];
+                });
+
                 $domain->phones()->createMany($phoneRows);
             }
 
-            if(isset($fields['emails'])) {
+            if(!empty($fields['emails'])) {
                 $domain->emails()->delete();
                 $phoneRows = collect($fields['emails'])->map(fn($item) => ['emails' => $item]);
                 $domain->emails()->createMany($phoneRows);
             }
 
-            if(isset($fields['inn'])) {
+            if(!empty($fields['inn'])) {
                 $domain->inns()->delete();
                 $phoneRows = collect($fields['inn'])->map(fn($item) => ['inn' => $item]);
                 $domain->inns()->createMany($phoneRows);
@@ -202,5 +205,26 @@ class DomainController extends Controller
         }
 
         return \Response::success('Записи обновлены!', $changedFields);
+    }
+
+    /**
+     * Чистим номер телефона от всего, кроме цифр
+     * TODO: Перенести в App\Helpers
+     *
+     * @param string $phone Номер телефона в любом формате
+     * @param bool $savePlus Сохранять ли плюс в номере
+     *
+     * @return array|string|null
+     */
+    private function cleanPhoneString(string $phone, bool $savePlus = false) : string
+    {
+        $plus = false;
+        if($savePlus) {
+            $plus = '+';
+        }
+
+        $regex = '/[^0-9'.$plus.'.]+/';
+
+        return preg_replace($regex, '', $phone);
     }
 }
