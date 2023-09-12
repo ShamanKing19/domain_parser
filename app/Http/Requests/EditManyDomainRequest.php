@@ -30,7 +30,7 @@ class EditManyDomainRequest extends BaseRequest
             'domains.*.emails' => ['array', 'nullable'],
             'domains.*.emails.*' => ['string', 'email:rfc', 'nullable'],
             'domains.*.inn' => ['array', 'nullable'],
-            'domains.*.inn.*' => ['unique:\App\Models\Company,inn', 'nullable']
+            'domains.*.inn.*' => ['string']
         ];
     }
 }

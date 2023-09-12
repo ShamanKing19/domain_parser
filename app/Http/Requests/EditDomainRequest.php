@@ -29,7 +29,7 @@ class EditDomainRequest extends BaseRequest
             'emails' => ['array', 'nullable'],
             'emails.*' => ['string', 'email:rfc', 'nullable'],
             'inn' => ['array', 'nullable'],
-            'inn.*' => ['unique:\App\Models\Company,inn', 'nullable']
+            'inn.*' => ['string']
         ];
     }
 }

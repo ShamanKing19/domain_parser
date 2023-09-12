@@ -129,22 +129,25 @@ class DomainController extends Controller
             return \Response::error('Запись не найдена');
         }
 
-        if(isset($fields['phones'])) {
+        if(!empty($fields['phones'])) {
             $domain->phones()->delete();
-            $phoneRows = collect($fields['phones'])->map(fn($item) => ['phone' => $item]);
+            $phoneRows = collect($fields['phones'])->unique()->map(function($item) {
+                return ['phone' => $this->cleanPhoneString($item)];
+            });
+
             $domain->phones()->createMany($phoneRows);
         }
 
-        if(isset($fields['emails'])) {
+        if(!empty($fields['emails'])) {
             $domain->emails()->delete();
-            $phoneRows = collect($fields['emails'])->map(fn($item) => ['emails' => $item]);
-            $domain->emails()->createMany($phoneRows);
+            $emails = collect($fields['emails'])->unique()->map(fn($item) => ['email' => $item]);
+            $domain->emails()->createMany($emails);
         }
 
-        if(isset($fields['inn'])) {
+        if(!empty($fields['inn'])) {
             $domain->inns()->delete();
-            $phoneRows = collect($fields['inn'])->map(fn($item) => ['inn' => $item]);
-            $domain->inns()->createMany($phoneRows);
+            $inns = collect($fields['inn'])->map(fn($item) => ['inn' => $item]);
+            $domain->inns()->createMany($inns);
         }
 
         $success = $domain->update($fields);
@@ -179,7 +182,7 @@ class DomainController extends Controller
 
             if(!empty($fields['phones'])) {
                 $domain->phones()->delete();
-                $phoneRows = collect($fields['phones'])->map(function($item) {
+                $phoneRows = collect($fields['phones'])->unique()->map(function($item) {
                     return ['phone' => $this->cleanPhoneString($item)];
                 });
 
@@ -188,14 +191,14 @@ class DomainController extends Controller
 
             if(!empty($fields['emails'])) {
                 $domain->emails()->delete();
-                $phoneRows = collect($fields['emails'])->map(fn($item) => ['emails' => $item]);
-                $domain->emails()->createMany($phoneRows);
+                $emails = collect($fields['emails'])->unique()->map(fn($item) => ['email' => $item]);
+                $domain->emails()->createMany($emails);
             }
 
             if(!empty($fields['inn'])) {
                 $domain->inns()->delete();
-                $phoneRows = collect($fields['inn'])->map(fn($item) => ['inn' => $item]);
-                $domain->inns()->createMany($phoneRows);
+                $inns = collect($fields['inn'])->map(fn($item) => ['inn' => $item]);
+                $domain->inns()->createMany($inns);
             }
 
             $success = $domain->update($fields);
