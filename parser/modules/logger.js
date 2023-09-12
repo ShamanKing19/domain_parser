@@ -16,7 +16,7 @@ class Logger
             console.log(message);
         }
 
-        const now = new Date().toLocaleString();
+        const now = this.getCurrentTime();
         const formattedMessage = now + ': ' + message + '\n';
         await this.fs.appendFile(this.logsPath, formattedMessage, () => {});
     }
@@ -26,7 +26,7 @@ class Logger
             console.log(message);
         }
 
-        const now = new Date().toLocaleString();
+        const now = this.getCurrentTime();
         const formattedMessage = now + ': ' + message + '\n';
         await this.fs.appendFile(this.errorsPath, formattedMessage, () => {});
     }
@@ -41,6 +41,15 @@ class Logger
 
     logHtml(filename, data) {
         this.fs.writeFileSync(`${this.logsDir}/${filename}.html`, data);
+    }
+
+    /**
+     * Возвращает текущую дату в формате YYYY-MM-DD
+     *
+     * @return {string}
+     */
+    getCurrentTime() {
+        return new Date().toISOString().split('T').join(' ');
     }
 }
 
