@@ -66,7 +66,6 @@ class DomainController extends Controller
 
     /**
      * Создание записи с доменом
-     * // TODO: Вынести копипасту в сервис
      *
      * @param StoreDomainRequest $request
      *
@@ -103,7 +102,6 @@ class DomainController extends Controller
 
     /**
      * Изменение полей домена
-     * // TODO: Вынести копипасту в сервис
      *
      * @param EditDomainRequest $request
      *
@@ -124,7 +122,6 @@ class DomainController extends Controller
 
     /**
      * Изменение полей домена
-     * // TODO: Вынести копипасту в сервис
      *
      * @param EditManyDomainRequest $request
      *

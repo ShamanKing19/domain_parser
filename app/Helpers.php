@@ -5,7 +5,6 @@ class Helpers
 {
     /**
      * Чистим номер телефона от всего, кроме цифр
-     * TODO: Перенести в App\Helpers
      *
      * @param string $phone Номер телефона в любом формате
      * @param bool $savePlus Сохранять ли плюс в номере

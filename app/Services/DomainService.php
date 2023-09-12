@@ -89,11 +89,7 @@ class DomainService
             $this->attachInns($domain, $fields['inn']);
         }
 
-        if((int)$fields['id'] === 126722) {
-            \Log::debug($fields);
-        }
         $domain->update($fields);
-
 
         return $domain;
     }
