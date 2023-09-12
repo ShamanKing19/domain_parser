@@ -47,7 +47,7 @@ class Parser
     /**
      * Парсинг сайта
      *
-     * @returns {Promise<void>}
+     * @returns {Promise<>}
      */
     async run() {
         const domain = this.getDomain();
@@ -59,34 +59,40 @@ class Parser
         const httpResponse = result[0];
         const httpsResponse = result[1];
 
-        if(!httpsResponse && !httpResponse) {
-            console.log(`Ошибка при запросе ${domain}`);
-            return;
+        if(!httpResponse && !httpsResponse) {
+            return {
+                id: this.id,
+                status: 404
+            };
         }
 
-        const hasHttpsRedirect = this.checkHttpsRedirect(httpResponse);
-        const hasSsl = this.checkSsl(httpsResponse);
+        const hasHttpsRedirect = httpResponse ? this.checkHttpsRedirect(httpResponse) : false;
+        const hasSsl = httpsResponse ? this.checkSsl(httpsResponse) : false;
 
         const status = this.getStatusCode(httpsResponse);
         const realUrl = this.getRealUrl(httpsResponse);
-        const responseData = this.getResponseData(httpsResponse);
-        const html = this.getHtml(responseData)
+        const responseBody = this.getResponseData(httpsResponse);
+        const html = this.getHtml(responseBody)
 
         const title = this.getTitle(html);
         const description = this.getDescription(html);
         const keywords = this.getKeywords(html);
 
         const cms = this.guessCms(html);
-        const innList = this.findInns(responseData);
-        const phoneList = this.findPhones(responseData);
-        const emailList = this.findEmails(responseData);
-        const companyList = this.findCompanyName(responseData);
+        const innList = this.findInns(responseBody);
+        const phoneList = this.findPhones(responseBody);
+        const emailList = this.findEmails(responseBody);
+        const companyList = this.findCompanyName(responseBody);
 
-        const category = this.guessCategory(responseData);
+        const category = this.guessCategory(responseBody);
 
-        const finances = innList.length !== 0 ? await this.findFinanceInfo(innList) : {};
+        const finances = innList.length !== 0 ? this.findFinanceInfo(innList) : {};
 
-        return cms;
+        return {
+            id: this.id,
+            status: status,
+            cms: cms
+        };
     }
 
     /**
@@ -156,7 +162,8 @@ class Parser
      * @returns {string}
      */
     getRealUrl(response) {
-        return response.request.res.responseUrl;
+        const res = response.request ? response.request.res : {};
+        return res ? res.responseUrl ?? '' : '';
     }
 
     /**

@@ -15,6 +15,8 @@ const app = new App();
 test('get domains', async () => {
     const domains = await app.getDomains(1, 1);
     expect(domains.length).toBe(1);
+    expect(domains[0]).toHaveProperty('id');
+    expect(domains[0]).toHaveProperty('domain');
 
     const domains2 = await app.getDomains(1, 12);
     expect(domains2.length).toBe(12);

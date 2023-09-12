@@ -12,7 +12,7 @@ class App
         this.logger = new Logger();
         this.function = new Functions();
         this.client = new Client();
-        this.itemsPerPage = 300;
+        this.itemsPerPage = 100;
     }
 
     async run() {
@@ -22,27 +22,29 @@ class App
         while(currentPage <= lastPage) {
             const domainList = await this.getDomains(currentPage, this.itemsPerPage);
             const parsedData = [];
-            for(const domain of domainList) {
-                const parser = new Parser(domain);
+            for(const domainItem of domainList) {
+                const parser = new Parser(domainItem['domain'], domainItem['id']);
                 parsedData.push(parser.run());
             }
 
             await Promise.all(parsedData);
 
-            const response  = this.sendParsedData(parsedData).then(async (response) => {
-                const pageNumber = currentPage.data['page_number'] ?? currentPage;
-                const now = this.function.getCurrentDate();
-                await this.logger.log(`[${now}]: Порция ${pageNumber} отправлена`);
-
-                console.log(response);
-            });
+            // console.log(parsedData);
+            const response  = await this.sendParsedData({'domains': parsedData});
+            // console.log(response);
+            const pageNumber = response.data['page_number'] ?? currentPage;
+            const now = this.function.getCurrentDate();
+            await this.logger.log(`[${now}]: Порция ${pageNumber} отправлена`);
+            await this.logger.logJsonAsync('test', parsedData);
 
             currentPage++;
             if(currentPage === lastPage) {
-                await response;
+                // await response;
                 currentPage = 1;
             }
         }
+
+        console.log('Я почему-то вышел из цикла while...', currentPage, lastPage);
     }
 
     /**
@@ -52,7 +54,7 @@ class App
      * @return {Promise<AxiosResponse>}
      */
     async sendParsedData(data) {
-        return this.client.post(this.apiUrl + '/', data);
+        return this.client.post(this.apiUrl + '/update-many', data);
     }
 
     /**
@@ -68,7 +70,7 @@ class App
     }
 
     /**
-     * Список ссылок
+     * Список доменов с id
      *
      * @param {number} pageNumber
      * @param {number} itemsPerPage

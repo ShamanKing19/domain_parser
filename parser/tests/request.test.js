@@ -83,6 +83,19 @@ test('parser get real url', async () => {
     const parser = new Parser(unipumpUrl);
     const response = await parser.makeHttpsRequest(parser.getDomain());
     expect(parser.getRealUrl(response)).toBe(unipumpUrl + '/');
+
+    const emptyResponse = {};
+    expect(parser.getRealUrl(emptyResponse)).toBe('');
+
+    const emptyRequestResponse = {request: {}};
+    expect(parser.getRealUrl(emptyRequestResponse)).toBe('');
+
+    const emptyResResponse = {request: {res: {}}};
+    expect(parser.getRealUrl(emptyResResponse)).toBe('');
+
+    const emptyRealUrlResponse = {request: {res: {url: ''}}};
+    expect(parser.getRealUrl(emptyRealUrlResponse)).toBe('');
+
 });
 
 test('parser check https redirect', async () => {

@@ -78,6 +78,11 @@ class Request
                 return false;
             }
 
+            // timeout
+            if(e.code = 'ECONNABORTED') {
+                return false;
+            }
+
             if(e.response) {
                 return e.response;
             }
