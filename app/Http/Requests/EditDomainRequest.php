@@ -9,7 +9,7 @@ class EditDomainRequest extends BaseRequest
     public function rules()
     {
         return [
-            'id' => ['exists:\App\Models\Domain,id'],
+            'id' => ['required', 'exists:\App\Models\Domain,id'],
             'real_domain' => ['string'],
             'status' => ['integer'],
             'cms' => ['string'],
