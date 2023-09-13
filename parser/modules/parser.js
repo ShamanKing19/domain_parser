@@ -81,7 +81,7 @@ class Parser
         const realUrl = this.getRealUrl(httpsResponse);
         const hasSsl = this.checkSsl(httpsResponse);
         const responseBody = this.getResponseData(httpsResponse);
-        if(!responseBody || !(responseBody instanceof String) || responseBody.trim() === '') {
+        if(!responseBody || typeof responseBody !== 'string' || responseBody.trim() === '') {
             return {
                 id: this.id,
                 status: 0
