@@ -15,54 +15,6 @@ class Request
         this.logger = new Logger();
     }
 
-
-    /**
-     * Делает несколько попыток запроса по URL. Если ответ не будет получен возвращает false
-     *
-     * @param url       {string}        Строка запроса
-     * @param config    {Object}        Кастомный конфиг для запроса
-     * @param repeatTimes {int}         Количество повторений (При 10 работает хорошо)
-     * @returns {Promise<AxiosResponse<any>|boolean>}
-     */
-    async tryGet(url, config = {}, repeatTimes = 1) {
-        let response;
-
-        for (let i = 0; i < repeatTimes; i++) {
-            try {
-                response = await this.get(url, config);
-                return response;
-            } catch (e) {
-                await this.functions.sleep(this.sleepTime)
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Делает несколько попыток запроса по URL. Если ответ не будет получен возвращает false
-     *
-     * @param url       {string}        Строка запроса
-     * @param data      {Object}        Тело запроса
-     * @param config    {Object}        Кастомный конфиг для запроса
-     * @param repeatTimes {int}         Количество повторных запросов
-     * @returns {Promise<AxiosResponse<any>|boolean>}
-     */
-    async tryPost(url, data, config = {}, repeatTimes = 100) {
-        let response;
-
-        for (let i = 0; i < repeatTimes; i++) {
-            try {
-                response = await this.post(url, data, config);
-                return response;
-            } catch (e) {
-                await this.functions.sleep(this.sleepTime)
-            }
-        }
-
-        return false;
-    }
-
     /**
      * GET запрос с параметрами и стандартным таймаутом
      *
@@ -79,29 +31,10 @@ class Request
         try {
             return await client.get(encodeURI(url), config);
         } catch (e) {
-            // if(!e) {
-            //     return {
-            //         status: 404,
-            //         statusText: 'Not Found'
-            //     }
-            // }
-
             if(e.response) {
                 await this.logger.log(`${e.code}: ${url}`, false, 'shit.txt')
                 return e.response;
             }
-
-            // if(e.code === 'ECONNABORTED') {
-            //     return {
-            //         status: 408,
-            //         statusText: 'Timed Out'
-            //     };
-            // }
-
-            // return {
-            //     status: 0,
-            //     statusText: 'Unhandled error'
-            // };
 
             return false;
         }

@@ -192,7 +192,7 @@ class Parser
      */
     getResponseData(response) {
         const body = response ? response.data : '';
-        return body ? body : '';
+        return body ? body ?? '' : '';
     }
 
     /**
