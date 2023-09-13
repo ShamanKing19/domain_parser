@@ -104,8 +104,8 @@ class Parser
         let hasCatalog = false;
         let hasCart = false;
         if(cms === this.cmsBitrix) {
-            hasCatalog = this.hasCatalog();
-            hasCart = this.hasCart();
+            hasCatalog = await this.hasCatalog();
+            hasCart = await this.hasCart();
         }
 
         const innList = this.findInns(responseBody);
