@@ -62,7 +62,7 @@ class Parser
         if(!httpResponse && !httpsResponse) {
             return {
                 id: this.id,
-                status: 0 // TODO: Возвращать из запроса кастомный ответ
+                status: 0
             }
         }
 
@@ -74,6 +74,13 @@ class Parser
         const realUrl = this.getRealUrl(httpsResponse);
         const hasSsl = this.checkSsl(httpsResponse);
         const responseBody = this.getResponseData(httpsResponse);
+        if(!responseBody || responseBody.trim() === '') {
+            return {
+                id: this.id,
+                status: 0
+            }
+        }
+
         const headers = this.getHeaders(httpsResponse);
         const html = this.getHtml(responseBody)
 
