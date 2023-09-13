@@ -1,21 +1,10 @@
 class Functions
 {
     fs = require('fs');
-    axios = require('axios');
 
-    sleepTime = 500;
-
-
-    async writeJson(filepath, data) {
-        const pathList = filepath.split('/');
-        const filename = pathList.pop();
-        const dirPath = pathList.join('/');
-        if (!this.fs.existsSync(dirPath)) {
-            await this.fs.mkdir(dirPath, {recursive: true}, () => {});
-        }
-        await this.fs.writeFile(filepath, JSON.stringify(data), () => {});
+    cleanPhone(string) {
+        return string.replace(/[^0-9]+/gm, '');
     }
-
 
     readJson(filepath) {
         const data = this.fs.readFileSync(filepath);

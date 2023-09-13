@@ -14,7 +14,7 @@ class Parser
         this.url = url;
         this.id = id;
         this.client = new Client();
-        this.functions = new Function();
+        this.functions = new Functions();
         this.cmsBitrix = 'bitrix';
     }
 
@@ -513,7 +513,12 @@ class Parser
      */
     findPhones(text) {
         const regex = /\b(\+7|7|8)?[\s\-]?\(?[489][\d]{2}\)?[\s\-]?[0-9]{3}[\s\-]?[0-9]{2}[\s\-]?[0-9]{2}\b/gm;
-        return text.match(regex) ?? [];
+        let match = text.match(regex) ?? [];
+        match = [...new Set(match)].map(item => this.functions.cleanPhone(item));
+
+        return match.filter(item => {
+            return !['79999999999', '89999999999', '9999999999'].includes(item);
+        });
     }
 
     /**
@@ -524,19 +529,24 @@ class Parser
      */
     findEmails(text) {
         const regex = /[a-zA-Z0-9\.\-_]+@[a-zA-Z0-9_\-]+\.[a-zA-Z]+\.?[a-zA-Z]*\.?[a-zA-Z]*/gm;
-        return text.match(regex) ?? [];
+        let match = text.match(regex) ?? [];
+        match = [...new Set(match)];
+
+        return match.filter(item => {
+            return !['.jpg', 'jpeg', '.png', '.css', '.js', 'beget.com', 'timeweb.ru', 'email@email.ru'].includes(item);
+        });
     }
 
     /**
      * Поиск названия компании
-     * TODO: Улучшить
      *
      * @param {string} text
      * @returns {string[]}
      */
     findCompanyName(text) {
         const regex = /[ОПАЗНК]{2,3}\s+["'«]?[\w\dа-яА-Я\s]+["'»]?/gmu;
-        return text.match(regex) ?? [];
+        let match = text.match(regex) ?? [];
+        return [...new Set(match)];
     }
 
     /**
