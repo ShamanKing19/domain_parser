@@ -6,6 +6,7 @@ use App\Http\Requests\EditDomainRequest;
 use App\Http\Requests\EditManyDomainRequest;
 use App\Http\Requests\StoreDomainRequest;
 use App\Models\Domain;
+use App\Repositories\DomainRepository;
 use App\Services\DomainService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -15,9 +16,12 @@ class DomainController extends Controller
 {
     private DomainService $service;
 
-    public function __construct(DomainService $service)
+    private DomainRepository $repository;
+
+    public function __construct(DomainService $service, DomainRepository $repository)
     {
         $this->service = $service;
+        $this->repository = $repository;
     }
 
     /**
@@ -49,7 +53,6 @@ class DomainController extends Controller
 
     /**
      * Список доменов отфильтрованный по CMS
-     * // TODO: Вынести в репозиторий
      *
      * @param Request $request
      * @param string $cms Название CMS
@@ -58,8 +61,8 @@ class DomainController extends Controller
      */
     public function viewByCms(Request $request, string $cms): Response
     {
-        $itemsPerPage = $request->get('count') ?: \App\Models\Domain::getModel()->getPerPage();
-        $domains = \App\Models\Domain::where('cms', '=', $cms)->paginate($itemsPerPage);
+        $itemsPerPage = $request->get('count') ?: 0;
+        $domains = $this->repository->getDomainsByCms($cms, $itemsPerPage);
 
         return \Response::success('', $domains);
     }
