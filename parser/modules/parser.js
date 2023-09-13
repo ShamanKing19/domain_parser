@@ -65,76 +65,81 @@ class Parser
         let httpsResponse = result[0];
         const httpResponse = result[1];
 
-        const hasHttpsRedirect = httpResponse ? this.checkHttpsRedirect(httpResponse) : false;
+        this.hasHttpsRedirect = httpResponse ? this.checkHttpsRedirect(httpResponse) : false;
         if(!httpResponse && !httpsResponse) {
-            return {
-                id: this.id,
-                status: 0
-            }
+            this.status = 0;
+            return this.toObject();
         }
 
         if(!httpsResponse && httpResponse) {
             httpsResponse = httpResponse;
         }
 
-        const status = this.getStatusCode(httpsResponse);
-        const realUrl = this.getRealUrl(httpsResponse);
-        const hasSsl = this.checkSsl(httpsResponse);
+        this.status = this.getStatusCode(httpsResponse);
+        this.realUrl = this.getRealUrl(httpsResponse);
+        this.hasSsl = this.checkSsl(httpsResponse);
         const responseBody = this.getResponseData(httpsResponse);
         if(!responseBody || typeof responseBody !== 'string' || responseBody.trim() === '') {
-            return {
-                id: this.id,
-                status: 0
-            }
+            this.status = 0;
+            return this.toObject();
         }
 
         const headers = this.getHeaders(httpsResponse);
         const html = this.getHtml(responseBody)
 
-        const title = this.getTitle(html);
-        const description = this.getDescription(html);
-        const keywords = this.getKeywords(html);
+        this.title = this.getTitle(html);
+        this.description = this.getDescription(html);
+        this.keywords = this.getKeywords(html);
 
-        let cms = this.guessCmsByHeaders(headers);
-        if(cms === '') {
-            cms = this.guessCms(html);
+        this.cms = this.guessCmsByHeaders(headers);
+        if(this.cms === '') {
+            this.cms = this.guessCms(html);
         }
 
-        let hasCatalog = false;
-        let hasCart = false;
-        if(cms === this.cmsBitrix) {
-            hasCatalog = await this.hasCatalog();
-            hasCart = await this.hasCart();
+        this.hasCatalog = false;
+        this.hasCart = false;
+        if(this.cms === this.cmsBitrix) {
+            this.hasCatalog = await this.checkIfHasCatalog();
+            this.hasCart = await this.checkIfHasCart();
         }
 
-        const innList = this.findInns(responseBody);
-        const phoneList = this.findPhones(responseBody);
-        const emailList = this.findEmails(responseBody);
-        // const companyList = this.findCompanyName(responseBody);
-        // const category = this.guessCategory(responseBody);
+        this.innList = this.findInns(responseBody);
+        this.phoneList = this.findPhones(responseBody);
+        this.emailList = this.findEmails(responseBody);
+        // this.companyList = this.findCompanyName(responseBody);
+        // this.category = this.guessCategory(responseBody);
 
         // TODO: Отправлять поля company
         // const company = innList.length !== 0 ? await this.findFinanceInfo(innList) : {};
-        const finances = [];
+        this.finances = [];
 
+        return this.toObject();
+    }
+
+    /**
+     * Приведение к объекту для отправки
+     *
+     * @return {object}
+     */
+    toObject() {
         return {
             'id': this.id,
-            'status': status,
-            'real_domain': realUrl,
-            'has_https_redirect': hasHttpsRedirect,
-            'has_ssl': hasSsl,
-            'cms': cms,
-            'has_catalog': hasCatalog,
-            'has_basket': hasCart,
-            'title': title,
-            'description': description,
-            'keywords': keywords,
-            'inn': innList,
-            'phones': phoneList,
-            'emails': emailList,
-            // 'companies': companyList,
-            // 'category': category,
-            'finances': finances
+            'status': this.status ?? 0,
+            'real_domain': this.realUrl ?? '',
+            'has_https_redirect': this.hasHttpsRedirect ?? false,
+            'has_ssl': this.hasSsl ?? false,
+            'cms': this.cms ?? '',
+            'has_catalog': this.hasCatalog ?? false,
+            'has_basket': this.hasCart ?? false,
+            'title': this.title ?? '',
+            'description': this.description ?? '',
+            'keywords': this.keywords ?? '',
+            'inn': this.innList ?? [],
+            'phones': this.phoneList ?? [],
+            'emails': this.emailList ?? [],
+            // 'companies': this.companyList ?? [],
+            // 'category': this.category ?? [],
+            'finances': this.finances ?? []
         };
     }
 
@@ -214,7 +219,7 @@ class Parser
      *
      * @returns Promise<boolean>
      */
-    async hasCatalog() {
+    async checkIfHasCatalog() {
         const catalogUriList = ['/catalog', '/products', '/katalog', '/shop'];
         const requestList = [];
         for(const uri of catalogUriList) {
@@ -236,7 +241,7 @@ class Parser
      *
      * @returns Promise<boolean>
      **/
-    async hasCart() {
+    async checkIfHasCart() {
         const catalogUriList = ['/cart', '/basket', '/personal/basket', '/personal/cart', '/korzina'];
         const requestList = [];
         for(const uri of catalogUriList) {

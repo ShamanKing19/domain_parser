@@ -167,13 +167,13 @@ test('check if there is catalog on "Bitrix" website', async () => {
 
     for(const domain of domainsWithCatalog) {
         const parser = new Parser(domain);
-        const hasCatalog = await parser.hasCatalog();
+        const hasCatalog = await parser.checkIfHasCatalog();
         expect(hasCatalog).toBeTruthy();
     }
 
     for(const domain of domainsWithoutCatalog) {
         const parser = new Parser(domain);
-        const hasCatalog = await parser.hasCatalog();
+        const hasCatalog = await parser.checkIfHasCatalog();
         expect(hasCatalog).toBeFalsy();
     }
 }, 20000);
@@ -185,13 +185,13 @@ test('check if there is cart on "Bitrix" website', async () => {
 
     for(const domain of domainsWithCart) {
         const parser = new Parser(domain);
-        const hasCatalog = await parser.hasCart();
+        const hasCatalog = await parser.checkIfHasCart();
         expect(hasCatalog).toBeTruthy();
     }
 
     for(const domain of domainsWithoutCart) {
         const parser = new Parser(domain);
-        const hasCatalog = await parser.hasCart();
+        const hasCatalog = await parser.checkIfHasCart();
         expect(hasCatalog).toBeFalsy();
     }
 }, 20000);
