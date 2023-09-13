@@ -215,7 +215,7 @@ class Parser
      * @returns Promise<boolean>
      */
     async hasCatalog() {
-        const catalogUriList = ['/catalog', '/products', '/katalog'];
+        const catalogUriList = ['/catalog', '/products', '/katalog', '/shop'];
         const requestList = [];
         for(const uri of catalogUriList) {
             requestList.push(this.makeHttpRequest(this.getDomain() + uri));

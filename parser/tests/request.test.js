@@ -162,40 +162,38 @@ test('parser get html', async () => {
 });
 
 test('check if there is catalog on "Bitrix" website', async () => {
-    const parser1 = new Parser(unipumpUrl);
-    const hasCatalog1 = await parser1.hasCatalog();
-    expect(hasCatalog1).toBeTruthy();
+    const domainsWithCatalog = [unipumpUrl, 'www.ascgroup.ru', 'https://mnogomeb.ru'];
+    const domainsWithoutCatalog = ['https://skillline.ru'];
 
-    const parser2 = new Parser('https://mnogomeb.ru');
-    const hasCatalog2 = await parser2.hasCatalog();
-    expect(hasCatalog2).toBeTruthy();
+    for(const domain of domainsWithCatalog) {
+        const parser = new Parser(domain);
+        const hasCatalog = await parser.hasCatalog();
+        expect(hasCatalog).toBeTruthy();
+    }
 
-    const parser3 = new Parser('https://portal.skillline.ru');
-    const hasCatalog3 = await parser3.hasCatalog();
-    expect(hasCatalog3).toBeFalsy();
-
-    const parser4 = new Parser('https://skillline.ru');
-    const hasCatalog4 = await parser4.hasCatalog();
-    expect(hasCatalog4).toBeFalsy();
+    for(const domain of domainsWithoutCatalog) {
+        const parser = new Parser(domain);
+        const hasCatalog = await parser.hasCatalog();
+        expect(hasCatalog).toBeFalsy();
+    }
 }, 20000);
 
 
 test('check if there is cart on "Bitrix" website', async () => {
-    const parser1 = new Parser(unipumpUrl);
-    const hasCatalog1 = await parser1.hasCart();
-    expect(hasCatalog1).toBeTruthy();
+    const domainsWithCart = [unipumpUrl, 'mnogomeb.ru'];
+    const domainsWithoutCart = ['portal.skillline.ru', 'skillline.ru'];
 
-    const parser2 = new Parser('https://mnogomeb.ru');
-    const hasCatalog2 = await parser2.hasCart();
-    expect(hasCatalog2).toBeTruthy();
+    for(const domain of domainsWithCart) {
+        const parser = new Parser(domain);
+        const hasCatalog = await parser.hasCart();
+        expect(hasCatalog).toBeTruthy();
+    }
 
-    const parser3 = new Parser('https://portal.skillline.ru');
-    const hasCatalog3 = await parser3.hasCart();
-    expect(hasCatalog3).toBeFalsy();
-
-    const parser4 = new Parser('https://skillline.ru');
-    const hasCatalog4 = await parser4.hasCart();
-    expect(hasCatalog4).toBeFalsy();
+    for(const domain of domainsWithoutCart) {
+        const parser = new Parser(domain);
+        const hasCatalog = await parser.hasCart();
+        expect(hasCatalog).toBeFalsy();
+    }
 }, 20000);
 
 test('get info from db', async () => {
