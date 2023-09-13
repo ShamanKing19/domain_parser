@@ -12,14 +12,13 @@ class App
         this.logger = new Logger();
         this.function = new Functions();
         this.client = new Client();
-        this.itemsPerPage = 1000;
+        this.itemsPerPage = 10;
     }
 
     async run() {
         let currentPage = 1;
         const lastPage = await this.getLastPageNumber(this.itemsPerPage);
         const domainsCount = await this.getDomainsCount();
-        let requestList = [];
 
         while(currentPage <= lastPage) {
             const domainList = await this.getDomains(currentPage, this.itemsPerPage);
@@ -46,13 +45,8 @@ class App
                 });
 
             await this.logger.log(`Спаршено ${currentPage} из ${lastPage} страниц (${currentPage * this.itemsPerPage}/${domainsCount})`, true);
-            if(requestList.length === 10) {
-                await Promise.all(requestList);
-                requestList = [];
-            }
 
             currentPage++;
-            requestList.push(request);
             if(currentPage === lastPage) {
                 currentPage = 1;
             }

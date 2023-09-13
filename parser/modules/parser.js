@@ -53,14 +53,12 @@ class Parser
         const domain = this.getDomain();
 
         const httpRequest = this.makeHttpRequest(domain);
-        const httpsRequest = this.makeHttpsRequest(domain);
-
-        const result = await Promise.all([httpRequest, httpsRequest]);
-        const httpResponse = result[0];
-        let httpsResponse = result[1];
+        let httpsRequest = this.makeHttpsRequest(domain);
+        const result = await Promise.all([httpsRequest, httpRequest]);
+        let httpsResponse = result[0];
+        const httpResponse = result[1];
 
         const hasHttpsRedirect = httpResponse ? this.checkHttpsRedirect(httpResponse) : false;
-
         if(!httpResponse && !httpsResponse) {
             return {
                 id: this.id,
@@ -68,7 +66,7 @@ class Parser
             }
         }
 
-        if(httpResponse && !httpsResponse) {
+        if(!httpsResponse && httpResponse) {
             httpsResponse = httpResponse;
         }
 
@@ -90,8 +88,8 @@ class Parser
         const innList = this.findInns(responseBody);
         const phoneList = this.findPhones(responseBody);
         const emailList = this.findEmails(responseBody);
-        const companyList = this.findCompanyName(responseBody);
-        const category = this.guessCategory(responseBody);
+        // const companyList = this.findCompanyName(responseBody);
+        // const category = this.guessCategory(responseBody);
 
         // TODO: Отправлять поля company
         // const company = innList.length !== 0 ? await this.findFinanceInfo(innList) : {};
@@ -110,8 +108,8 @@ class Parser
             'inn': innList,
             'phones': phoneList,
             'emails': emailList,
-            'companies': companyList,
-            'category': category,
+            // 'companies': companyList,
+            // 'category': category,
             'finances': finances
         };
     }
