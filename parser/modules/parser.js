@@ -81,13 +81,12 @@ class Parser
         const realUrl = this.getRealUrl(httpsResponse);
         const hasSsl = this.checkSsl(httpsResponse);
         const responseBody = this.getResponseData(httpsResponse);
-        // if(!responseBody || typeof responseBody !== 'string' || responseBody.trim() === '') {
-        // if(!responseBody) {
-        //     return {
-        //         id: this.id,
-        //         status: 0
-        //     }
-        // }
+        if(!responseBody || typeof responseBody !== 'string' || responseBody.trim() === '') {
+            return {
+                id: this.id,
+                status: 0
+            }
+        }
 
         const headers = this.getHeaders(httpsResponse);
         const html = this.getHtml(responseBody)
