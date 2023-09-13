@@ -15,6 +15,7 @@ class Parser
         this.id = id;
         this.client = new Client();
         this.functions = new Function();
+        this.cmsBitrix = 'bitrix';
     }
 
     /**
@@ -32,7 +33,13 @@ class Parser
      * @returns {string}
      */
     getDomain() {
-        return this.url.split('://').pop();
+        let url = this.url;
+        const urlLength = url.length;
+        if(url[urlLength - 1] === '/') {
+            url = url.substring(0, urlLength - 1);
+        }
+
+        return url.split('://').pop();
     }
 
     /**
@@ -92,6 +99,14 @@ class Parser
         if(cms === '') {
             cms = this.guessCms(html);
         }
+
+        let hasCatalog = false;
+        let hasCart = false;
+        if(cms === this.cmsBitrix) {
+            hasCatalog = this.hasCatalog();
+            hasCart = this.hasCart();
+        }
+
         const innList = this.findInns(responseBody);
         const phoneList = this.findPhones(responseBody);
         const emailList = this.findEmails(responseBody);
@@ -109,6 +124,8 @@ class Parser
             'has_https_redirect': hasHttpsRedirect,
             'has_ssl': hasSsl,
             'cms': cms,
+            'has_catalog': hasCatalog,
+            'has_basket': hasCart,
             'title': title,
             'description': description,
             'keywords': keywords,
@@ -192,12 +209,48 @@ class Parser
         return res ? res.responseUrl ?? '' : '';
     }
 
-    hasCatalog() {
-       // TODO: Implement
+    /**
+     * Проверка: есть ли каталог
+     *
+     * @returns Promise<boolean>
+     */
+    async hasCatalog() {
+        const catalogUriList = ['/catalog', '/products', '/katalog'];
+        const requestList = [];
+        for(const uri of catalogUriList) {
+            requestList.push(this.makeHttpRequest(this.getDomain() + uri));
+        }
+
+        const resultList = await Promise.all(requestList);
+        for(const result of resultList) {
+            if(result && result.status >= 200 && result.status < 400) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
-    hasCart() {
-        // TODO: Implement
+    /**
+     * Проверка: есть ли корзина
+     *
+     * @returns Promise<boolean>
+     **/
+    async hasCart() {
+        const catalogUriList = ['/cart', '/basket', '/personal/basket', '/personal/cart', '/korzina'];
+        const requestList = [];
+        for(const uri of catalogUriList) {
+            requestList.push(this.makeHttpRequest(this.getDomain() + uri));
+        }
+
+        const resultList = await Promise.all(requestList);
+        for(const result of resultList) {
+            if(result && result.status >= 200 && result.status < 400) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -301,12 +354,14 @@ class Parser
      * @param headers
      */
     guessCmsByHeaders(headers) {
-        const cmsExamples = {
+        const cmsExamples = {};
+        cmsExamples[this.cmsBitrix] = {
+            'x-powered-cms': 'bitrix site manager'
+        };
+
+        Object.assign(cmsExamples, {
             'ukit': {
                 'x-cms': 'ukit'
-            },
-            'bitrix': {
-                'x-powered-cms': 'bitrix site manager'
             },
             'nethouse': {
                 'x-generator': 'nethouse'
@@ -332,7 +387,7 @@ class Parser
             'magento': {
                 'set-cookie': 'x-magento'
             }
-        };
+        });
 
         for(const cms in cmsExamples) {
             const cmsHeaders = cmsExamples[cms];
@@ -358,10 +413,10 @@ class Parser
      */
     guessCms(html) {
         const cmsExamples = {
-            'src="/bitrix/': 'bitrix',
-            'href="/bitrix': 'bitrix',
-            'bitrix/templates/': 'bitrix',
-            'bitrix/cache/': 'bitrix',
+            'src="/bitrix/': this.cmsBitrix,
+            'href="/bitrix': this.cmsBitrix,
+            'bitrix/templates/': this.cmsBitrix,
+            'bitrix/cache/': this.cmsBitrix,
             'wp-content/': 'wordpress',
             'wp-includes/': 'wordpress',
             '<script src="https://static.tilda': 'tilda',

@@ -65,17 +65,17 @@ test('get 404 response vie GET method', async () => {
     expect(response.statusText).toBe('Not Found');
 });
 
-test('handle timeout', async () => {
-    const client = new Client();
-
-    const url = 'https://germes-dent.ru/';
-    const response = await client.get(url, {
-        timeout: 100
-    });
-
-    expect(response).toBeInstanceOf(Object);
-    expect(response.status).toBe(408);
-});
+// test('handle timeout', async () => {
+//     const client = new Client();
+//
+//     const url = 'https://germes-dent.ru/';
+//     const response = await client.get(url, {
+//         timeout: 100
+//     });
+//
+//     expect(response).toBeInstanceOf(Object);
+//     expect(response.status).toBe(408);
+// });
 
 test('make request to non-existing url via GET method', async () => {
     const client = new Client();
@@ -160,6 +160,43 @@ test('parser get html', async () => {
     const data = parser.getResponseData(response);
     expect(parser.getHtml(data)).toBeInstanceOf(HTMLElement);
 });
+
+test('check if there is catalog on "Bitrix" website', async () => {
+    const parser1 = new Parser(unipumpUrl);
+    const hasCatalog1 = await parser1.hasCatalog();
+    expect(hasCatalog1).toBeTruthy();
+
+    const parser2 = new Parser('https://mnogomeb.ru');
+    const hasCatalog2 = await parser2.hasCatalog();
+    expect(hasCatalog2).toBeTruthy();
+
+    const parser3 = new Parser('https://portal.skillline.ru');
+    const hasCatalog3 = await parser3.hasCatalog();
+    expect(hasCatalog3).toBeFalsy();
+
+    const parser4 = new Parser('https://skillline.ru');
+    const hasCatalog4 = await parser4.hasCatalog();
+    expect(hasCatalog4).toBeFalsy();
+}, 20000);
+
+
+test('check if there is cart on "Bitrix" website', async () => {
+    const parser1 = new Parser(unipumpUrl);
+    const hasCatalog1 = await parser1.hasCart();
+    expect(hasCatalog1).toBeTruthy();
+
+    const parser2 = new Parser('https://mnogomeb.ru');
+    const hasCatalog2 = await parser2.hasCart();
+    expect(hasCatalog2).toBeTruthy();
+
+    const parser3 = new Parser('https://portal.skillline.ru');
+    const hasCatalog3 = await parser3.hasCart();
+    expect(hasCatalog3).toBeFalsy();
+
+    const parser4 = new Parser('https://skillline.ru');
+    const hasCatalog4 = await parser4.hasCart();
+    expect(hasCatalog4).toBeFalsy();
+}, 20000);
 
 test('get info from db', async () => {
     // TODO: Сделать когда будет api

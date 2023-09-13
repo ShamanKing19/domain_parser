@@ -43,7 +43,7 @@ test('get domain', () => {
     expect(parser2.getDomain()).toBe('www.npmjs.com/package/node-html-parser');
 
     const parser3 = new Parser(testUrl3);
-    expect(parser3.getDomain()).toBe('www.dev-notes.ru/articles/');
+    expect(parser3.getDomain()).toBe('www.dev-notes.ru/articles');
 });
 
 test('get id', () => {
