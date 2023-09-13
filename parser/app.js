@@ -19,9 +19,11 @@ class App
         let currentPage = 1;
         const lastPage = await this.getLastPageNumber(this.itemsPerPage);
         const domainsCount = await this.getDomainsCount();
+        let domainList = await this.getDomains(1, this.itemsPerPage);
 
         while(currentPage <= lastPage) {
-            const domainList = await this.getDomains(currentPage, this.itemsPerPage);
+            const nextPage = currentPage === lastPage ? 1 : currentPage + 1;
+            const nextPageDomainsList = this.getDomains(nextPage, this.itemsPerPage);
             let parsedData = [];
             for(const domainItem of domainList) {
                 const parser = new Parser(domainItem['domain'], domainItem['id']);
@@ -29,7 +31,7 @@ class App
             }
 
             parsedData = await Promise.all(parsedData);
-            const request = this.sendParsedData({'domains': parsedData})
+            this.sendParsedData({'domains': parsedData})
                 .then(async (response) => {
                     if(!response) {
                         this.logger.logJson('broken_data/' + currentPage, parsedData);
@@ -47,9 +49,7 @@ class App
             await this.logger.log(`Спаршено ${currentPage} из ${lastPage} страниц (${currentPage * this.itemsPerPage}/${domainsCount})`, true);
 
             currentPage++;
-            if(currentPage === lastPage) {
-                currentPage = 1;
-            }
+            domainList = await nextPageDomainsList;
         }
     }
 
