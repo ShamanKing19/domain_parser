@@ -76,18 +76,21 @@ class Parser
         const realUrl = this.getRealUrl(httpsResponse);
         const hasSsl = this.checkSsl(httpsResponse);
         const responseBody = this.getResponseData(httpsResponse);
+        const headers = this.getHeaders(httpsResponse);
         const html = this.getHtml(responseBody)
 
         const title = this.getTitle(html);
         const description = this.getDescription(html);
         const keywords = this.getKeywords(html);
 
-        const cms = this.guessCms(html);
+        let cms = this.guessCmsByHeaders(headers);
+        if(cms === '') {
+            cms = this.guessCms(html);
+        }
         const innList = this.findInns(responseBody);
         const phoneList = this.findPhones(responseBody);
         const emailList = this.findEmails(responseBody);
         const companyList = this.findCompanyName(responseBody);
-
         const category = this.guessCategory(responseBody);
 
         // TODO: Отправлять поля company
@@ -184,6 +187,24 @@ class Parser
         return res ? res.responseUrl ?? '' : '';
     }
 
+    hasCatalog() {
+       // TODO: Implement
+    }
+
+    hasCart() {
+        // TODO: Implement
+    }
+
+    /**
+     * Получение тела ответа
+     *
+     * @param {AxiosResponse} response
+     * @return {object}
+     */
+    getHeaders(response) {
+        return response.headers ?? {};
+    }
+
     /**
      * Получение тела ответа
      *
@@ -271,6 +292,60 @@ class Parser
     }
 
     /**
+     *
+     * @param headers
+     */
+    guessCmsByHeaders(headers) {
+        const cmsExamples = {
+            'ukit': {
+                'x-cms': 'ukit'
+            },
+            'bitrix': {
+                'x-powered-cms': 'bitrix site manager'
+            },
+            'nethouse': {
+                'x-generator': 'nethouse'
+            },
+            'adobe muse': {
+                'x-powered-by': 'plesklin'
+            },
+            'umi': {
+                'x-generated-by': 'umi.cms'
+            },
+            'drupal': {
+                'x-generator': 'drupal'
+            },
+            'okay': {
+                'x-powered-cms': 'okaycms'
+            },
+            'phpshop': {
+                'x-powered-by': 'phpshop'
+            },
+            'modx': {
+                'x-powered-by': 'modx'
+            },
+            'magento': {
+                'set-cookie': 'x-magento'
+            }
+        };
+
+        for(const cms in cmsExamples) {
+            const cmsHeaders = cmsExamples[cms];
+            for(const cmsHeader in cmsHeaders) {
+                const cmsHeaderValue = cmsHeaders[cmsHeader];
+                for(const header in headers) {
+                    const headerValue = headers[header.toLowerCase()].toString().toLowerCase();
+                    if(headerValue.includes(cmsHeaderValue)) {
+                        return cms;
+                    }
+                }
+            }
+        }
+
+        return '';
+    }
+
+    /**
      * Получение названия используемой CMS, если она используется
      *
      * @param {HTMLElement} html
@@ -284,19 +359,20 @@ class Parser
             'bitrix/cache/': 'bitrix',
             'wp-content/': 'wordpress',
             'wp-includes/': 'wordpress',
-            '<meta name="modxru': 'modx',
-            '<script type="text/javascript" src="/netcat': 'netcat',
-            '<script src="/phpshop': 'phpshop',
-            '<script type="text/x-magento-init': 'magento',
-            '/wa-data/': 'shop-script',
+            '<script src="https://static.tilda': 'tilda',
             'catalog/view/': 'opencart',
+            'sources/ukit_font/': 'ukit',
+            '/wa-data/': 'shop-script',
+            '<meta name="modxru': 'modx',
+            '<script src="/phpshop': 'phpshop',
+            '<script type="text/javascript" src="/netcat': 'netcat',
+            '<script type="text/x-magento-init': 'magento',
             'data-drupal-': 'drupal',
             'name="generator" content="Joomla': 'joomla',
             '/media/system': 'joomla',
             'var dle_admin': 'datalife engine',
             'UCOZ-JS': 'ucoz',
             'ucoz.net/': 'ucoz',
-            '<script src="https://static.tilda': 'tilda',
             '<meta name="generator" content="Wix': 'wix',
             'type="wix/htmlEmbeds"': 'wix',
             'nethouse.ru/': 'nethouse',

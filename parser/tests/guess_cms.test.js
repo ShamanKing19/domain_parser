@@ -1,5 +1,37 @@
 const Parser = require('../modules/parser');
 
+const cmsHeadersMap = {
+    'ukit': ['https://007-agent.ru/'],
+    'bitrix': ['https://unipump.ru', 'https://mnogomeb.ru', 'http://www.230vac.ru/'],
+    'nethouse': ['http://23mayki.ru/', 'https://22altritual.ru/', 'https://24cpz.ru/', 'http://29dveri.ru/'],
+    'adobe muse': ['http://24gadanie.ru/', 'https://1yog.ru/'],
+    'umi': ['https://3-dental.ru/', 'https://5butterfly.ru/'],
+    'drupal': ['https://24abs.ru/', 'https://74em.ru/', 'https://www.6-10kv.ru/'],
+    'okay': ['https://630630.ru/', 'https://agaxx.ru/'],
+    'phpshop': ['https://42na.ru/', 'https://64-shop.ru/', 'http://a-ofis.ru/', 'http://accubat.ru/'],
+    'modx': ['https://www.9474444.com/', 'https://agromolkom.ru/'],
+    'magento': ['https://2009920.ru/'],
+};
+
+for(const cms in cmsHeadersMap) {
+    const urlList = cmsHeadersMap[cms];
+    for(const url of urlList) {
+        test(`parser guess ${cms} by headers`, async () => {
+            const parser = new Parser(url);
+
+            let response = await parser.makeHttpRequest(parser.getDomain());
+            if(!response) {
+                response = await parser.makeHttpsRequest(parser.getDomain());
+            }
+
+            const headers = parser.getHeaders(response);
+
+            expect(parser.guessCmsByHeaders(headers)).toBe(cms);
+        }, 10000);
+    }
+}
+
+
 const cmsMap = {
     'bitrix': ['https://unipump.ru', 'https://mnogomeb.ru', 'http://www.230vac.ru/'],
     'wordpress': ['https://23uslugi-yurista.ru/', 'http://24dvs.ru/', 'https://russiandiamonds.ru/'],
@@ -29,7 +61,6 @@ for(const cms in cmsMap) {
     for(const url of urlList) {
         test(`parser guess ${cms}`, async () => {
             const parser = new Parser(url);
-            parser.client.sleepTime = 5000;
 
             let response = await parser.makeHttpRequest(parser.getDomain());
             if(!response) {

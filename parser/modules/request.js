@@ -1,6 +1,6 @@
 const {AxiosResponse, AxiosInstance} = require('axios');
-const Logger = require("./logger");
-const {Agent} = require("https");
+const Logger = require('./logger');
+const {Agent} = require('https');
 
 class Request
 {
@@ -32,8 +32,7 @@ class Request
             return await client.get(encodeURI(url), config);
         } catch (e) {
             if(e.response) {
-                await this.logger.log(`${e.code}: ${url}`, false, 'shit.txt')
-                return e.response;
+                return await e.response;
             }
 
             return false;
@@ -73,6 +72,11 @@ class Request
         if(!('timeout' in config)) {
             config['timeout'] = 3000;
         }
+
+        config['httpsAgent'] = new Agent({
+            rejectUnauthorized: false,
+        });
+
         if(!('headers' in config)) {
             config['headers'] = {};
         }
@@ -83,7 +87,7 @@ class Request
             };
         }
 
-        Object.assign(config['headers'], {
+        const defaultHeaders = {
             'Sec-Ch-Ua-Mobile': '?0',
             'Sec-Ch-Ua-Platform': "Windows",
             'Sec-Fetch-Dest': 'document',
@@ -92,11 +96,14 @@ class Request
             'Sec-Fetch-User': '?1',
             'Upgrade-Insecure-Requests': 1,
             'Dnt': 1
-        });
+        };
 
-        config['httpsAgent'] = new Agent({
-            rejectUnauthorized: false,
-        });
+        for(const headerKey in defaultHeaders) {
+            const headerValue = defaultHeaders[headerKey];
+            if(!(headerKey in config['headers'])) {
+                config['headers'][headerKey] = headerValue;
+            }
+        }
 
        return this.axios.create(config);
     }
