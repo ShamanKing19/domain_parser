@@ -12,9 +12,9 @@ class CreateCompanyFinancesTable extends Migration
             $table->foreignId('inn_id');
             $table->foreign('inn_id')->references('id')->on('company_info')->cascadeOnDelete();
             $table->smallInteger('year');
-            $table->unsignedFloat('income');
-            $table->unsignedFloat('outcome');
-            $table->unsignedFloat('profit');
+            $table->unsignedFloat('income', 20);
+            $table->unsignedFloat('outcome', 20);
+            $table->float('profit', 20);
             $table->primary(['inn_id', 'year']);
         });
     }

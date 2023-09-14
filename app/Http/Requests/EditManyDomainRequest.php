@@ -48,6 +48,11 @@ class EditManyDomainRequest extends BaseRequest
             'domains.*.companies.*.employees_count' => ['int'],
             'domains.*.companies.*.main_activity' => ['string'],
             'domains.*.companies.*.last_finance_year' => ['int'],
+
+            'domains.*.companies.*.finances.*.year' => ['int'],
+            'domains.*.companies.*.finances.*.income' => ['numeric'],
+            'domains.*.companies.*.finances.*.outcome' => ['numeric'],
+            'domains.*.companies.*.finances.*.profit' => ['numeric'],
         ];
     }
 }

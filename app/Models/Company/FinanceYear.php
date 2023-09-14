@@ -11,6 +11,8 @@ class FinanceYear extends Model
 
     protected $table = 'company_finances';
 
+    public $timestamps = false;
+
     protected $fillable = [
         'inn_id',
         'year',

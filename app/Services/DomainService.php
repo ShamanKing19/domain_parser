@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Models\Company;
+use App\Models\Company\FinanceYear;
 use App\Models\Domain;
 use Illuminate\Support\Facades\Date;
 
@@ -136,16 +138,48 @@ class DomainService
      */
     public function attachCompanies(Domain $domain, array $companyList) : void
     {
-        foreach($companyList as $company) {
-            $company['updated_at'] = Date::now();
-            $companyRow = \App\Models\Company::firstOrCreate($company);
-            if($companyRow) {
-                $companyIdList[] = $companyRow->id;
+        foreach($companyList as $companyFields) {
+            $inn = $companyFields['inn'];
+            $companyRow = Company::firstOrCreate(['inn' => $inn]);
+            if($companyRow->wasRecentlyCreated) {
+                $newCompanyIdList = [];
+            } else {
+                $companyFields['updated_at'] = Date::now();
+                $companyRow->update($companyFields);
+            }
+
+            if(!empty($companyFields['finances'])) {
+                $this->attachFinancesToCompany($companyRow, $companyFields['finances']);
             }
         }
 
-        if($companyIdList) {
-            $domain->companies()->attach($companyIdList);
+        if(isset($newCompanyIdList)) {
+            $domain->companies()->attach($newCompanyIdList);
+        }
+    }
+
+    /**
+     * Прикрепление периодов отчётности к компании
+     * TODO: Рефакторнуть
+     *
+     * @param Company $company
+     * @param array $financesFields
+     *
+     * @return void
+     */
+    public function attachFinancesToCompany(Company $company, array $financesFields) : void
+    {
+        foreach($financesFields as $financeYear) {
+            $year = $company->financeYears()->where([
+                'year' => $financeYear['year']
+            ]);
+
+            if($year->get()->isNotEmpty()) {
+                $year->update($financeYear);
+            } else {
+                $financeYear['inn_id'] = $company->id;
+                FinanceYear::create($financeYear);
+            }
         }
     }
 

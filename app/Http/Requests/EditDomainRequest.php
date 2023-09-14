@@ -47,6 +47,11 @@ class EditDomainRequest extends BaseRequest
             'companies.*.employees_count' => ['int'],
             'companies.*.main_activity' => ['string'],
             'companies.*.last_finance_year' => ['int'],
+
+            'companies.*.finances.*.year' => ['int'],
+            'companies.*.finances.*.income' => ['numeric'],
+            'companies.*.finances.*.outcome' => ['numeric'],
+            'companies.*.finances.*.profit' => ['numeric'],
         ];
     }
 }
