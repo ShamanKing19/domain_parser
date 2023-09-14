@@ -36,23 +36,23 @@ class App
             // 1. Проверка статусов
             parsers = await Promise.all(parsers.map(parser => parser.checkStatus()));
             const validSiteCount = parsers.filter(parser => parser.response && parser.response.status === 200)
-            // console.log('1 -', this.now(start), `- (${validSiteCount.length}/${parsers.length})`, '- status');
+            // console.log('1 -', this.timeSpent(start), `- (${validSiteCount.length}/${parsers.length})`, '- status');
 
             // 2. Проверка https редиректов
             parsers = await Promise.all(parsers.map(parser => parser.checkRedirect()));
-            // console.log('2 -', this.now(start), '- redirect');
+            // console.log('2 -', this.timeSpent(start), '- redirect');
 
             // 3. Сбор информации без запросов
             parsers = parsers.map(parser => parser.parse());
-            // console.log('3 -', this.now(start), '- parsing');
+            // console.log('3 -', this.timeSpent(start), '- parsing');
 
             // 4. Проверка битриксовых сайтов на каталог и корзину
             parsers = await Promise.all(parsers.map(parser => parser.checkBitrixEcom()));
-            // console.log('4 -', this.now(start), '- bitrix ecom');
+            // console.log('4 -', this.timeSpent(start), '- bitrix ecom');
 
             // 5. Поиск информации по ИНН
             parsers = await Promise.all(parsers.map(parser => parser.collectCompanyInfo()));
-            // console.log('5 -', this.now(start), '- company info');
+            // console.log('5 -', this.timeSpent(start), '- company info');
 
             parsedData = parsers.map(parser => parser.toObject());
 
@@ -71,7 +71,7 @@ class App
                     }
                 });
 
-            await this.logger.log(`${this.now(start)} - (${validSiteCount.length}/${parsers.length}) - Обработано ${currentPage} из ${lastPage} страниц (${currentPage * this.itemsPerPage}/${domainsCount})`, true);
+            await this.logger.log(`${this.timeSpent(start)} - (${validSiteCount.length}/${parsers.length}) - Обработано ${currentPage} из ${lastPage} страниц (${currentPage * this.itemsPerPage}/${domainsCount})`, true);
 
             currentPage++;
             domainList = await nextPageDomainsList;
@@ -148,8 +148,8 @@ class App
         return response ? response.data['data'] : false;
     }
 
-    now(start) {
-        return Date.now() / 1000 - start / 1000;
+    timeSpent(start) {
+        return Math.round((Date.now() - start) / 10) / 100;
     }
 }
 
