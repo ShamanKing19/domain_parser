@@ -52,6 +52,15 @@ class Parser
     }
 
     /**
+     * Проверка: есть ли действительный ответ
+     *
+     * @return {boolean}
+     */
+    hasResponse() {
+        return !!this.response && this.status >= 200 && this.status < 400;
+    }
+
+    /**
      * Https запрос к сайту
      *
      * @return {Promise<Parser>}
@@ -105,8 +114,8 @@ class Parser
             this.cms = this.guessCms(html);
         }
 
-        // this.emailList = this.findEmails(responseBody); // Вот это говно работает 30 сек на 200 сайтах
-        this.emailList = this.findEmailsSimple(responseBody);
+        this.emailList = this.findEmails(responseBody); // Вот это говно работает 30 сек на 200 сайтах
+        // this.emailList = this.findEmailsSimple(responseBody);
         this.phoneList = this.findPhones(responseBody);
         this.innList = this.findInns(responseBody);
         // this.companyList = this.findCompanyName(responseBody);
@@ -571,7 +580,7 @@ class Parser
      * @returns {string[]}
      */
     findEmailsSimple(text) {
-        const regex = /[\w\d\.\-_]{1,20}@[a-zA-Z0-9_\-]{3,12}\.[a-zA-Z]+\.?[a-zA-Z]*\.?[a-zA-Z]*/gm;
+        const regex = /[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+/gm;
         let match = text.match(regex) ?? [];
         match = [...new Set(match)];
 

@@ -9,6 +9,7 @@ class Request
     Functions = require('./functions');
 
     constructor() {
+        this.defaultTimeout = 3000;
         this.functions = new this.Functions();
         this.logger = new Logger();
     }
@@ -68,7 +69,7 @@ class Request
      */
     makeClientInstance(config = {}) {
         if(!('timeout' in config)) {
-            config['timeout'] = 3000;
+            config['timeout'] = this.defaultTimeout;
         }
 
         config['httpsAgent'] = new Agent({

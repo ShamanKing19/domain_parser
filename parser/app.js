@@ -35,7 +35,7 @@ class App
 
             // 1. Проверка статусов
             parsers = await Promise.all(parsers.map(parser => parser.checkStatus()));
-            const validSiteCount = parsers.filter(parser => parser.response && parser.response.status === 200)
+            parsers = parsers.filter(parser => parser.hasResponse());
             // console.log('1 -', this.timeSpent(start), `- (${validSiteCount.length}/${parsers.length})`, '- status');
 
             // 2. Проверка https редиректов
@@ -71,7 +71,7 @@ class App
                     }
                 });
 
-            await this.logger.log(`${this.timeSpent(start)} - (${validSiteCount.length}/${parsers.length}) - Обработано ${currentPage} из ${lastPage} страниц (${currentPage * this.itemsPerPage}/${domainsCount})`, true);
+            await this.logger.log(`${this.timeSpent(start)} - (${parsers.length}/${domainList.length}) - Обработано ${currentPage} из ${lastPage} страниц (${currentPage * this.itemsPerPage}/${domainsCount})`, true);
 
             currentPage++;
             domainList = await nextPageDomainsList;
