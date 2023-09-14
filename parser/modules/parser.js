@@ -52,39 +52,48 @@ class Parser
     }
 
     /**
-     * Парсинг сайта
+     * Https запрос к сайту
      *
-     * @returns {Promise<>}
+     * @return {Promise<Parser>}
      */
-    async run() {
+    async checkStatus() {
         const domain = this.getDomain();
+        this.response = await this.makeHttpsRequest(domain);
+        this.status = this.getStatusCode(this.response);
+        this.realUrl = this.getRealUrl(this.response);
+        this.hasSsl = this.checkSsl(this.response);
 
-        const httpRequest = this.makeHttpRequest(domain);
-        let httpsRequest = this.makeHttpsRequest(domain);
-        const result = await Promise.all([httpsRequest, httpRequest]);
-        let httpsResponse = result[0];
-        const httpResponse = result[1];
+        return this;
+    }
 
-        this.hasHttpsRedirect = httpResponse ? this.checkHttpsRedirect(httpResponse) : false;
-        if(!httpResponse && !httpsResponse) {
-            this.status = 0;
-            return this.toObject();
+    /**
+     * Http запрос к сайту для проверки редиректа на https
+     *
+     * @return {Promise<Parser>}
+     */
+    async checkRedirect() {
+        const domain = this.getDomain();
+        const response = await this.makeHttpRequest(domain);
+        if(response) {
+            this.hasHttpsRedirect = this.checkHttpsRedirect(response)
+            this.response = this.response ?? response;
         }
 
-        if(!httpsResponse && httpResponse) {
-            httpsResponse = httpResponse;
-        }
+        return this;
+    }
 
-        this.status = this.getStatusCode(httpsResponse);
-        this.realUrl = this.getRealUrl(httpsResponse);
-        this.hasSsl = this.checkSsl(httpsResponse);
-        const responseBody = this.getResponseData(httpsResponse);
+    /**
+     * Сбор информации с сайта
+     *
+     * @return {Parser}
+     */
+    parse() {
+        const responseBody = this.getResponseData(this.response);
         if(!responseBody || typeof responseBody !== 'string' || responseBody.trim() === '') {
-            this.status = 0;
-            return this.toObject();
+            return this;
         }
 
-        const headers = this.getHeaders(httpsResponse);
+        const headers = this.getHeaders(this.response);
         const html = this.getHtml(responseBody)
 
         this.title = this.getTitle(html);
@@ -96,6 +105,22 @@ class Parser
             this.cms = this.guessCms(html);
         }
 
+        // this.emailList = this.findEmails(responseBody); // Вот это говно работает 30 сек на 200 сайтах
+        this.emailList = this.findEmailsSimple(responseBody);
+        this.phoneList = this.findPhones(responseBody);
+        this.innList = this.findInns(responseBody);
+        // this.companyList = this.findCompanyName(responseBody);
+        // this.category = this.guessCategory(responseBody);
+
+        return this;
+    }
+
+    /**
+     * Проверка наличия каталога и корзины для битриксовый сайтов
+     *
+     * @return {Promise<Parser>}
+     */
+    async checkBitrixEcom() {
         this.hasCatalog = false;
         this.hasCart = false;
         if(this.cms === this.cmsBitrix) {
@@ -103,17 +128,19 @@ class Parser
             this.hasCart = await this.checkIfHasCart();
         }
 
-        this.innList = this.findInns(responseBody);
-        this.phoneList = this.findPhones(responseBody);
-        this.emailList = this.findEmails(responseBody);
-        // this.companyList = this.findCompanyName(responseBody);
-        // this.category = this.guessCategory(responseBody);
+        return this;
+    }
 
+    /**
+     * Сбор информации о компании
+     *
+     * @return {Promise<Parser>}
+     */
+    async collectCompanyInfo() {
         // TODO: Отправлять поля company
         // const company = innList.length !== 0 ? await this.findFinanceInfo(innList) : {};
         this.finances = [];
-
-        return this.toObject();
+        return this;
     }
 
     /**
@@ -171,7 +198,7 @@ class Parser
      * @returns {boolean}
      */
     checkSsl(response) {
-        const responseUrl = response.request.res.responseUrl;
+        const responseUrl = response.request ? response.request.res.responseUrl : this.url;
 
         return responseUrl.includes('https://');
     }
@@ -529,6 +556,22 @@ class Parser
      */
     findEmails(text) {
         const regex = /[a-zA-Z0-9\.\-_]+@[a-zA-Z0-9_\-]+\.[a-zA-Z]+\.?[a-zA-Z]*\.?[a-zA-Z]*/gm;
+        let match = text.match(regex) ?? [];
+        match = [...new Set(match)];
+
+        return match.filter(item => {
+            return !['.jpg', 'jpeg', '.png', '.css', '.js', 'beget.com', 'timeweb.ru', 'email@email.ru'].includes(item);
+        });
+    }
+
+    /**
+     * Поиск электронных почт (упрощённая регулярка)
+     *
+     * @param {string} text
+     * @returns {string[]}
+     */
+    findEmailsSimple(text) {
+        const regex = /[\w\d\.\-_]{1,20}@[a-zA-Z0-9_\-]{3,12}\.[a-zA-Z]+\.?[a-zA-Z]*\.?[a-zA-Z]*/gm;
         let match = text.match(regex) ?? [];
         match = [...new Set(match)];
 

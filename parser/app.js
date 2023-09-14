@@ -12,7 +12,7 @@ class App
         this.logger = new Logger();
         this.function = new Functions();
         this.client = new Client();
-        this.itemsPerPage = 10;
+        this.itemsPerPage = 100;
     }
 
     async run() {
@@ -22,16 +22,41 @@ class App
         let domainList = await this.getDomains(1, this.itemsPerPage);
 
         while(currentPage <= lastPage) {
+            const start = Date.now();
+
             const nextPage = currentPage === lastPage ? 1 : currentPage + 1;
             const nextPageDomainsList = this.getDomains(nextPage, this.itemsPerPage);
             let parsedData = [];
+            let parsers = [];
             for(const domainItem of domainList) {
                 const parser = new Parser(domainItem['domain'], domainItem['id']);
-                parsedData.push(parser.run());
+                parsers.push(parser);
             }
 
-            parsedData = await Promise.all(parsedData);
-            this.sendParsedData({'domains': parsedData})
+            // 1. Проверка статусов
+            parsers = await Promise.all(parsers.map(parser => parser.checkStatus()));
+            const validSiteCount = parsers.filter(parser => parser.response && parser.response.status === 200)
+            // console.log('1 -', this.now(start), `- (${validSiteCount.length}/${parsers.length})`, '- status');
+
+            // 2. Проверка https редиректов
+            parsers = await Promise.all(parsers.map(parser => parser.checkRedirect()));
+            // console.log('2 -', this.now(start), '- redirect');
+
+            // 3. Сбор информации без запросов
+            parsers = parsers.map(parser => parser.parse());
+            // console.log('3 -', this.now(start), '- parsing');
+
+            // 4. Проверка битриксовых сайтов на каталог и корзину
+            parsers = await Promise.all(parsers.map(parser => parser.checkBitrixEcom()));
+            // console.log('4 -', this.now(start), '- bitrix ecom');
+
+            // 5. Поиск информации по ИНН
+            parsers = await Promise.all(parsers.map(parser => parser.collectCompanyInfo()));
+            // console.log('5 -', this.now(start), '- company info');
+
+            parsedData = parsers.map(parser => parser.toObject());
+
+            await this.sendParsedData({'domains': parsedData})
                 .then(async (response) => {
                     if(!response) {
                         this.logger.logJson('broken_data/' + currentPage, parsedData);
@@ -46,7 +71,7 @@ class App
                     }
                 });
 
-            await this.logger.log(`Спаршено ${currentPage} из ${lastPage} страниц (${currentPage * this.itemsPerPage}/${domainsCount})`, true);
+            await this.logger.log(`${this.now(start)} - (${validSiteCount.length}/${parsers.length}) - Обработано ${currentPage} из ${lastPage} страниц (${currentPage * this.itemsPerPage}/${domainsCount})`, true);
 
             currentPage++;
             domainList = await nextPageDomainsList;
@@ -116,10 +141,15 @@ class App
             params: {
                 'page': pageNumber,
                 'count': itemsPerPage
-            }
+            },
+            timeout: 0
         });
 
         return response ? response.data['data'] : false;
+    }
+
+    now(start) {
+        return Date.now() / 1000 - start / 1000;
     }
 }
 

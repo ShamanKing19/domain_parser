@@ -8,8 +8,6 @@ class Request
     axios = require('axios');
     Functions = require('./functions');
 
-    sleepTime = 3000;
-
     constructor() {
         this.functions = new this.Functions();
         this.logger = new Logger();
