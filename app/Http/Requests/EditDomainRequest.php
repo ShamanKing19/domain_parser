@@ -28,8 +28,25 @@ class EditDomainRequest extends BaseRequest
             'phones.*' => ['string', 'nullable'],
             'emails' => ['array', 'nullable'],
             'emails.*' => ['string', 'email:rfc', 'nullable'],
-            'inn' => ['array', 'nullable'],
-            'inn.*' => ['string']
+
+            'companies' => ['array', 'nullable'],
+            'companies.*.inn' => ['string'],
+            'companies.*.name' => ['string'],
+            'companies.*.type' => ['string'],
+            'companies.*.region' => ['string'],
+            'companies.*.city' => ['string'],
+            'companies.*.address' => ['string'],
+            'companies.*.post_index' => ['string'],
+            'companies.*.registration_date' => ['date_format:Y-m-d'],
+            'companies.*.boss_name' => ['string'],
+            'companies.*.boss_post' => ['string'],
+            'companies.*.authorized_capital_type' => ['string'],
+            'companies.*.authorized_capital_amount' => ['int'],
+            'companies.*.registry_date' => ['date_format:Y-m-d'],
+            'companies.*.registry_category' => ['int'],
+            'companies.*.employees_count' => ['int'],
+            'companies.*.main_activity' => ['string'],
+            'companies.*.last_finance_year' => ['int'],
         ];
     }
 }

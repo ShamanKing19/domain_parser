@@ -32,7 +32,7 @@ class DomainService
         }
 
         if(isset($fields['inn'])) {
-            $this->attachInns($domain, $fields['inn']);
+            $this->attachCompanies($domain, $fields['inn']);
         }
 
         return $domain;
@@ -84,9 +84,9 @@ class DomainService
             $this->attachEmails($domain, $fields['emails']);
         }
 
-        if(!empty($fields['inn'])) {
-            $domain->inns()->delete();
-            $this->attachInns($domain, $fields['inn']);
+        if(!empty($fields['companies'])) {
+            $domain->companies()->delete();
+            $this->attachCompanies($domain, $fields['companies']);
         }
 
         $domain->update($fields);
@@ -130,31 +130,22 @@ class DomainService
      * Прикрепление ИНН'ов
      *
      * @param Domain $domain
-     * @param array $inns
+     * @param array $companyList
      *
      * @return void
      */
-    public function attachInns(Domain $domain, array $inns) : void
+    public function attachCompanies(Domain $domain, array $companyList) : void
     {
-        if($inns) {
-            $domain->inns()->delete();
-        }
-
-        $inns = array_unique($inns);
-        $companyIdList = [];
-
-        foreach($inns as $inn) {
-            $companyRow = \App\Models\Company::firstOrCreate([
-                'inn' => $inn
-            ]);
-
+        foreach($companyList as $company) {
+            $company['updated_at'] = Date::now();
+            $companyRow = \App\Models\Company::firstOrCreate($company);
             if($companyRow) {
                 $companyIdList[] = $companyRow->id;
             }
         }
 
         if($companyIdList) {
-            $domain->inns()->attach($companyIdList);
+            $domain->companies()->attach($companyIdList);
         }
     }
 

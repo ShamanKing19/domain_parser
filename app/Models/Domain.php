@@ -46,7 +46,7 @@ class Domain extends Model
         return $this->hasMany(\App\Models\Domain\Email::class, 'domain_id', 'id');
     }
 
-    public function inns() : BelongsToMany
+    public function companies() : BelongsToMany
     {
         return $this->belongsToMany(Company::class, 'domains_inns', 'domain_id', 'inn_id');
     }

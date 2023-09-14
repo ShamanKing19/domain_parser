@@ -29,8 +29,25 @@ class EditManyDomainRequest extends BaseRequest
             'domains.*.phones.*' => ['string', 'nullable'],
             'domains.*.emails' => ['array', 'nullable'],
             'domains.*.emails.*' => ['string', 'email:rfc', 'nullable'],
-            'domains.*.inn' => ['array', 'nullable'],
-            'domains.*.inn.*' => ['string']
+
+            'domains.*.companies' => ['array', 'nullable'],
+            'domains.*.companies.*.inn' => ['string'],
+            'domains.*.companies.*.name' => ['string'],
+            'domains.*.companies.*.type' => ['string'],
+            'domains.*.companies.*.region' => ['string'],
+            'domains.*.companies.*.city' => ['string'],
+            'domains.*.companies.*.address' => ['string'],
+            'domains.*.companies.*.post_index' => ['string'],
+            'domains.*.companies.*.registration_date' => ['date_format:Y-m-d'],
+            'domains.*.companies.*.boss_name' => ['string'],
+            'domains.*.companies.*.boss_post' => ['string'],
+            'domains.*.companies.*.authorized_capital_type' => ['string'],
+            'domains.*.companies.*.authorized_capital_amount' => ['int'],
+            'domains.*.companies.*.registry_date' => ['date_format:Y-m-d'],
+            'domains.*.companies.*.registry_category' => ['int'],
+            'domains.*.companies.*.employees_count' => ['int'],
+            'domains.*.companies.*.main_activity' => ['string'],
+            'domains.*.companies.*.last_finance_year' => ['int'],
         ];
     }
 }

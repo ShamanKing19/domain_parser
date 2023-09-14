@@ -22,7 +22,6 @@ class Company extends Model
         'name',
         'type',
         'segment_id',
-        'segment_id',
         'region',
         'city',
         'address',
