@@ -107,25 +107,25 @@ class DomainService
      */
     public function attachPhones(Domain $domain, array $phones) : void
     {
-        $phoneRows = collect($phones)->map(function($item) {
-            return ['phone' => \App\Helpers::cleanPhoneString($item)];
-        })->unique();
-
-        $domain->phones()->createMany($phoneRows);
+        $phoneRows = collect($phones)->map(fn($item) => \App\Helpers::cleanPhoneString($item))->unique();
+        foreach($phoneRows as $phone) {
+            $domain->phones()->firstOrCreate(['phone' => $phone]);
+        }
     }
 
     /**
      * Прикрепление email'ов
      *
      * @param Domain $domain
-     * @param array $emails
+     * @param array $emailList
      *
      * @return void
      */
-    public function attachEmails(Domain $domain, array $emails) : void
+    public function attachEmails(Domain $domain, array $emailList) : void
     {
-        $emailList = collect(array_unique($emails))->map(fn($item) => ['email' => $item]);
-        $domain->emails()->createMany($emailList);
+        foreach(array_unique($emailList) as $email) {
+            $domain->emails()->firstOrCreate(['email' => $email]);
+        }
     }
 
     /**
