@@ -172,7 +172,6 @@ class Parser
             'title': this.title ?? '',
             'description': this.description ?? '',
             'keywords': this.keywords ?? '',
-            'inn': this.innList ?? [],
             'phones': this.phoneList ?? [],
             'emails': this.emailList ?? [],
             'companies': this.companies ?? []
@@ -565,7 +564,7 @@ class Parser
      * @returns {string[]}
      */
     findEmails(text) {
-        const regex = /[a-zA-Z0-9\.\-_]+@[a-zA-Z0-9_\-]+\.[a-zA-Z]+\.?[a-zA-Z]*\.?[a-zA-Z]*/gm;
+        const regex = /[\w\d\.\-]+@[\w\d\-]+\.\w+\.?\w*\.?\w+/gm;
         let match = text.match(regex) ?? [];
         match = [...new Set(match)];
 

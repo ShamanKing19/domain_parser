@@ -29,7 +29,7 @@ class Logger
         const now = this.getCurrentTime();
         const formattedMessage = `[${now}]: ${message}\n`;
         if(consoleLog) {
-            console.log(formattedMessage.replace('\n', ''));
+            console.error(formattedMessage.replace('\n', ''));
         }
 
         this.fs.appendFile(this.errorsPath, formattedMessage, () => {});

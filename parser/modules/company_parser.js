@@ -1,6 +1,7 @@
 const { AxiosResponse } = require('axios');
 const { parse } = require('node-html-parser');
 const Client = require('./request');
+const Functions = require('./functions');
 
 class Company
 {
@@ -13,6 +14,7 @@ class Company
     constructor(inn) {
         this.inn = inn;
         this.client = new Client();
+        this.functions = new Functions();
     }
 
     /**
@@ -69,7 +71,7 @@ class Company
      * @return {object}
      */
     toObject() {
-        return {
+        return this.functions.clean({
             'inn': this.getInn(),
             'name': this.getFullName(),
             'type': this.getType(),
@@ -88,7 +90,7 @@ class Company
             'main_activity': this.getMainActivityName(),
             'last_finance_year': this.getLastFinanceYear(),
             'finances': this.getFinancialYearListFormatted()
-        };
+        });
     }
 
     /**
