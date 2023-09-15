@@ -55,6 +55,43 @@ class Company
     }
 
     /**
+     * Проверка: получены ли данные по компании
+     *
+     * @returns {boolean}
+     */
+    isParsed() {
+        return this.getInn() !== '' && this.getFullName() !== '' && this.getRegion() !== '';
+    }
+
+    /**
+     * Приведение к объекту для отправки
+     *
+     * @return {object}
+     */
+    toObject() {
+        return {
+            'inn': this.getInn(),
+            'name': this.getFullName(),
+            'type': this.getType(),
+            'region': this.getRegion(),
+            'city': this.getCity(),
+            'address': this.getAddress(),
+            'post_index': this.getIndex(),
+            'registration_date': this.getRegistrationDate(),
+            'boss_name': this.getBossName(),
+            'boss_post': this.getBossPosition(),
+            'authorized_capital_type': this.getAuthorizedCapitalType(),
+            'authorized_capital_amount': this.getAuthorizedCapitalAmount(),
+            'registry_date': this.getRegistryDate(),
+            'registry_category': this.getRegistryCategory(),
+            'employees_count': this.getStaffCount(),
+            'main_activity': this.getMainActivityName(),
+            'last_finance_year': this.getLastFinanceYear(),
+            'finances': this.getFinancialYearListFormatted()
+        };
+    }
+
+    /**
      * "Сведения Юридического лица"
      *
      * @return {object}
@@ -278,7 +315,8 @@ class Company
      * @returns {object[]}
      */
     getIndividualEntityList() {
-        return this.getLegalEntityFields()['СведДолжнФЛ'] ?? [];
+        const fields = this.getLegalEntityFields();
+        return fields ? fields['СведДолжнФЛ'] ?? [] : [];
     }
 
     /**
@@ -287,7 +325,10 @@ class Company
      * @return {Object}
      */
     findBoss() {
-        const staff = this.getIndividualEntityList();
+        let staff = this.getIndividualEntityList();
+        if(!Array.isArray(staff)) {
+            staff = [staff];
+        }
 
         for(const employee of staff) {
             const positionFields = employee['СвДолжн'] ?? {};
@@ -300,7 +341,7 @@ class Company
             }
         }
 
-        return staff.pop();
+        return staff.pop() ?? {};
     }
 
     /**
@@ -333,7 +374,7 @@ class Company
      */
     getBossPosition() {
         const fields = this.findBoss()['СвДолжн'] ?? {};
-        const attributes = fields['@attributes'];
+        const attributes = fields['@attributes'] ?? {};
 
         return attributes['НаимДолжн'] ? attributes['НаимДолжн'].toUpperCase() : '';
     }
@@ -343,11 +384,20 @@ class Company
      *
      * @return {number}
      */
-    getAuthorizedCapital() {
+    getAuthorizedCapitalAmount() {
         const fields = this.getLegalEntityFields()['СвУстКап'] ?? {};
         const attributes = fields['@attributes'] ?? {};
 
         return attributes['СумКап'] ? Number(attributes['СумКап']) : 0;
+    }
+
+    /**
+     * Тип уставного капитала
+     *
+     * @return {string}
+     */
+    getAuthorizedCapitalType() {
+        return ''; // TODO: Implement
     }
 
     /**
@@ -414,6 +464,50 @@ class Company
     }
 
     /**
+     * Список годов с финансовой отчётностью для отправки по api
+     *
+     * [
+     *     {
+     *         'year': 2021,
+     *         'income': 100,
+     *         'outcome': 1.3,
+     *         'profit': 98.7
+     *     },
+     *     {
+     *         'year': 2022,
+     *         'income': 0,
+     *         'outcome': 10,
+     *         'profit': -10
+     *     },
+     *     ...
+     * ]
+     *
+     * @return {object[]}
+     */
+    getFinancialYearListFormatted() {
+        const data = this.getFinancialYearList();
+        const result = [];
+        for(const year in data) {
+            const yearInfo = data[year];
+            const attributes = yearInfo['@attributes'];
+            if(!attributes) {
+                continue;
+            }
+
+            const income = Number(attributes['income']);
+            const outcome = Number(attributes['outcome']);
+            result.push({
+                'year': Number(year),
+                'income': income,
+                'outcome': outcome,
+                'profit': income - outcome,
+            });
+        }
+
+        return result;
+    }
+
+    /**
      * Последний год финансовой отчётности
      *
      * @return {number}
@@ -421,6 +515,9 @@ class Company
     getLastFinanceYear() {
         const financeYears = this.getFinancialYearList();
         const years = Object.keys(financeYears).map((year) => Number(year));
+        if(years.length === 0) {
+            return 0;
+        }
 
         return Math.max(...years);
     }
@@ -455,7 +552,7 @@ class Company
      * @return {number}
      */
     getStaffCount() {
-        const fields = this.getLastFinanceYearFields();
+        const fields = this.getLastFinanceYearFields() ?? {};
         const count = fields['@attributes'] ? fields['@attributes']['n'] ?? 0 : 0;
 
         return Number(count);

@@ -11,31 +11,10 @@ const company = new Company(testInn);
 const companyData = functions.readJson( `${__dirname}/${testInn}.json`);
 company.setFields(companyData);
 
-// test('init company parser', async () => {
-//     await parser.init();
-//     expect(parser.getFields()).not.toStrictEqual({});
-// });
-
-
-// test('find finance info', async () => {
-//     const parser = new Parser('zxc');
-//
-//     const notInfoInnList = ['231231231123'];
-//     for(const inn of notInfoInnList) {
-//         const financeInfo = await parser.findFinanceInfoByInn(inn);
-//         expect(financeInfo).toBeInstanceOf(Company);
-//         expect(financeInfo.getFields()).toStrictEqual({});
-//     }
-//
-//     const innList = ['7730588444', '9500018482', '9500018475', '9500018468', '972714924120', '971511159105'];
-//     for(const inn of innList) {
-//         const company = await parser.findFinanceInfoByInn(inn);
-//
-//         expect(company).toBeInstanceOf(Company);
-//         expect(company.getFields()).not.toStrictEqual({});
-//     }
-//
-// });
+test('init company parser', async () => {
+    await company.init();
+    expect(company.getFields()).not.toStrictEqual({});
+});
 
 test('get inn', () => {
     expect(company.getInn()).toBe(testInn);
@@ -120,7 +99,7 @@ test('get google reviews', () => {
 });
 
 test('get authorized capital', () => {
-    expect(company.getAuthorizedCapital()).toBe(12000);
+    expect(company.getAuthorizedCapitalAmount()).toBe(12000);
 });
 
 test('get registry date', () => {
@@ -185,5 +164,18 @@ test('get side activities', () => {
             "code": "85.42",
             "name": "Образование профессиональное дополнительное",
         }
+    ]);
+});
+
+test('get finance info', async () => {
+    expect(company.getFinancialYearListFormatted()).toStrictEqual([
+        {year: 2014, income: 22972000, outcome: 17583000, profit: 5389000},
+        {year: 2015, income: 28331000, outcome: 28445000, profit: -114000},
+        {year: 2016, income: 25151000, outcome: 23307000, profit: 1844000},
+        {year: 2017, income: 26620000, outcome: 24668000, profit: 1952000},
+        {year: 2018, income: 24059000, outcome: 23750000, profit: 309000},
+        {year: 2019, income: 34099000, outcome: 32818000, profit: 1281000},
+        {year: 2020, income: 52525000, outcome: 50172000, profit: 2353000},
+        {year: 2021, income: 88295000, outcome: 83168000, profit: 5127000}
     ]);
 });

@@ -146,9 +146,11 @@ class Parser
      * @return {Promise<Parser>}
      */
     async collectCompanyInfo() {
-        // TODO: Отправлять поля company
-        // const company = innList.length !== 0 ? await this.findFinanceInfo(innList) : {};
-        this.finances = [];
+        if(!this.innList || this.innList === []) {
+            return this;
+        }
+
+        this.companies = await this.findFinanceInfo(this.innList);
         return this;
     }
 
@@ -173,9 +175,8 @@ class Parser
             'inn': this.innList ?? [],
             'phones': this.phoneList ?? [],
             'emails': this.emailList ?? [],
-            // 'companies': this.companyList ?? [],
+            'companies': this.companies ?? []
             // 'category': this.category ?? [],
-            'finances': this.finances ?? []
         };
     }
 
@@ -615,7 +616,7 @@ class Parser
      * Получение финансовых данных по ИНН
      *
      * @param {string[]} innList
-     * @return {Promise[]}
+     * @return {Promise<[]>}
      */
     async findFinanceInfo(innList) {
         const requests = [];
@@ -623,7 +624,10 @@ class Parser
             requests.push(this.findFinanceInfoByInn(inn));
         }
 
-        return Promise.all(requests);
+        let companies = await Promise.all(requests);
+        companies = companies.filter(company => company.isParsed());
+
+        return companies.map(company => company.toObject());
     }
 
     /**
@@ -634,8 +638,7 @@ class Parser
      */
     async findFinanceInfoByInn(inn) {
         const companyParser = new Company(inn);
-        companyParser.init();
-        return companyParser;
+        return companyParser.init();
     }
 
     /**
