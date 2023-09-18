@@ -566,7 +566,7 @@ class Parser
      * @returns {string[]}
      */
     findEmails(text) {
-        const regex = /[\w\d\.\-]+@[\w\d\-]+\.\w+\.?\w*\.?\w*/gm;
+        const regex = /[^-_\s:<>,.][\w\d\.\-]*@[^-_\s:<>,.][\w\d\-]*\.\w+\.?\w*\.?\w*/gm;
         let match = text.match(regex) ?? [];
         match = [...new Set(match)];
 

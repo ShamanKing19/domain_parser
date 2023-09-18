@@ -12,8 +12,19 @@ const testText = `
         7-921-145-54-20
         8 (921) 145-54-20
 
+        u002F@-xxi.5662
+
         <a href="mailto:asd@asd.asd">123email.zxc123@kuku123.xyz</a>
        fake,email,@asd.asd fake-email@asdasd <b>a@a.a</b>
+
+       "logo1@1x.png",
+       logo1@2x.png",
+       biotechnology-bann123er@1x.jpg",
+       biotechnology-bann123er@2x.jpg,
+       mrlk@1x.jpg",
+       fnac_256@1x.png",
+       fnac_256@2x.png,
+       "kfu_vernadskogo@1x.png",
 
         <section id="requisites" class="requisites">
             <div class="requisites__wrapper">
