@@ -16,9 +16,8 @@ class App
     }
 
     async run() {
-        let currentPage = 600;
+        let currentPage = 1;
         const lastPage = await this.getLastPageNumber(this.itemsPerPage);
-        console.log(lastPage);
         const domainsCount = await this.getDomainsCount();
         let domainList = await this.getDomains(1, this.itemsPerPage);
 
