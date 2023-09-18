@@ -187,7 +187,7 @@ class Company
      */
     getCity() {
         const fields = this.getAddressFields()['АдресРФ'] ?? {};
-        const city = fields['Город'] ?? '';
+        const city = fields['Город'] ?? {};
         const cityName =  city['@attributes'] ? city['@attributes']['НаимГород'] ?? '' : '';
 
         return cityName.toUpperCase();

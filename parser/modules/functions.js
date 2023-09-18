@@ -36,6 +36,23 @@ class Functions
         return false;
     }
 
+    /**
+     * Фильтрация массива строк от неподходящих значений
+     *
+     * @param {array<string>} array Массив строк, который нужно отфильтровать
+     * @param {array<string|number>} itemsToRemove Значения, которые будут удалены
+     * @return {array<string>}
+     */
+    filterArray(array, itemsToRemove) {
+        for(const stopWord of itemsToRemove) {
+            array = array.filter(item => {
+                return !item.includes(stopWord);
+            });
+        }
+
+        return array;
+    }
+
     cleanPhone(string) {
         return string.replace(/[^0-9]+/gm, '');
     }

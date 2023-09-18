@@ -16,6 +16,7 @@ class Parser
         this.client = new Client();
         this.functions = new Functions();
         this.cmsBitrix = 'bitrix';
+        this.emailBlackList = ['.jpg', 'jpeg', '.png', '.css', '.js', 'beget.com', 'timeweb.ru', 'email@email.ru'];
     }
 
     /**
@@ -391,6 +392,7 @@ class Parser
     }
 
     /**
+     * Определение cms по заголовкам
      *
      * @param headers
      */
@@ -564,13 +566,11 @@ class Parser
      * @returns {string[]}
      */
     findEmails(text) {
-        const regex = /[\w\d\.\-]+@[\w\d\-]+\.\w+\.?\w*\.?\w+/gm;
+        const regex = /[\w\d\.\-]+@[\w\d\-]+\.\w+\.?\w*\.?\w*/gm;
         let match = text.match(regex) ?? [];
         match = [...new Set(match)];
 
-        return match.filter(item => {
-            return !['.jpg', 'jpeg', '.png', '.css', '.js', 'beget.com', 'timeweb.ru', 'email@email.ru'].includes(item);
-        });
+        return this.functions.filterArray(match, this.emailBlackList);
     }
 
     /**
@@ -584,9 +584,8 @@ class Parser
         let match = text.match(regex) ?? [];
         match = [...new Set(match)];
 
-        return match.filter(item => {
-            return !['.jpg', 'jpeg', '.png', '.css', '.js', 'beget.com', 'timeweb.ru', 'email@email.ru'].includes(item);
-        });
+        return this.functions.filterArray(match, this.emailBlackList);
+
     }
 
     /**

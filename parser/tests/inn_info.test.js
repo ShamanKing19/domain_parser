@@ -7,13 +7,25 @@ const logger = new Logger();
 const functions = new Functions();
 
 const testInn = '7730588444';
+const company1 = new Company(testInn);
+
+/**
+ * Реальная инициализация парсера
+ */
+test('init company parser', async () => {
+    await company1.init();
+    expect(company1.getFields()).not.toStrictEqual({});
+});
+
+/**
+ * ТЕСТОВЫЕ ДАННЫЕ
+ */
 const company = new Company(testInn);
 const companyData = functions.readJson( `${__dirname}/${testInn}.json`);
 company.setFields(companyData);
 
-test('init company parser', async () => {
-    await company.init();
-    expect(company.getFields()).not.toStrictEqual({});
+test('company fields set', () => {
+    expect(company.getFields()).toStrictEqual(companyData);
 });
 
 test('get inn', () => {
