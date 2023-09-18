@@ -16,8 +16,9 @@ class App
     }
 
     async run() {
-        let currentPage = 1;
+        let currentPage = 600;
         const lastPage = await this.getLastPageNumber(this.itemsPerPage);
+        console.log(lastPage);
         const domainsCount = await this.getDomainsCount();
         let domainList = await this.getDomains(1, this.itemsPerPage);
 
@@ -61,13 +62,11 @@ class App
                 if(!response) {
                     this.logger.logJson('broken_data/' + currentPage, parsedData);
                     await this.logger.error(`Ошибка при отправке запроса на api`, true)
-                    continue;
                 }
 
                 if(!response || !response.data || !response.data['status']) {
                     await this.logger.logJson('broken_api_data/' + currentPage, parsedData);
                     await this.logger.error(JSON.stringify(response.data), true);
-                    continue;
                 }
             }
 

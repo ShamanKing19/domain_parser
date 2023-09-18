@@ -12,7 +12,7 @@ const testText = `
         7-921-145-54-20
         8 (921) 145-54-20
 
-        u002F@-xxi.5662
+        u002F@-xxi.5662 /Rating@Mail.ru
 
         <a href="mailto:asd@asd.asd">123email.zxc123@kuku123.xyz</a>
        fake,email,@asd.asd fake-email@asdasd <b>a@a.a</b>
@@ -127,7 +127,7 @@ test('find emails', () => {
     const parser = new Parser(testUrl);
 
     const emailList = parser.findEmails(testText);
-    const correctResult = ['asd@asd.asd', '123email.zxc123@kuku123.xyz', 'a@a.a'];
+    const correctResult = ['Rating@Mail.ru', 'asd@asd.asd', '123email.zxc123@kuku123.xyz', 'a@a.a'];
 
     expect(emailList).toStrictEqual(correctResult);
 });
