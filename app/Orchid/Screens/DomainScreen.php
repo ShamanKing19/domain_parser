@@ -2,11 +2,9 @@
 
 namespace App\Orchid\Screens;
 
-use Illuminate\Support\Facades\DB;
 use Orchid\Screen\Screen;
-use Orchid\Support\Facades\Layout;
 
-class Login extends Screen
+class DomainScreen extends Screen
 {
     /**
      * Query data.
@@ -15,8 +13,15 @@ class Login extends Screen
      */
     public function query(): iterable
     {
+        $domains =  \App\Models\Domain::with(['emails'])->filters()->defaultSort('id')->paginate(20);
+        $domains->map(function($domain) {
+            $emails = $domain->emails()->get('email')->implode('email', ', ');
+            $domain['shit'] = $emails;
+        });
 
-        return [];
+        return [
+            'domains' => $domains,
+        ];
     }
 
     /**
@@ -26,7 +31,7 @@ class Login extends Screen
      */
     public function name(): ?string
     {
-        return 'Статистика';
+        return 'DomainScreen';
     }
 
     /**
@@ -47,7 +52,7 @@ class Login extends Screen
     public function layout(): iterable
     {
         return [
-            Layout::view('login'),
+            \App\Orchid\Layouts\DomainLayout::class
         ];
     }
 }

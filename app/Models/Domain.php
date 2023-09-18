@@ -6,16 +6,31 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Orchid\Filters\Filterable;
+use Orchid\Filters\Types\Like;
+use Orchid\Filters\Types\Where;
+use Orchid\Screen\AsMultiSource;
 
 class Domain extends Model
 {
-    use HasFactory;
+    use HasFactory, AsMultiSource, Filterable;
 
     protected $table = 'domains';
 
     public $timestamps = false;
 
     protected $perPage = 500;
+
+    protected $allowedFilters = [
+        'cms' => Like::class,
+    ];
+
+    /**
+     * @var array
+     */
+    protected $allowedSorts = [
+        'cms',
+    ];
 
     protected $fillable = [
         'domain',

@@ -29,31 +29,8 @@ class PlatformProvider extends OrchidServiceProvider
     {
         return [
             Menu::make('Домены')
-                ->icon('statistic')
                 ->route('platform.domains')
                 ->title('Парсер'),
-
-            Menu::make('ИНН')
-                ->icon('statistic')
-                ->route('platform.inn'),
-
-            Menu::make('Статистика')
-                ->icon('statistic')
-                ->route('platform.statistic'),
-
-            Menu::make('Выгрузка в CRM')
-                ->icon('statistic')
-                ->route('platform.export'),
-            Menu::make(__('Users'))
-                ->icon('user')
-                ->route('platform.systems.users')
-                ->permission('platform.systems.users')
-                ->title(__('Access rights')),
-
-            Menu::make(__('Roles'))
-                ->icon('lock')
-                ->route('platform.systems.roles')
-                ->permission('platform.systems.roles'),
         ];
     }
 

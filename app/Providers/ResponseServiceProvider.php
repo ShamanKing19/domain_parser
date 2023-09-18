@@ -47,14 +47,4 @@ class ResponseServiceProvider extends ServiceProvider
             return Response::make($fields)->setStatusCode($status);
         });
     }
-
-    /**
-     * Register the application services.
-     *
-     * @return void
-     */
-    public function register()
-    {
-        //
-    }
 }
