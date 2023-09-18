@@ -56,17 +56,19 @@ class App
 
             parsedData = parsers.map(parser => parser.toObject());
 
-            const response = await this.sendParsedData({'domains': parsedData});
-            if(!response) {
-                this.logger.logJson('broken_data/' + currentPage, parsedData);
-                await this.logger.error(`Ошибка при отправке запроса на api`, true)
-                continue;
-            }
+            if(parsedData.length !== 0) {
+                const response = await this.sendParsedData({'domains': parsedData});
+                if(!response) {
+                    this.logger.logJson('broken_data/' + currentPage, parsedData);
+                    await this.logger.error(`Ошибка при отправке запроса на api`, true)
+                    continue;
+                }
 
-            if(!response || !response.data || !response.data['status']) {
-                await this.logger.logJson('broken_api_data/' + currentPage, parsedData);
-                await this.logger.error(JSON.stringify(response.data), true);
-                continue;
+                if(!response || !response.data || !response.data['status']) {
+                    await this.logger.logJson('broken_api_data/' + currentPage, parsedData);
+                    await this.logger.error(JSON.stringify(response.data), true);
+                    continue;
+                }
             }
 
             await this.logger.log(`${this.timeSpent(start)} - (${parsers.length}/${domainList.length}) - Обработано ${currentPage} из ${lastPage} страниц (${currentPage * this.itemsPerPage}/${domainsCount})`, true);
