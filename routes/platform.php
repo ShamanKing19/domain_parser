@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Orchid\Screens\DomainListScreen;
 use App\Orchid\Screens\DomainScreen;
 use App\Orchid\Screens\PlatformScreen;
 use App\Orchid\Screens\Role\RoleEditScreen;
@@ -90,4 +91,5 @@ Route::screen('roles', RoleListScreen::class)
             ->push(__('Roles'), route('platform.systems.roles'));
     });
 
-Route::screen('domains', DomainScreen::class)->name('platform.domains');
+Route::screen('domains', DomainListScreen::class)->name('platform.domains.list');
+Route::screen('domains/{domain}', DomainScreen::class)->whereNumber('id')->name('platform.domains.detail');

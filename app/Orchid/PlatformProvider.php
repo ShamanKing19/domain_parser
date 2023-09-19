@@ -18,8 +18,6 @@ class PlatformProvider extends OrchidServiceProvider
     public function boot(Dashboard $dashboard): void
     {
         parent::boot($dashboard);
-
-        // ...
     }
 
     /**
@@ -29,7 +27,7 @@ class PlatformProvider extends OrchidServiceProvider
     {
         return [
             Menu::make('Домены')
-                ->route('platform.domains')
+                ->route('platform.domains.list')
                 ->title('Парсер'),
         ];
     }
