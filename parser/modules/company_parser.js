@@ -496,8 +496,8 @@ class Company
                 continue;
             }
 
-            const income = Number(attributes['income']);
-            const outcome = Number(attributes['outcome']);
+            const income = Number(attributes['income'] ?? 0);
+            const outcome = Number(attributes['outcome'] ?? 0);
             result.push({
                 'year': Number(year),
                 'income': income,

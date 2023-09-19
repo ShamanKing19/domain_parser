@@ -15,7 +15,7 @@ const testText = `
         u002F@-xxi.5662 /Rating@Mail.ru
 
         <a href="mailto:asd@asd.asd">123email.zxc123@kuku123.xyz</a>
-       fake,email,@asd.asd fake-email@asdasd <b>a@a.a</b>
+       fake,email,@asd.asd fake-email@asdasd <b>a@a.a</b>aa@a.a
 
        "logo1@1x.png",
        logo1@2x.png",
@@ -127,7 +127,7 @@ test('find emails', () => {
     const parser = new Parser(testUrl);
 
     const emailList = parser.findEmails(testText);
-    const correctResult = ['Rating@Mail.ru', 'asd@asd.asd', '123email.zxc123@kuku123.xyz', 'a@a.a'];
+    const correctResult = ['Rating@Mail.ru', 'asd@asd.asd', '123email.zxc123@kuku123.xyz', 'aa@a.a'];
 
     expect(emailList).toStrictEqual(correctResult);
 });
