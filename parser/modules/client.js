@@ -163,6 +163,7 @@ class Client
             'Z_BUF_ERROR': 507,
             'Z_DATA_ERROR': 507,
             'EPROTO': 526,
+            'EHOSTUNREACH': 0
         };
 
         if(e.code) {
