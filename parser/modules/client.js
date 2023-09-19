@@ -178,7 +178,7 @@ class Client
             response.body = '';
         }
 
-        if(!response.statusCode) {
+        if(!response.statusCode && response.statusCode !== 0) {
             console.log(this.url, e);
         }
 
