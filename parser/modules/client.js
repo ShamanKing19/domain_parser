@@ -155,6 +155,7 @@ class Client
     handleErrors(e) {
         const response = e.response ?? {};
         const errorsStatusMap = {
+            'ERR_NON_2XX_3XX_RESPONSE': 403,
             'ECONNREFUSED': 404,
             'ENOTFOUND': 404,
             'ETIMEDOUT': 408,
