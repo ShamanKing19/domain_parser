@@ -19,6 +19,7 @@
         "postcss": "^8.1.14"
     },
     "dependencies": {
+        "got": "^11.8.2",
         "node-html-parser": "^6.1.6",
         "user-agents": "^1.0.1444"
     }

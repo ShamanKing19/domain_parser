@@ -19,11 +19,10 @@ class App
         let currentPage = 1;
         const lastPage = await this.getLastPageNumber(this.itemsPerPage);
         const domainsCount = await this.getDomainsCount();
-        let domainList = await this.getDomains(1, this.itemsPerPage);
+        let domainList = await this.getDomains(currentPage, this.itemsPerPage);
 
         while(currentPage <= lastPage) {
             const start = Date.now();
-
             const nextPage = currentPage === lastPage ? 1 : currentPage + 1;
             const nextPageDomainsList = this.getDomains(nextPage, this.itemsPerPage);
             let parsedData = [];
@@ -34,9 +33,9 @@ class App
             }
 
             // 1. Проверка статусов
-            parsers = await Promise.all(parsers.map(parser => parser.checkStatus()));
+            parsers = await Promise.all(parsers.map(parser => parser.init())); // TODO: Ломается тут на 511-й странице с порцией 100
             parsers = parsers.filter(parser => parser.hasResponse());
-            // console.log('1 -', this.timeSpent(start), `- (${validSiteCount.length}/${parsers.length})`, '- status');
+            // console.log('1 -', this.timeSpent(start), `- (${parsers.length}/${domainList.length})`, '- status');
 
             // 2. Проверка https редиректов
             parsers = await Promise.all(parsers.map(parser => parser.checkRedirect()));

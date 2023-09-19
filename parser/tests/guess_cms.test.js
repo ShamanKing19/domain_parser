@@ -17,15 +17,16 @@ for(const cms in cmsHeadersMap) {
     const urlList = cmsHeadersMap[cms];
     for(const url of urlList) {
         test(`parser guess ${cms} by headers`, async () => {
-            const parser = new Parser(url);
+            let parser = new Parser(url);
+            await parser.init();
 
-            let response = await parser.makeHttpRequest(parser.getDomain());
-            if(!response) {
-                response = await parser.makeHttpsRequest(parser.getDomain());
+            if(!parser.client.isAvailable()) {
+                parser = new Parser(url);
+                await parser.init();
+                await parser.checkRedirect();
             }
 
-            const headers = parser.getHeaders(response);
-
+            const headers = parser.client.getHeaders();
             expect(parser.guessCmsByHeaders(headers)).toBe(cms);
         }, 10000);
     }
@@ -61,15 +62,9 @@ for(const cms in cmsMap) {
     for(const url of urlList) {
         test(`parser guess ${cms}`, async () => {
             const parser = new Parser(url);
+            await parser.init();
 
-            let response = await parser.makeHttpRequest(parser.getDomain());
-            if(!response) {
-                response = await parser.makeHttpsRequest(parser.getDomain());
-            }
-
-            const data = parser.getResponseData(response);
-            const html = parser.getHtml(data);
-
+            const html = parser.getHtml();
             expect(parser.guessCms(html)).toBe(cms);
         }, 10000);
     }

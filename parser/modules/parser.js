@@ -1,7 +1,7 @@
 const {AxiosResponse} = require('axios');
 const { parse } = require('node-html-parser');
 const Functions = require('./functions');
-const Client = require('./request');
+const Client = require('./client');
 const Company = require('./company_parser');
 
 class Parser
@@ -13,7 +13,6 @@ class Parser
     constructor(url, id = 0) {
         this.url = url;
         this.id = id;
-        this.client = new Client();
         this.functions = new Functions();
         this.cmsBitrix = 'bitrix';
         this.emailBlackList = ['.jpg', 'jpeg', '.png', '.css', '.js', 'beget.com', 'timeweb.ru', 'email@email.ru'];
@@ -25,7 +24,17 @@ class Parser
      * @returns {string}
      */
     getUrl() {
-        return this.url;
+        let url = this.url;
+        if(!/https?:\/\//.test(url)) {
+            url = 'https://' + url;
+        }
+
+        const urlLength = url.length;
+        if(url[urlLength - 1] === '/') {
+            url = url.substring(0, urlLength - 1);
+        }
+
+        return url;
     }
 
     /**
@@ -58,7 +67,7 @@ class Parser
      * @return {boolean}
      */
     hasResponse() {
-        return !!this.response && this.status >= 200 && this.status < 400;
+        return this.client.isAvailable();
     }
 
     /**
@@ -66,12 +75,13 @@ class Parser
      *
      * @return {Promise<Parser>}
      */
-    async checkStatus() {
+    async init() {
         const domain = this.getDomain();
-        this.response = await this.makeHttpsRequest(domain);
-        this.status = this.getStatusCode(this.response);
-        this.realUrl = this.getRealUrl(this.response);
-        this.hasSsl = this.checkSsl(this.response);
+        this.client = await this.makeHttpsRequest(domain);
+        this.status = this.client.getStatus();
+        this.realUrl = this.client.getRealUrl();
+        this.hasSsl = this.client.checkSsl();
+        this.hasWwwRedirect = this.client.checkWwwRedirect();
 
         return this;
     }
@@ -83,10 +93,11 @@ class Parser
      */
     async checkRedirect() {
         const domain = this.getDomain();
-        const response = await this.makeHttpRequest(domain);
-        if(response) {
-            this.hasHttpsRedirect = this.checkHttpsRedirect(response)
-            this.response = this.response ?? response;
+        const client = await this.makeHttpRequest(domain);
+        this.hasHttpsRedirect = client.checkHttpsRedirect()
+
+        if(!this.client.isAvailable()) {
+            this.client = client;
         }
 
         return this;
@@ -98,13 +109,8 @@ class Parser
      * @return {Parser}
      */
     parse() {
-        const responseBody = this.getResponseData(this.response);
-        if(!responseBody || typeof responseBody !== 'string' || responseBody.trim() === '') {
-            return this;
-        }
-
-        const headers = this.getHeaders(this.response);
-        const html = this.getHtml(responseBody)
+        const headers = this.client.getHeaders();
+        const html = this.getHtml();
 
         this.title = this.getTitle(html);
         this.description = this.getDescription(html);
@@ -114,6 +120,8 @@ class Parser
         if(this.cms === '') {
             this.cms = this.guessCms(html);
         }
+
+        const responseBody = this.client.getBody();
 
         this.emailList = this.findEmails(responseBody); // Вот это говно работает 30 сек на 200 сайтах
         // this.emailList = this.findEmailsSimple(responseBody);
@@ -184,71 +192,27 @@ class Parser
      * Запрос по протоколу HTTP
      *
      * @param domain Домен
-     * @returns {AxiosResponse|false}
-     */
+     * @returns {Client}
+     **/
     async makeHttpRequest(domain)
     {
-        return this.client.get('http://' + domain);
+        const client = new Client('http://' + domain);
+        await client.get();
+
+        return client;
     }
 
     /**
      * Запрос по протоколу HTTPS
      *
      * @param domain Домен
-     * @returns {AxiosResponse|false}
+     * @returns {Client}
      */
     async makeHttpsRequest(domain) {
-        return this.client.get('https://' + domain);
-    }
+        const client = new Client('https://' + domain);
+        await client.get();
 
-    /**
-     * Проверка: есть ли у сайта SSL сертификат
-     *
-     * @param {AxiosResponse} response
-     * @returns {boolean}
-     */
-    checkSsl(response) {
-        const responseUrl = response.request ? response.request.res.responseUrl : this.url;
-
-        return responseUrl.includes('https://');
-    }
-
-    /**
-     * Проверка: есть ли у сайта редирект на https
-     *
-     * @param {AxiosResponse} response
-     * @returns {boolean}
-     */
-    checkHttpsRedirect(response) {
-        const requestUrl = response.config.url;
-        if(requestUrl.includes('https://')) {
-            return false;
-        }
-
-        const responseUrl = this.getRealUrl(response)
-
-        return responseUrl.includes('https://');
-    }
-
-    /**
-     * Получение http-кода ответа
-     *
-     * @param {AxiosResponse} response
-     * @returns {number}
-     */
-    getStatusCode(response) {
-        return response.status
-    }
-
-    /**
-     * Получение настоящей ссылки (после всех редирект ов)
-     *
-     * @param {AxiosResponse} response
-     * @returns {string}
-     */
-    getRealUrl(response) {
-        const res = response.request ? response.request.res : {};
-        return res ? res.responseUrl ?? '' : '';
+        return client;
     }
 
     /**
@@ -260,12 +224,14 @@ class Parser
         const catalogUriList = ['/catalog', '/products', '/katalog', '/shop'];
         const requestList = [];
         for(const uri of catalogUriList) {
-            requestList.push(this.makeHttpRequest(this.getDomain() + uri));
+            const client = new Client(this.getUrl() + uri);
+            requestList.push(client.head());
         }
 
-        const resultList = await Promise.all(requestList);
-        for(const result of resultList) {
-            if(result && result.status >= 200 && result.status < 400) {
+        const clientList = await Promise.all(requestList);
+        for(const client of clientList) {
+            const status = client.getStatus();
+            if(status >= 200 && status < 400) {
                 return true;
             }
         }
@@ -282,12 +248,14 @@ class Parser
         const catalogUriList = ['/cart', '/basket', '/personal/basket', '/personal/cart', '/korzina'];
         const requestList = [];
         for(const uri of catalogUriList) {
-            requestList.push(this.makeHttpRequest(this.getDomain() + uri));
+            const client = new Client(this.getUrl() + uri);
+            requestList.push(client.head());
         }
 
         const resultList = await Promise.all(requestList);
-        for(const result of resultList) {
-            if(result && result.status >= 200 && result.status < 400) {
+        for(const client of resultList) {
+            const status = client.getStatus();
+            if(status >= 200 && status < 400) {
                 return true;
             }
         }
@@ -296,34 +264,12 @@ class Parser
     }
 
     /**
-     * Получение тела ответа
-     *
-     * @param {AxiosResponse} response
-     * @return {object}
-     */
-    getHeaders(response) {
-        return response.headers ?? {};
-    }
-
-    /**
-     * Получение тела ответа
-     *
-     * @param {AxiosResponse} response
-     * @return {string}
-     */
-    getResponseData(response) {
-        const body = response ? response.data : '';
-        return body ? body ?? '' : '';
-    }
-
-    /**
      * Получение html из ответа
      *
-     * @param {string} text Document text
      * @returns {HTMLElement}
      */
-    getHtml(text) {
-        return parse(text ?? '');
+    getHtml() {
+        return parse(this.client.getBody() ?? '');
     }
 
     /**
