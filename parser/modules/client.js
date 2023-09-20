@@ -166,6 +166,7 @@ class Client
             'EPROTO': 526,
             'EHOSTUNREACH': 0,
             'HPE_INVALID_HEADER_TOKEN': 0,
+            'ENETUNREACH': 0,
         };
 
         if(e.code) {
