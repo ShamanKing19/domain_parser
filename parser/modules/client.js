@@ -165,6 +165,7 @@ class Client
             'Z_DATA_ERROR': 507,
             'EPROTO': 526,
             'EHOSTUNREACH': 0,
+            'HPE_INVALID_HEADER_TOKEN': 0,
         };
 
         if(e.code) {
