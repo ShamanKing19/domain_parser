@@ -3,6 +3,10 @@
 namespace App\Orchid\Screens;
 
 use App\Models\Domain;
+use App\Orchid\Layouts\Company\CompanyFinancesLayout;
+use App\Orchid\Layouts\Company\CompanyLayout;
+use App\Orchid\Layouts\Domain\DomainContactsLayout;
+use App\Orchid\Layouts\Domain\DomainLayout;
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Screen;
@@ -29,28 +33,27 @@ class DomainScreen extends Screen
 
             // TODO: Запускать парсер и обновлять страницу
             Button::make('Обновить данные')
-                ->icon('')
+                ->icon('bs.arrow-through-heart')
                 ->method('update'),
 
-            // Implement
-            Button::make('Удалить')
-                ->icon('trash')
-                ->method('remove')
-                ->confirm('Запись удалится из базы данных'),
-
-            // Implement
-            Button::make('Сохранить')
-                ->icon('check')
-                ->method('save'),
+            // TODO: Implement
+//            Button::make('Удалить')
+//                ->icon('trash')
+//                ->method('remove')
+//                ->confirm('Запись удалится из базы данных'),
         ];
     }
 
     public function layout(): iterable
     {
         return [
-            Layout::columns([
-                new \App\Orchid\Layouts\DomainLayout()
-                // TODO: Сделать layout для отображения инфы о компании
+            Layout::tabs([
+                'Общая информация' => new DomainLayout(),
+                'Контакты' => new DomainContactsLayout(),
+                'Информация о компании' => [
+                    new CompanyLayout(),
+                    new CompanyFinancesLayout()
+                ],
             ])
         ];
     }

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Orchid\Layouts;
+namespace App\Orchid\Layouts\Domain;
 
 use App\Models\Domain;
 use Orchid\Screen\Fields\Input;

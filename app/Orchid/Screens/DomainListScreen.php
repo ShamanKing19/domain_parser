@@ -34,7 +34,7 @@ class DomainListScreen extends Screen
     public function layout(): iterable
     {
         return [
-            \App\Orchid\Layouts\DomainListLayout::class
+            \App\Orchid\Layouts\Domain\DomainListLayout::class
         ];
     }
 }

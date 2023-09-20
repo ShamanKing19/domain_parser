@@ -1,20 +1,17 @@
 <?php
 
-namespace App\Orchid\Layouts;
+namespace App\Orchid\Layouts\Domain;
 
-use App\Models\Domain;
-use Orchid\Screen\Contracts\Fieldable;
 use Orchid\Screen\Fields\Label;
 use Orchid\Screen\Layouts\Rows;
 
 class DomainLayout extends Rows
 {
+//    protected $title = 'Основная информация';
+
     protected function fields(): iterable
     {
-        /** @var Domain $domain */
-        $domain = $this->query->get('domain');
-
-        $fields = [
+        return [
             'id' => Label::make('domain.id')
                 ->horizontal()
                 ->title('id'),
@@ -67,8 +64,5 @@ class DomainLayout extends Rows
                 ->horizontal()
                 ->title('Последнее обновление'),
         ];
-
-
-        return $fields;
     }
 }
