@@ -33,7 +33,7 @@ class App
             }
 
             // 1. Проверка статусов
-            parsers = await Promise.all(parsers.map(parser => parser.init())); // TODO: Ломается тут на 511-й странице с порцией 100
+            parsers = await Promise.all(parsers.map(parser => parser.init()));
             parsers = parsers.filter(parser => parser.hasResponse());
             // console.log('1 -', this.timeSpent(start), `- (${parsers.length}/${domainList.length})`, '- status');
 
@@ -72,6 +72,8 @@ class App
 
             currentPage++;
             domainList = await nextPageDomainsList;
+            parsers = null;
+            parsedData = null;
         }
     }
 

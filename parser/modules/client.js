@@ -157,13 +157,14 @@ class Client
         const errorsStatusMap = {
             'ERR_NON_2XX_3XX_RESPONSE': 403,
             'ECONNREFUSED': 404,
+            'ECONNRESET': 404,
             'ENOTFOUND': 404,
             'ETIMEDOUT': 408,
             'EAI_AGAIN': 408,
             'Z_BUF_ERROR': 507,
             'Z_DATA_ERROR': 507,
             'EPROTO': 526,
-            'EHOSTUNREACH': 0
+            'EHOSTUNREACH': 0,
         };
 
         if(e.code) {
@@ -194,6 +195,9 @@ class Client
         return {
             timeout: {
                 request: this.timeout,
+            },
+            retry: {
+                limit: 0,
             },
             https: {
                 rejectUnauthorized: false
