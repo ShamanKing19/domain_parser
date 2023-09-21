@@ -44,4 +44,24 @@ class DomainRepository
     {
         return $count === 0 || $count < 0 ? \App\Models\Domain::getModel()->getPerPage() : $count;
     }
+
+    /**
+     * Получение всех существующих CMS
+     *
+     * @return array
+     */
+    public function getCmsList() : array
+    {
+        return \App\Models\Domain::select('cms')->groupBy('cms')->pluck('cms')->filter()->toArray();
+    }
+
+    /**
+     * Получение всех существующих статусов ответа
+     *
+     * @return array
+     */
+    public function getStatusList() : array
+    {
+        return \App\Models\Domain::select('status')->groupBy('status')->pluck('status')->filter()->toArray();
+    }
 }

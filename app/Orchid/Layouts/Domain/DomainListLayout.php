@@ -3,6 +3,7 @@
 namespace App\Orchid\Layouts\Domain;
 
 use App\Models\Domain;
+use App\Repositories\DomainRepository;
 use Orchid\Screen\Fields\Input;
 use Orchid\Screen\Layouts\Table;
 use Orchid\Screen\TD;
@@ -10,6 +11,22 @@ use Orchid\Screen\TD;
 class DomainListLayout extends Table
 {
     protected $target = 'domains';
+    private array $cmsList;
+    private mixed $statusList;
+
+    public function __construct(DomainRepository $repository)
+    {
+        $cmsList = $repository->getCmsList();
+        foreach($cmsList as $cms) {
+            $this->cmsList[$cms] = $cms;
+        }
+
+        $statusList = $repository->getStatusList();
+        foreach($statusList as $status) {
+            $this->statusList[$status] = $status;
+        }
+    }
+
 
     protected function columns() : iterable
     {
@@ -31,10 +48,10 @@ class DomainListLayout extends Table
                     return isset($domain['real_domain']) ? "<a href='$domain->real_domain' target='_blank'>$domain->real_domain</a>" : '';
                 }),
 
-            TD::make('status')->sort(),
+            TD::make('status', 'Статус')->filter(TD::FILTER_SELECT, $this->statusList)->sort(),
 
             TD::make('cms', 'CMS')
-                ->filter(Input::make())
+                ->filter(TD::FILTER_SELECT, $this->cmsList)
                 ->sort(),
 
             TD::make('title', 'Заголовок')
