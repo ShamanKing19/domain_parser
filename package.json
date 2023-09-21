@@ -9,7 +9,7 @@
         "prod": "npm run production",
         "production": "mix --production",
         "test": "jest",
-        "parse": "node parser.js"
+        "parser": "pm2 start parser.js --node-args=\"--expose-gc\""
     },
     "devDependencies": {
         "axios": "^0.21.4",

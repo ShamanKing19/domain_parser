@@ -74,6 +74,11 @@ class App
             domainList = await nextPageDomainsList;
             parsers = null;
             parsedData = null;
+
+            // need to run with --expose-gc flag
+            if(global.gc) {
+                global.gc();
+            }
         }
     }
 
