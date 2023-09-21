@@ -2,6 +2,7 @@
 
 namespace App\Orchid\Screens;
 
+use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Screen;
 
 class DomainListScreen extends Screen
@@ -12,7 +13,7 @@ class DomainListScreen extends Screen
         // TODO: Переделать
         $domains->map(function($domain) {
             $emails = $domain->emails()->get('email')->implode('email', ', ');
-            $domain['shit'] = $emails;
+            $domain['emails_string'] = $emails;
         });
 
         return [
@@ -28,7 +29,19 @@ class DomainListScreen extends Screen
     // TODO: Сделать кнопку "Спарсить все на странице"
     public function commandBar(): iterable
     {
-        return [];
+        $request = request();
+        $clearFiltersUrl = $request->fullUrlWithQuery(['filter' => null]);
+        $clearSortUrl = $request->fullUrlWithQuery(['sort' => null]);
+
+        return [
+            Link::make('Сбросить фильтры')
+                ->href($clearFiltersUrl)
+                ->icon('bs.arrow-clockwise'),
+
+            Link::make('Сбросить сортировку')
+                ->href($clearSortUrl)
+                ->icon('bs.arrow-clockwises'),
+        ];
     }
 
     public function layout(): iterable

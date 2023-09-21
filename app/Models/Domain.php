@@ -22,14 +22,31 @@ class Domain extends Model
     protected $perPage = 500;
 
     protected $allowedFilters = [
+        'id' => Where::class,
+        'domain' => Like::class,
+        'real_domain' => Like::class,
+        'status' => Where::class,
         'cms' => Like::class,
+        'title' => Like::class,
+        'description' => Like::class,
+        'keywords' => Like::class,
+        'has_ssl' => Where::class,
+        'has_https_redirect' => Where::class,
+        'has_catalog' => Where::class,
+        'has_basket' => Where::class
     ];
 
     /**
      * @var array
      */
     protected $allowedSorts = [
+        'id',
+        'status',
         'cms',
+        'has_ssl',
+        'has_https_redirect',
+        'has_catalog',
+        'has_basket'
     ];
 
     protected $fillable = [

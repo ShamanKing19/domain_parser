@@ -28,12 +28,12 @@ class DomainScreen extends Screen
         return [
             Link::make('Назад')
                 ->route('platform.domains.list')
-                ->icon('arrow-left')
+                ->icon('bs.arrow-bar-left')
                 ->class('btn btn-link mr-10'),
 
             // TODO: Запускать парсер и обновлять страницу
             Button::make('Обновить данные')
-                ->icon('bs.arrow-through-heart')
+                ->icon('bs.arrow-clockwise')
                 ->method('update'),
 
             // TODO: Implement
