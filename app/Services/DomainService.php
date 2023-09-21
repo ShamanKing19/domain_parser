@@ -138,24 +138,37 @@ class DomainService
      */
     public function attachCompanies(Domain $domain, array $companyList) : void
     {
+        $newCompanyIdList = [];
         foreach($companyList as $companyFields) {
             $inn = $companyFields['inn'];
-            $companyRow = Company::firstOrCreate(['inn' => $inn]);
+            $companyRow = $this->getCompany($inn);
             if($companyRow->wasRecentlyCreated) {
-                $newCompanyIdList = [];
-            } else {
-                $companyFields['updated_at'] = Date::now();
-                $companyRow->update($companyFields);
+                $newCompanyIdList[] = $companyRow->id;
             }
+
+            $companyFields['updated_at'] = Date::now();
+            $companyRow->update($companyFields);
 
             if(!empty($companyFields['finances'])) {
                 $this->attachFinancesToCompany($companyRow, $companyFields['finances']);
             }
         }
 
-        if(isset($newCompanyIdList)) {
-            $domain->companies()->attach($newCompanyIdList);
+        if($newCompanyIdList) {
+            $domain->companies()->syncWithoutDetaching($newCompanyIdList);
         }
+    }
+
+    /**
+     * Создание или получение уже существующей компании
+     *
+     * @param string $inn
+     *
+     * @return Company
+     */
+    private function getCompany(string $inn) : Company
+    {
+        return Company::firstOrCreate(['inn' => $inn]);
     }
 
     /**
