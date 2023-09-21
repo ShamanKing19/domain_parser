@@ -17,7 +17,7 @@ class DomainListScreen extends Screen
         });
 
         return [
-            'domains' => $domains,
+            'domains' => $domains
         ];
     }
 

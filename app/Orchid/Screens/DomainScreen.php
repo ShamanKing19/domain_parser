@@ -7,6 +7,7 @@ use App\Orchid\Layouts\Company\CompanyFinancesLayout;
 use App\Orchid\Layouts\Company\CompanyLayout;
 use App\Orchid\Layouts\Domain\DomainContactsLayout;
 use App\Orchid\Layouts\Domain\DomainLayout;
+use Illuminate\Support\Collection;
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Screen;
@@ -14,9 +15,15 @@ use Orchid\Support\Facades\Layout;
 
 class DomainScreen extends Screen
 {
+    private mixed $name;
+
+    private Collection $companies;
+
+
     public function query(Domain $domain): iterable
     {
         $this->name = $domain->domain;
+        $this->companies = $domain->companies()->with('financeYears')->get();
 
         return [
             'domain' => $domain
@@ -46,15 +53,24 @@ class DomainScreen extends Screen
 
     public function layout(): iterable
     {
+        $tabs = [
+            'Общая информация' => new DomainLayout(),
+            'Контакты' => new DomainContactsLayout(),
+        ];
+
+        if($this->companies->isNotEmpty()) {
+            foreach($this->companies as $company) {
+                $tab = [new CompanyLayout($company)];
+                if($company->financeYears()->exists()) {
+                    $tab[] = new CompanyFinancesLayout($company);
+                }
+
+                $tabs['ИНН: ' . $company->inn] = $tab;
+            }
+        }
+
         return [
-            Layout::tabs([
-                'Общая информация' => new DomainLayout(),
-                'Контакты' => new DomainContactsLayout(),
-                'Информация о компании' => [
-                    new CompanyLayout(),
-                    new CompanyFinancesLayout()
-                ],
-            ])
+            Layout::tabs($tabs)
         ];
     }
 }

@@ -2,18 +2,20 @@
 
 namespace App\Orchid\Layouts\Company;
 
-use App\Models\Domain;
-use Orchid\Screen\Field;
-use Orchid\Screen\Layouts\Rows;
+use App\Models\Company;
+use Orchid\Screen\Layouts\Table;
 
-class CompanyFinancesLayout extends Rows
+class CompanyFinancesLayout extends Table
 {
-    protected function fields(): iterable
+    private Company $company;
+
+    public function __construct(Company $company)
     {
-        /** @var Domain $domain */
-        $domain = $this->query->get('domain');
-        $companyList = $domain->companies->load('financeYears');
-        // TODO: Доделать
+        $this->company = $company;
+    }
+
+    protected function columns(): iterable
+    {
         return [];
     }
 }
