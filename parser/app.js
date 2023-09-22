@@ -66,10 +66,6 @@ class App
                     await this.logger.logJson('broken_api_data/' + currentPage, parsedData);
                     await this.logger.error(JSON.stringify(response.data), true);
                 }
-            } else {
-                for(const parser of parsers) {
-                    await this.logger.logJson('broken_response', parser.client.response);
-                }
             }
 
             await this.logger.log(`${this.timeSpent(start)} - (${parsers.length}/${domainList.length}) - Обработано ${currentPage} из ${lastPage} страниц (${currentPage * this.itemsPerPage}/${domainsCount})`, true);

@@ -1,4 +1,5 @@
 const got = require('got');
+const Logger = require('./logger');
 
 /**
  * TODO: Покрыть всё тестами
@@ -10,6 +11,7 @@ class Client
         this.timeout = timeout;
         this.data = data;
         this.response = {};
+        this.logger = new Logger();
     }
 
     isAvailable() {
@@ -172,6 +174,12 @@ class Client
         if(e.code) {
             response.statusCode = errorsStatusMap[e.code];
         }
+
+        let errorMessage = e.name ?? e.code;
+        if(response.statusCode) {
+            errorMessage += ' ' + response.statusCode;
+        }
+        this.logger.log(errorMessage, false, './../logs/response_errors.txt');
 
         if(e.name) {
             response.statusText = e.name;
