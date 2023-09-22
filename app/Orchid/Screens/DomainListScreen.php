@@ -40,7 +40,7 @@ class DomainListScreen extends Screen
 
             Link::make('Сбросить сортировку')
                 ->href($clearSortUrl)
-                ->icon('bs.arrow-clockwises'),
+                ->icon('bs.arrow-clockwise'),
         ];
     }
 

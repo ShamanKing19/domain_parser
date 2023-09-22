@@ -22,12 +22,29 @@ class DomainScreen extends Screen
 
     public function query(Domain $domain): iterable
     {
+        $this->domain = $domain;
         $this->name = $domain->domain;
         $this->companies = $domain->companies()->with('financeYears')->get();
 
-        return [
+        $result = [
             'domain' => $domain
         ];
+
+        foreach($this->companies as $company) {
+            $result['company_' . $company->inn] = $company->financeYears()->paginate();
+        }
+
+        return $result;
+    }
+
+    public function name(): ?string
+    {
+        return $this->domain->domain;
+    }
+
+    public function description() : ?string
+    {
+       return $this->domain->title;
     }
 
     public function commandBar(): iterable
