@@ -90,10 +90,16 @@ class DomainListLayout extends Table
                 ->filter(Input::make())
                 ->sort(),
 
+            TD::make('last_year_income', 'Выручка')
+                ->render(function(Domain $domain) {
+                    return $domain->last_year_income;
+                })
+                ->sort(),
+
             TD::make('emails_string', 'Почты')
                 ->render(function(Domain $domain) {
                     return $domain->emails_string ? \App\Helpers::truncate($domain->emails_string, 60, '...') : '';
-                }),
+                })
         ];
     }
 }

@@ -53,4 +53,38 @@ class Company extends Model
     {
         return $this->belongsToMany(Domain::class, 'domains_inns', 'inn_id', 'domain_id');
     }
+
+    /**
+     * Последний год финансовой отчётности
+     *
+     * @return FinanceYear|false
+     */
+    public function getLastFinanceYear() : FinanceYear|null
+    {
+        return $this->financeYears()->where('year', '=', $this->last_finance_year)->first();
+    }
+
+    /**
+     * Выручка последнего года финансовой отчётности
+     *
+     * @return float
+     */
+    public function getLastFinanceYearIncomeAttribute() : float
+    {
+        $year = $this->getLastFinanceYear();
+
+        return $year ? $year->income : 0.0;
+    }
+
+    /**
+     * Чистая прибыль последнего года финансовой отчётности
+     *
+     * @return float
+     */
+    public function getLastFinanceYearProfitAttribute() : float
+    {
+        $year = $this->getLastFinanceYear();
+
+        return $year ? $year->profit : 0.0;
+    }
 }

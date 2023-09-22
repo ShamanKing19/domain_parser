@@ -34,11 +34,5 @@ class Helpers
     public static function truncate(string $value, int $length = 255, $end = '') : string
     {
         return \Illuminate\Support\Str::limit($value, $length, $end);
-//        $value = trim($value);
-//        if(mb_strlen($value) <= $length) {
-//            return $value;
-//        }
-
-//        return mb_substr($value, 0, $length) . $end;
     }
 }

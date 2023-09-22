@@ -83,4 +83,26 @@ class Domain extends Model
     {
         return $this->belongsToMany(Company::class, 'domains_inns', 'domain_id', 'inn_id');
     }
+
+    /**
+     * Получение компании с наибольшей выручкой (зачастую компания одна, поэтому так)
+     *
+     * @return Company|null
+     */
+    public function getCompanyAttribute() : Company|null
+    {
+        return $this->companies()->get()->sortBy(function($value) {
+            return $value->last_finance_year_income;
+        }, SORT_REGULAR, true)->first();
+    }
+
+    /**
+     * Получение выручки с последнего года финансовой отчётности
+     *
+     * @return float|mixed
+     */
+    public function getLastYearIncomeAttribute()
+    {
+        return $this->company->last_finance_year_income ?? 0.0;
+    }
 }
