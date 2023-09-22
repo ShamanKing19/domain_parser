@@ -30,18 +30,26 @@ class DomainListScreen extends Screen
     public function commandBar(): iterable
     {
         $request = request();
-        $clearFiltersUrl = $request->fullUrlWithQuery(['filter' => null]);
-        $clearSortUrl = $request->fullUrlWithQuery(['sort' => null]);
 
-        return [
-            Link::make('Сбросить фильтры')
+        $filtersApplied = !empty($request->get('filter'));
+        $sortApplied = !empty($request->get('sort'));
+
+        $actions = [];
+        if($filtersApplied) {
+            $clearFiltersUrl = $request->fullUrlWithQuery(['filter' => null]);
+            $actions[] = Link::make('Сбросить фильтры')
                 ->href($clearFiltersUrl)
-                ->icon('bs.arrow-clockwise'),
+                ->icon('bs.arrow-clockwise');
+        }
 
-            Link::make('Сбросить сортировку')
+        if($sortApplied) {
+            $clearSortUrl = $request->fullUrlWithQuery(['sort' => null]);
+            $actions[] = Link::make('Сбросить сортировку')
                 ->href($clearSortUrl)
-                ->icon('bs.arrow-clockwise'),
-        ];
+                ->icon('bs.arrow-clockwise');
+        }
+
+        return $actions;
     }
 
     public function layout(): iterable

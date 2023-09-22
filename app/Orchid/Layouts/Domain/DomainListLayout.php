@@ -55,13 +55,22 @@ class DomainListLayout extends Table
                 ->sort(),
 
             TD::make('title', 'Заголовок')
+                ->render(function(Domain $domain) {
+                    return $domain->title ? \App\Helpers::truncate($domain->title, 60, '...') : '';
+                })
                 ->filter(Input::make()),
 
             TD::make('description', 'Описание')
+                ->render(function(Domain $domain) {
+                    return $domain->description ? \App\Helpers::truncate($domain->description, 60, '...') : '';
+                })
                 ->filter(Input::make())
                 ->defaultHidden(),
 
             TD::make('keywords', 'Ключевые слова')
+                ->render(function(Domain $domain) {
+                    return $domain->keywords ? \App\Helpers::truncate($domain->keywords, 60, '...') : '';
+                })
                 ->filter(Input::make())
                 ->defaultHidden(),
 
@@ -81,7 +90,10 @@ class DomainListLayout extends Table
                 ->filter(Input::make())
                 ->sort(),
 
-            TD::make('emails_string', 'Почты'),
+            TD::make('emails_string', 'Почты')
+                ->render(function(Domain $domain) {
+                    return $domain->emails_string ? \App\Helpers::truncate($domain->emails_string, 60, '...') : '';
+                }),
         ];
     }
 }
