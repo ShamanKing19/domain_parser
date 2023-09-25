@@ -42,12 +42,14 @@ class DomainListLayout extends Table
                 ->render(function(Domain $domain) {
                     return "<a href='/domains/$domain->id'>$domain->domain</a>";
                 })
+                ->filter(Input::make())
                 ->sort(),
 
             TD::make('real_domain', 'Конечная ссылка')
                 ->render(function (Domain $domain) {
                     return isset($domain['real_domain']) ? "<a href='$domain->real_domain' target='_blank'>$domain->real_domain</a>" : '';
                 })
+                ->filter(Input::make())
                 ->sort(),
 
             TD::make('status', 'Статус')->filter(TD::FILTER_SELECT, $this->statusList)->sort(),
