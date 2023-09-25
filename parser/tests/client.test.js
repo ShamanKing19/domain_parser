@@ -33,7 +33,6 @@ test('get 201 response via POST method', async () => {
 test('get 404 response vie GET method', async () => {
     const client = new Client(unipumpUrl + '/ohuuiho232ohi1h');
     await client.get();
-    console.log(client.getResponse());
 
     expect(client.getStatus()).toBe(404);
     expect(client.getStatusText()).toBe('Not Found');

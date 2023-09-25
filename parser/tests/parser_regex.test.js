@@ -26,6 +26,8 @@ const testText = `
        fnac_256@2x.png,
        "kfu_vernadskogo@1x.png",
 
+       name-_09@mail09-.ru
+
         <section id="requisites" class="requisites">
             <div class="requisites__wrapper">
                 <div class="requisites__header">

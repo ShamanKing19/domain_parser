@@ -49,7 +49,7 @@ const cmsMap = {
     'drupal': ['https://24abs.ru/', 'https://74em.ru/', 'https://www.6-10kv.ru/'],
     'okay': ['https://www.4lapy24.ru/', 'https://agaxx.ru/'],
     'phpshop': ['https://42na.ru/', 'https://64-shop.ru/', 'http://a-ofis.ru/', 'http://accubat.ru/'],
-    'amiro': ['https://2580999.ru/', 'http://allagroup.ru/', 'http://alpclubk2.ru/'],
+    'amiro': ['https://2580999.ru/', 'http://allagroup.ru/'],
     'netcat': ['https://4shiny.ru/', 'https://9213606.ru/', 'https://abraziv-chel.ru/', 'http://agava-shop.ru/', 'https://alcovrach.ru/'],
     'siteedit': ['http://a-svarka.ru/', 'https://agrcomp-rvd.ru/'],
     'modx': ['https://3kdveri.ru/', 'https://www.9474444.com/', 'https://agromolkom.ru/'],

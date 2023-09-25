@@ -45,7 +45,6 @@ test('check if there is catalog on "Bitrix" website', async () => {
     for(const domain of domainsWithCatalog) {
         const parser = new Parser(domain);
         const hasCatalog = await parser.checkIfHasCatalog();
-        console.log(domain, hasCatalog);
         expect(hasCatalog).toBeTruthy();
     }
 
