@@ -157,6 +157,7 @@ class Client
     handleErrors(e) {
         const response = e.response ?? {};
         const errorsStatusMap = {
+            'ERR_TOO_MANY_REDIRECTS': 310,
             'ERR_NON_2XX_3XX_RESPONSE': 403,
             'ECONNREFUSED': 404,
             'ECONNRESET': 404,
@@ -208,11 +209,13 @@ class Client
             },
             retry: {
                 limit: 0,
+                maxRetryAfter: undefined,
             },
             https: {
                 rejectUnauthorized: false
             },
             headers: {
+                'Connection': 'close',
                 'User-Agent': this.getUserAgent(),
                 'Sec-Ch-Ua-Mobile': '?0',
                 'Sec-Ch-Ua-Platform': "Windows",
