@@ -23,7 +23,7 @@ class CreateCompanyInfoTable extends Migration
             $table->string('boss_name')->nullable();
             $table->string('boss_post')->nullable();
             $table->string('authorized_capital_type')->nullable();
-            $table->unsignedInteger('authorized_capital_amount')->nullable();
+            $table->unsignedBigInteger('authorized_capital_amount')->nullable();
             $table->date('registry_date')->nullable();
             $table->unsignedTinyInteger('registry_category')->nullable();
             $table->unsignedMediumInteger('employees_count')->nullable();
