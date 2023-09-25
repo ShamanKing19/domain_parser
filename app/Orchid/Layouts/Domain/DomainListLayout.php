@@ -11,11 +11,15 @@ use Orchid\Screen\TD;
 class DomainListLayout extends Table
 {
     protected $target = 'domains';
+    private string $path;
     private array $cmsList;
     private mixed $statusList;
 
     public function __construct(DomainRepository $repository)
     {
+        $request = request();
+        $this->path = $request ? $request->path() : '/domains';
+
         $cmsList = $repository->getCmsList();
         foreach($cmsList as $cms) {
             $this->cmsList[$cms] = $cms;
@@ -30,17 +34,19 @@ class DomainListLayout extends Table
 
     protected function columns() : iterable
     {
+        $path = $this->path;
+
         return [
             TD::make('id')
-                ->render(function(Domain $domain) {
-                    return "<a href='/domains/$domain->id'>$domain->id</a>";
+                ->render(function(Domain $domain) use($path) {
+                    return "<a href='$path/$domain->id'>$domain->id</a>";
                 })
                 ->filter(Input::make())
                 ->sort(),
 
             TD::make('domain', 'Домен')
-                ->render(function(Domain $domain) {
-                    return "<a href='/domains/$domain->id'>$domain->domain</a>";
+                ->render(function(Domain $domain) use($path) {
+                    return "<a href='$path/$domain->id'>$domain->domain</a>";
                 })
                 ->filter(Input::make())
                 ->sort(),
