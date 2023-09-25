@@ -15,7 +15,7 @@ class Parser
         this.id = id;
         this.functions = new Functions();
         this.cmsBitrix = 'bitrix';
-        this.emailBlackList = ['.jpg', 'jpeg', '.png', '.css', '.js', 'beget.com', 'timeweb.ru', 'email@email.ru'];
+        this.emailBlackList = ['.jpg', 'jpeg', '.png', '.webp', '.css', '.js', 'beget.com', 'timeweb.ru', 'email@email.ru'];
     }
 
     /**
@@ -512,7 +512,7 @@ class Parser
      * @returns {string[]}
      */
     findEmails(text) {
-        const regex = /[\w][\w\.\-]*[\w]@[\w]+\.[a-zA-Z]+/gm;
+        const regex = /[\w][\w\.\-]*[\w]@[a-zA-Z0-9]+\.[a-zA-Z]+/gm;
         let match = text.match(regex) ?? [];
         match = [...new Set(match)];
 

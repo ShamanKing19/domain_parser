@@ -390,7 +390,7 @@ class Company
         const fields = this.getLegalEntityFields()['СвУстКап'] ?? {};
         const attributes = fields['@attributes'] ?? {};
 
-        return attributes['СумКап'] ? Number(attributes['СумКап']) : 0;
+        return attributes['СумКап'] ? Math.round(Number(attributes['СумКап'])) : 0;
     }
 
     /**
