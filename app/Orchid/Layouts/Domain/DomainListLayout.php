@@ -41,12 +41,14 @@ class DomainListLayout extends Table
             TD::make('domain', 'Домен')
                 ->render(function(Domain $domain) {
                     return "<a href='/domains/$domain->id'>$domain->domain</a>";
-                }),
+                })
+                ->sort(),
 
             TD::make('real_domain', 'Конечная ссылка')
                 ->render(function (Domain $domain) {
                     return isset($domain['real_domain']) ? "<a href='$domain->real_domain' target='_blank'>$domain->real_domain</a>" : '';
-                }),
+                })
+                ->sort(),
 
             TD::make('status', 'Статус')->filter(TD::FILTER_SELECT, $this->statusList)->sort(),
 
@@ -58,13 +60,15 @@ class DomainListLayout extends Table
                 ->render(function(Domain $domain) {
                     return $domain->title ? \App\Helpers::truncate($domain->title, 60, '...') : '';
                 })
-                ->filter(Input::make()),
+                ->filter(Input::make())
+                ->sort(),
 
             TD::make('description', 'Описание')
                 ->render(function(Domain $domain) {
                     return $domain->description ? \App\Helpers::truncate($domain->description, 60, '...') : '';
                 })
                 ->filter(Input::make())
+                ->sort()
                 ->defaultHidden(),
 
             TD::make('keywords', 'Ключевые слова')
@@ -72,6 +76,7 @@ class DomainListLayout extends Table
                     return $domain->keywords ? \App\Helpers::truncate($domain->keywords, 60, '...') : '';
                 })
                 ->filter(Input::make())
+                ->sort()
                 ->defaultHidden(),
 
             TD::make('has_ssl', 'SSL')

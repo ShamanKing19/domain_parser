@@ -42,8 +42,13 @@ class Domain extends Model
      */
     protected $allowedSorts = [
         'id',
+        'domain',
+        'real_domain',
         'status',
         'cms',
+        'title',
+        'description',
+        'keywords',
         'has_ssl',
         'has_https_redirect',
         'has_catalog',
