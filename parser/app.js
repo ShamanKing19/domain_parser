@@ -12,7 +12,7 @@ class App
         this.logger = new Logger();
         this.function = new Functions();
         this.client = new Client();
-        this.itemsPerPage = 100;
+        this.itemsPerPage = 50;
     }
 
     async run() {
