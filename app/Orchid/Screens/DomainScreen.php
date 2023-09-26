@@ -51,7 +51,7 @@ class DomainScreen extends Screen
 
     public function commandBar(): iterable
     {
-        return [
+        $buttons = [
             Link::make('Назад')
                 ->route('platform.domains.list')
                 ->icon('bs.arrow-bar-left')
@@ -68,6 +68,15 @@ class DomainScreen extends Screen
 //                ->method('remove')
 //                ->confirm('Запись удалится из базы данных'),
         ];
+
+        if($this->domain->real_domain) {
+            $buttons[] = Link::make('Перейти на сайт')
+                ->href($this->domain->real_domain)
+                ->target('_blank')
+                ->icon('bs.box-arrow-up-left');
+        }
+
+        return $buttons;
     }
 
     public function layout(): iterable
