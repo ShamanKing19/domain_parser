@@ -172,6 +172,7 @@ class Parser
         return {
             'id': this.id,
             'status': this.status ?? 0,
+            'domain': this.getDomain(),
             'real_domain': this.realUrl ?? '',
             'has_https_redirect': this.hasHttpsRedirect ?? false,
             'has_ssl': this.hasSsl ?? false,

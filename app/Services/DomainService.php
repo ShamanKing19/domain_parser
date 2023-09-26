@@ -5,10 +5,38 @@ namespace App\Services;
 use App\Models\Company;
 use App\Models\Company\FinanceYear;
 use App\Models\Domain;
+use App\Repositories\DomainRepository;
 use Illuminate\Support\Facades\Date;
 
 class DomainService
 {
+    private DomainRepository $repository;
+
+    public function __construct(DomainRepository $repository)
+    {
+        $this->repository = $repository;
+    }
+
+    /**
+     * Создание или обновление существующей записи
+     *
+     * @param array $fields
+     *
+     * @return Domain|null
+     */
+    public function createOrUpdate(array $fields) : Domain|null
+    {
+        if(!empty($fields['id'])) {
+            return $this->update($fields['id'], $fields);
+        }
+
+        if(empty($fields['domain'])) {
+            return null;
+        }
+
+        $domain = $this->repository->getByDomain($fields['domain']);
+        return $domain ? $this->update($domain->id, $fields) : $this->create($fields);
+    }
 
     /**
      * Создание записи
@@ -64,13 +92,13 @@ class DomainService
      * @param int $id
      * @param array $fields
      *
-     * @return Domain|false
+     * @return Domain|null
      */
     public function update(int $id, array $fields)
     {
         $domain = Domain::find($id);
         if(is_null($domain)) {
-            return false;
+            return null;
         }
 
         $fields['updated_at'] = Date::now();

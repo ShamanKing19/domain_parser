@@ -5,13 +5,8 @@ class Logger
     logsPath = `${this.logsDir}/log.txt`;
     errorsPath = `${this.logsDir}/error.txt`;
 
-    constructor() {
-        if(!this.fs.existsSync(this.logsDir)) {
-            this.fs.mkdirSync(this.logsDir);
-        }
-    }
-
     async log(message, consoleLog = false, filepath = this.logsPath) {
+        this.createLogsDir();
         const now = this.getCurrentTime();
         const formattedMessage = `[${now}]: ${message}\n`;
         if(consoleLog) {
@@ -26,6 +21,7 @@ class Logger
     }
 
     async error(message, consoleLog = false) {
+        this.createLogsDir();
         const now = this.getCurrentTime();
         const formattedMessage = `[${now}]: ${message}\n`;
         if(consoleLog) {
@@ -36,15 +32,24 @@ class Logger
     }
 
     async logJsonAsync(filename, data) {
+        this.createLogsDir();
         this.fs.writeFile(`${this.logsDir}/${filename}.json`, JSON.stringify(data), 'utf-8', () => {});
     }
 
     logJson(filename, data) {
+        this.createLogsDir();
         this.fs.writeFileSync(`${this.logsDir}/${filename}.json`, JSON.stringify(data), 'utf-8');
     }
 
     logHtml(filename, data) {
+        this.createLogsDir();
         this.fs.writeFileSync(`${this.logsDir}/${filename}.html`, data);
+    }
+
+    createLogsDir() {
+        if(!this.fs.existsSync(this.logsDir)) {
+            this.fs.mkdirSync(this.logsDir);
+        }
     }
 
     /**

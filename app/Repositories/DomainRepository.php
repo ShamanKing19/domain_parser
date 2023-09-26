@@ -1,10 +1,33 @@
 <?php
 namespace App\Repositories;
 
+use App\Models\Domain;
 use Illuminate\Support\Collection;
 
 class DomainRepository
 {
+
+    /**
+     * Получение записи по id
+     *
+     * @param int $id
+     *
+     * @return Domain|null
+     */
+    public function getById(int $id) : Domain|null
+    {
+        return Domain::find($id);
+    }
+
+    /**
+     * @param string $domain
+     *
+     * @return Domain|null
+     */
+    public function getByDomain(string $domain) : Domain|null
+    {
+        return Domain::where('domain', '=', $domain)->first();
+    }
 
     /**
      * Получение списка доменов
@@ -16,7 +39,7 @@ class DomainRepository
     public function getDomains(int $count) : Collection
     {
         $itemsPerPage = $this->getItemsPerPage($count);
-        return \App\Models\Domain::paginate($itemsPerPage, ['id', 'domain'])->getCollection();
+        return Domain::paginate($itemsPerPage, ['id', 'domain'])->getCollection();
     }
 
     /**
@@ -30,7 +53,7 @@ class DomainRepository
     public function getDomainsByCms(string $cms, int $count) : Collection
     {
         $itemsPerPage = $this->getItemsPerPage($count);
-        return \App\Models\Domain::where('cms', '=', $cms)->paginate($itemsPerPage)->getCollection();
+        return Domain::where('cms', '=', $cms)->paginate($itemsPerPage)->getCollection();
     }
 
     /**
@@ -42,7 +65,7 @@ class DomainRepository
      */
     private function getItemsPerPage(int $count) : int
     {
-        return $count === 0 || $count < 0 ? \App\Models\Domain::getModel()->getPerPage() : $count;
+        return $count === 0 || $count < 0 ? Domain::getModel()->getPerPage() : $count;
     }
 
     /**
@@ -52,7 +75,7 @@ class DomainRepository
      */
     public function getCmsList() : array
     {
-        return \App\Models\Domain::select('cms')->groupBy('cms')->pluck('cms')->filter()->toArray();
+        return Domain::select('cms')->groupBy('cms')->pluck('cms')->filter()->toArray();
     }
 
     /**
@@ -62,6 +85,6 @@ class DomainRepository
      */
     public function getStatusList() : array
     {
-        return \App\Models\Domain::select('status')->groupBy('status')->pluck('status')->filter()->toArray();
+        return Domain::select('status')->groupBy('status')->pluck('status')->filter()->toArray();
     }
 }

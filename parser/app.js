@@ -15,6 +15,56 @@ class App
         this.itemsPerPage = 50;
     }
 
+    /**
+     * Запуск парсера с учётом параметров
+     *
+     * @param args
+     * @return {Promise<void>}
+     */
+    async runWithParams(args) {
+        const params = this.parseArgs(args);
+        if(params['domain']) {
+            const parser = new Parser(params['domain']);
+            await parser.init();
+            await parser.checkRedirect();
+            await parser.parse();
+            await parser.checkBitrixEcom();
+            await parser.collectCompanyInfo();
+            const response = await this.sendParsedDomain(parser.toObject());
+            console.log(JSON.stringify(response.data)); // Для возврата ответа при вызове из админки через exec()
+        }
+
+    }
+
+    /**
+     * Парсинг параметров
+     *
+     * @param {string[]} args Параметры запуска
+     * @return {object}
+     */
+    parseArgs(args) {
+        const regex = /--(.*[^\s])/g;
+        const paramsObject = {};
+        for(const arg of args) {
+            const params = arg.match(regex);
+            if(!params || params.length === 0) {
+                continue;
+            }
+
+            for(const param of params) {
+                const paramArray = param.split('=');
+                if(paramArray.length !== 2) {
+                    continue;
+                }
+
+                const paramName = paramArray[0].replace('--', '');
+                paramsObject[paramName] = paramArray[1];
+            }
+        }
+
+        return paramsObject;
+    }
+
     async run() {
         let currentPage = 1;
         const lastPage = await this.getLastPageNumber(this.itemsPerPage);
@@ -28,8 +78,7 @@ class App
             let parsedData = [];
             let parsers = [];
             for(const domainItem of domainList) {
-                const parser = new Parser(domainItem['domain'], domainItem['id']);
-                parsers.push(parser);
+                parsers.push(new Parser(domainItem['domain'], domainItem['id']));
             }
 
             // 1. Проверка статусов
@@ -71,14 +120,27 @@ class App
             await this.logger.log(`${this.timeSpent(start)} - (${parsers.length}/${domainList.length}) - Обработано ${currentPage} из ${lastPage} страниц (${currentPage * this.itemsPerPage}/${domainsCount})`, true);
 
             currentPage++;
-            domainList = await nextPageDomainsList;
+            domainList = null;
             parsers = null;
             parsedData = null;
+            domainList = await nextPageDomainsList;
         }
     }
 
     /**
-     * Отправка данных по API
+     * Отправка данных по одному домену
+     *
+     * @param data
+     * @return {Promise<AxiosResponse>}
+     */
+    async sendParsedDomain(data) {
+        return this.client.post(this.apiUrl + '/update', data, {
+            timeout: 0
+        });
+    }
+
+    /**
+     * Отправка данных по нескольким доменам
      *
      * @param data
      * @return {Promise<AxiosResponse>}

@@ -104,7 +104,7 @@ class DomainController extends Controller
     }
 
     /**
-     * Изменение полей домена
+     * Изменение полей домена или его создание
      *
      * @param EditDomainRequest $request
      *
@@ -115,9 +115,10 @@ class DomainController extends Controller
         $fields = $request->validated();
         $fields['updated_at'] = Date::now();
 
-        $domain = $this->service->update($fields['id'], $fields);
-        if(!$domain->wasChanged()) {
-            return \Response::error('Что-то пошло не так при обновлении');
+        $domain = $this->service->createOrUpdate($fields);
+
+        if(!$domain || (!$domain->wasRecentlyCreated && !$domain->wasChanged())) {
+            return \Response::error('Что-то пошло не так...');
         }
 
         return \Response::success('Запись обновлена!', [$domain->getChanges()]);
