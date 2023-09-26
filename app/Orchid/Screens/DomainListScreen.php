@@ -71,7 +71,9 @@ class DomainListScreen extends Screen
         $data = current($this->query()['domains']);
         $domainsString = $data->pluck('domain')->implode(',');
 
-        exec("~/.nvm/versions/node/v16.17.1/bin/node /home/production/web/domainsparse.dev.skillline.ru/public_html/parser.js --domains=\"$domainsString\"", $result, $errorCode);
+        $nodePath = config('parser.node_path');
+        $parserPath = config('parser.parser_path');
+        exec("$nodePath $parserPath --domains=\"$domainsString\"", $result, $errorCode);
         if($errorCode === 0) {
             Alert::success('Данные успешно обновлены!');
             return;

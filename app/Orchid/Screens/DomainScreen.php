@@ -106,7 +106,9 @@ class DomainScreen extends Screen
 
     public function update(Domain $domain)
     {
-        exec('~/.nvm/versions/node/v16.17.1/bin/node /home/production/web/domainsparse.dev.skillline.ru/public_html/parser.js --domain=' . $domain->domain, $result, $errorCode);
+        $nodePath = config('parser.node_path');
+        $parserPath = config('parser.parser_path');
+        exec("$nodePath $parserPath --domain=$domain->domain", $result, $errorCode);
         if($errorCode === 0) {
             Alert::success('Данные успешно обновлены!');
             return;
