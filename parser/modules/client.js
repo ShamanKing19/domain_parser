@@ -162,6 +162,7 @@ class Client
             'ECONNREFUSED': 404,
             'ECONNRESET': 404,
             'ENOTFOUND': 404,
+            'ERR_INVALID_URL': 404,
             'ETIMEDOUT': 408,
             'EAI_AGAIN': 408,
             'Z_BUF_ERROR': 507,
