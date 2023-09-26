@@ -51,24 +51,26 @@ class DomainScreen extends Screen
 
     public function commandBar(): iterable
     {
-        $buttons = [
-            Link::make('Назад')
-                ->route('platform.domains.list')
-                ->icon('bs.arrow-bar-left')
-                ->class('btn btn-link mr-10'),
+        /* Кнопка "Назад" */
+        $previousUrl = url()->previous();
+        $backButton = Link::make('Назад')
+            ->icon('bs.arrow-bar-left')
+            ->class('btn btn-link mr-10');
 
-            // TODO: Запускать парсер и обновлять страницу
-            Button::make('Обновить данные')
+        if($previousUrl && $previousUrl !== url()->current()) {
+            $backButton->href($previousUrl);
+        } else {
+            $backButton->route('platform.domains.list');
+        }
+
+        $buttons = [$backButton];
+
+        /* Принудительный парсинг домена */
+        $buttons[] = Button::make('Обновить данные')
                 ->icon('bs.arrow-clockwise')
-                ->method('update'),
+                ->method('update');
 
-            // TODO: Implement
-//            Button::make('Удалить')
-//                ->icon('trash')
-//                ->method('remove')
-//                ->confirm('Запись удалится из базы данных'),
-        ];
-
+        /* Кнопка с переходом на сайт */
         if($this->domain->real_domain) {
             $buttons[] = Link::make('Перейти на сайт')
                 ->href($this->domain->real_domain)
