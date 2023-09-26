@@ -24,16 +24,20 @@ class App
     async runWithParams(args) {
         const params = this.parseArgs(args);
         if(params['domain']) {
-            const parser = new Parser(params['domain']);
-            await parser.init();
-            await parser.checkRedirect();
-            await parser.parse();
-            await parser.checkBitrixEcom();
-            await parser.collectCompanyInfo();
-            const response = await this.sendParsedDomain(parser.toObject());
+            const parsedDataList = await this.parse([{'domain': params['domain']}]);
+            const parsedData = parsedDataList.shift();
+            const response = await this.sendParsedDomain(parsedData);
             console.log(JSON.stringify(response.data)); // Для возврата ответа при вызове из админки через exec()
+            return;
         }
 
+        if(params['domains']) {
+            const domainList = params['domains'].split(',').map((domain) => {return {'domain': domain}});
+            let parsedData = await this.parse(domainList);
+            parsedData = parsedData.filter(item => !!item);
+            const response = await this.sendParsedData({'domains': parsedData});
+            console.log(JSON.stringify(response.data));
+        }
     }
 
     /**
@@ -75,34 +79,7 @@ class App
             const start = Date.now();
             const nextPage = currentPage === lastPage ? 1 : currentPage + 1;
             const nextPageDomainsList = this.getDomains(nextPage, this.itemsPerPage);
-            let parsedData = [];
-            let parsers = [];
-            for(const domainItem of domainList) {
-                parsers.push(new Parser(domainItem['domain'], domainItem['id']));
-            }
-
-            // 1. Проверка статусов
-            parsers = await Promise.all(parsers.map(parser => parser.init()));
-            parsers = parsers.filter(parser => parser.hasResponse());
-            // console.log('1 -', this.timeSpent(start), `- (${parsers.length}/${domainList.length})`, '- status');
-
-            // 2. Проверка https редиректов
-            parsers = await Promise.all(parsers.map(parser => parser.checkRedirect()));
-            // console.log('2 -', this.timeSpent(start), '- redirect');
-
-            // 3. Сбор информации без запросов
-            parsers = parsers.map(parser => parser.parse());
-            // console.log('3 -', this.timeSpent(start), '- parsing');
-
-            // 4. Проверка битриксовых сайтов на каталог и корзину
-            parsers = await Promise.all(parsers.map(parser => parser.checkBitrixEcom()));
-            // console.log('4 -', this.timeSpent(start), '- bitrix ecom');
-
-            // 5. Поиск информации по ИНН
-            parsers = await Promise.all(parsers.map(parser => parser.collectCompanyInfo()));
-            // console.log('5 -', this.timeSpent(start), '- company info');
-
-            parsedData = parsers.map(parser => parser.toObject());
+            const parsedData = await this.parse(domainList);
 
             if(parsedData.length !== 0) {
                 const response = await this.sendParsedData({'domains': parsedData});
@@ -117,14 +94,47 @@ class App
                 }
             }
 
-            await this.logger.log(`${this.timeSpent(start)} - (${parsers.length}/${domainList.length}) - Обработано ${currentPage} из ${lastPage} страниц (${currentPage * this.itemsPerPage}/${domainsCount})`, true);
+            await this.logger.log(`${this.timeSpent(start)} - (${parsedData.length}/${domainList.length}) - Обработано ${currentPage} из ${lastPage} страниц (${currentPage * this.itemsPerPage}/${domainsCount})`, true);
 
             currentPage++;
-            domainList = null;
-            parsers = null;
-            parsedData = null;
             domainList = await nextPageDomainsList;
         }
+    }
+
+    /**
+     * Парсинг списка доменов
+     *
+     * @param {Object<id:int,domain:string>[]} domainList Список доменов
+     */
+    async parse(domainList)
+    {
+        let parsers = [];
+        for(const domainItem of domainList) {
+            parsers.push(new Parser(domainItem['domain'], domainItem['id'] ?? 0));
+        }
+
+        // 1. Проверка статусов
+        parsers = await Promise.all(parsers.map(parser => parser.init()));
+        parsers = parsers.filter(parser => parser.hasResponse());
+        // console.log('1 -', this.timeSpent(start), `- (${parsers.length}/${domainList.length})`, '- status');
+
+        // 2. Проверка https редиректов
+        parsers = await Promise.all(parsers.map(parser => parser.checkRedirect()));
+        // console.log('2 -', this.timeSpent(start), '- redirect');
+
+        // 3. Сбор информации без запросов
+        parsers = parsers.map(parser => parser.parse());
+        // console.log('3 -', this.timeSpent(start), '- parsing');
+
+        // 4. Проверка битриксовых сайтов на каталог и корзину
+        parsers = await Promise.all(parsers.map(parser => parser.checkBitrixEcom()));
+        // console.log('4 -', this.timeSpent(start), '- bitrix ecom');
+
+        // 5. Поиск информации по ИНН
+        parsers = await Promise.all(parsers.map(parser => parser.collectCompanyInfo()));
+        // console.log('5 -', this.timeSpent(start), '- company info');
+
+        return parsers.map(parser => parser.toObject());
     }
 
     /**

@@ -10,7 +10,8 @@ class EditManyDomainRequest extends BaseRequest
     {
         return [
             'domains' => ['required', 'array'],
-            'domains.*.id' => ['required', 'exists:\App\Models\Domain,id'],
+            'domains.*.id' => ['int'],
+            'domains.*.domain' => ['string'],
             'domains.*.real_domain' => ['string', 'nullable'],
             'domains.*.status' => ['integer', 'nullable'],
             'domains.*.cms' => ['string', 'nullable'],

@@ -137,9 +137,10 @@ class DomainController extends Controller
 
         $changedFields = [];
         foreach($allFields['domains'] as $fields) {
-            $domainId = $fields['id'];
-            $domain = $this->service->update($domainId, $fields);
-            $changedFields[$domainId] = $domain->getChanges();
+            $domain = $this->service->createOrUpdate($fields);
+            if($domain) {
+                $changedFields[$domain->id] = $domain->getChanges();
+            }
         }
 
         return \Response::success('Записи обновлены!', $changedFields);
