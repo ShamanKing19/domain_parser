@@ -29,6 +29,8 @@ class PlatformProvider extends OrchidServiceProvider
             Menu::make('Домены')
                 ->route('platform.domains.list')
                 ->title('Парсер'),
+            Menu::make('Типы сайтов')
+                ->route('platform.website-types.list')
         ];
     }
 

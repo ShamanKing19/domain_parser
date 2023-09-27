@@ -5,14 +5,23 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Orchid\Filters\Filterable;
+use Orchid\Screen\AsMultiSource;
 
 class WebsiteType extends Model
 {
-    use HasFactory;
+    use HasFactory, AsMultiSource, Filterable;
 
     protected $table = 'website_types';
 
+    public $timestamps = false;
+
     protected $fillable = [
+        'name'
+    ];
+
+    protected $allowedSorts = [
+        'id',
         'name'
     ];
 

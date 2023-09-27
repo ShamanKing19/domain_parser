@@ -14,14 +14,16 @@ return new class extends Migration
                 ->nullable()
                 ->after('has_basket')
                 ->references('id')
-                ->on('website_types');
+                ->on('website_types')
+                ->nullOnDelete();
 
             // Автоматически определяемое поле
             $table->foreignId('auto_type_id')
                 ->nullable()
                 ->after('type_id')
                 ->references('id')
-                ->on('website_types');
+                ->on('website_types')
+                ->nullOnDelete();
         });
     }
 

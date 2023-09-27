@@ -10,6 +10,8 @@ use App\Orchid\Screens\Role\RoleListScreen;
 use App\Orchid\Screens\User\UserEditScreen;
 use App\Orchid\Screens\User\UserListScreen;
 use App\Orchid\Screens\User\UserProfileScreen;
+use App\Orchid\Screens\WebsiteTypeListScreen;
+use App\Orchid\Screens\WebsiteTypeScreen;
 use Illuminate\Support\Facades\Route;
 use Tabuna\Breadcrumbs\Trail;
 
@@ -93,3 +95,7 @@ Route::screen('roles', RoleListScreen::class)
 
 Route::screen('domains', DomainListScreen::class)->name('platform.domains.list');
 Route::screen('domains/{domain}', DomainScreen::class)->whereNumber('id')->name('platform.domains.detail');
+
+Route::screen('website-types', WebsiteTypeListScreen::class)->name('platform.website-types.list');
+Route::screen('website-types/{type}/edit', WebsiteTypeScreen::class)->name('platform.website-types.detail');
+Route::screen('website-types/create', WebsiteTypeScreen::class)->name('platform.website.types.create');
