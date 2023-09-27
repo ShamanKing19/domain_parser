@@ -13,7 +13,8 @@ class DomainListLayout extends Table
     protected $target = 'domains';
     private string $path;
     private array $cmsList;
-    private mixed $statusList;
+    private array $statusList;
+    private array $typeList;
 
     public function __construct(DomainRepository $repository)
     {
@@ -28,6 +29,12 @@ class DomainListLayout extends Table
         $statusList = $repository->getStatusList();
         foreach($statusList as $status) {
             $this->statusList[$status] = $status;
+        }
+
+        $typeIdList = $repository->getTypeList();
+        $typeList = \App\Models\WebsiteType::where('id', '=', $typeIdList)->get();
+        foreach($typeList as $type) {
+            $this->typeList[$type->id] = $type->name;
         }
     }
 
@@ -62,6 +69,13 @@ class DomainListLayout extends Table
 
             TD::make('cms', 'CMS')
                 ->filter(TD::FILTER_SELECT, $this->cmsList)
+                ->sort(),
+
+            TD::make('type_id', 'Тип')
+                ->render(function(Domain $domain) {
+                    return $domain->type->name ?? '';
+                })
+                ->filter(TD::FILTER_SELECT, $this->typeList)
                 ->sort(),
 
             TD::make('title', 'Заголовок')

@@ -87,4 +87,14 @@ class DomainRepository
     {
         return Domain::select('status')->groupBy('status')->pluck('status')->filter()->toArray();
     }
+
+    /**
+     * Получение id всех типов
+     *
+     * @return array
+     */
+    public function getTypeList() : array
+    {
+        return Domain::select('type_id')->groupBy('type_id')->pluck('type_id')->filter()->toArray();
+    }
 }

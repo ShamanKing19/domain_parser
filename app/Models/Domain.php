@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Orchid\Filters\Filterable;
 use Orchid\Filters\Types\Like;
 use Orchid\Filters\Types\Where;
@@ -34,7 +35,8 @@ class Domain extends Model
         'has_ssl' => Where::class,
         'has_https_redirect' => Where::class,
         'has_catalog' => Where::class,
-        'has_basket' => Where::class
+        'has_basket' => Where::class,
+        'type_id' => Where::class
     ];
 
     /**
@@ -52,7 +54,8 @@ class Domain extends Model
         'has_ssl',
         'has_https_redirect',
         'has_catalog',
-        'has_basket'
+        'has_basket',
+        'type_id'
     ];
 
     protected $fillable = [
@@ -87,6 +90,11 @@ class Domain extends Model
     public function companies() : BelongsToMany
     {
         return $this->belongsToMany(Company::class, 'domains_inns', 'domain_id', 'inn_id');
+    }
+
+    public function type() : HasOne
+    {
+        return $this->hasOne(\App\Models\WebsiteType::class, 'id', 'type_id');
     }
 
     /**
