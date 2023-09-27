@@ -4,6 +4,7 @@ namespace App\Orchid\Layouts\Domain;
 
 use App\Models\Domain;
 use App\Repositories\DomainRepository;
+use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Fields\Input;
 use Orchid\Screen\Layouts\Table;
 use Orchid\Screen\TD;
@@ -11,16 +12,12 @@ use Orchid\Screen\TD;
 class DomainListLayout extends Table
 {
     protected $target = 'domains';
-    private string $path;
     private array $cmsList = [];
     private array $statusList = [];
     private array $typeList = [];
 
     public function __construct(DomainRepository $repository)
     {
-        $request = request();
-        $this->path = $request ? $request->path() : '/domains';
-
         $cmsList = $repository->getCmsList();
         foreach($cmsList as $cms) {
             $this->cmsList[$cms] = $cms;
@@ -41,26 +38,24 @@ class DomainListLayout extends Table
 
     protected function columns() : iterable
     {
-        $path = $this->path;
-
         return [
             TD::make('id')
-                ->render(function(Domain $domain) use($path) {
-                    return "<a href='$path/$domain->id'>$domain->id</a>";
+                ->render(function(Domain $domain) {
+                    return Link::make($domain->id)->route('platform.domains.detail', ['domain' => $domain->id]);
                 })
                 ->filter(Input::make())
                 ->sort(),
 
             TD::make('domain', 'Домен')
-                ->render(function(Domain $domain) use($path) {
-                    return "<a href='$path/$domain->id'>$domain->domain</a>";
+                ->render(function(Domain $domain) {
+                    return Link::make($domain->domain)->route('platform.domains.detail', ['domain' => $domain->id]);
                 })
                 ->filter(Input::make())
                 ->sort(),
 
             TD::make('real_domain', 'Конечная ссылка')
                 ->render(function (Domain $domain) {
-                    return isset($domain['real_domain']) ? "<a href='$domain->real_domain' target='_blank'>$domain->real_domain</a>" : '';
+                    return Link::make($domain->real_domain)->href($domain->real_domain ?? '')->target('blank');
                 })
                 ->filter(Input::make())
                 ->sort(),
