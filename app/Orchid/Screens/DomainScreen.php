@@ -7,6 +7,7 @@ use App\Orchid\Layouts\Company\CompanyFinancesLayout;
 use App\Orchid\Layouts\Company\CompanyLayout;
 use App\Orchid\Layouts\Domain\DomainContactsLayout;
 use App\Orchid\Layouts\Domain\DomainLayout;
+use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Actions\Link;
@@ -70,6 +71,11 @@ class DomainScreen extends Screen
                 ->icon('bs.arrow-clockwise')
                 ->method('update');
 
+        /* Сохранение обновляемых полей */
+        $buttons[] = Button::make('Сохранить')
+            ->icon('bs.check-circle')
+            ->method('save');
+
         /* Кнопка с переходом на сайт */
         if($this->domain->real_domain) {
             $buttons[] = Link::make('Перейти на сайт')
@@ -104,7 +110,7 @@ class DomainScreen extends Screen
         ];
     }
 
-    public function update(Domain $domain)
+    public function update(Domain $domain) : void
     {
         $nodePath = config('parser.node_path');
         $parserPath = config('parser.parser_path');
@@ -117,5 +123,21 @@ class DomainScreen extends Screen
         $response = implode('', $result);
         $response = json_decode($response, true);
         Alert::withoutEscaping()->error('<pre style="background-color: rgba(0, 0, 0, 0);">'.json_encode($response, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE).'</pre>');
+    }
+
+    public function save(Request $request, Domain $domain)
+    {
+        $fields = $request->post('domain');
+        if(isset($fields['type_id'])) {
+            $fields['auto_type_id'] = $fields['type_id'];
+        }
+
+        $result = $domain->fill($fields)->save();
+        if(!$result) {
+            Alert::error('Что-то пошло не так при обновлении...');
+            return;
+        }
+
+        Alert::success('Данные успешно обновлены!');
     }
 }

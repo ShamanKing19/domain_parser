@@ -4,6 +4,7 @@ namespace App\Orchid\Screens;
 
 use App\Models\WebsiteType;
 use App\Orchid\Layouts\WebsiteType\WebsiteTypeLayout;
+use Illuminate\Http\Request;
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Screen;
@@ -48,9 +49,9 @@ class WebsiteTypeScreen extends Screen
         return $buttons;
     }
 
-    public function save(WebsiteType $type)
+    public function save(Request $request, WebsiteType $type)
     {
-        $fields = request()->all();
+        $fields = $request->all();
 
         try {
             $success = $type->fill($fields)->save();
