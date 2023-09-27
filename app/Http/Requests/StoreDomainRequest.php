@@ -24,6 +24,8 @@ class StoreDomainRequest extends BaseRequest
             'has_https_redirect' => ['bool'],
             'has_catalog' => ['bool'],
             'has_basket' => ['bool'],
+            'type_id' => ['int', 'exists:'.\App\Models\WebsiteType::class.',id'],
+            'auto_type_id' => ['int', 'exists:'.\App\Models\WebsiteType::class.',id'],
             'phones' => ['array'],
             'phones.*' => ['string'],
             'emails' => ['array'],

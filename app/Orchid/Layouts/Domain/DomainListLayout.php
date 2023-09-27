@@ -12,9 +12,9 @@ class DomainListLayout extends Table
 {
     protected $target = 'domains';
     private string $path;
-    private array $cmsList;
-    private array $statusList;
-    private array $typeList;
+    private array $cmsList = [];
+    private array $statusList = [];
+    private array $typeList = [];
 
     public function __construct(DomainRepository $repository)
     {

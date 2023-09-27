@@ -117,8 +117,12 @@ class DomainController extends Controller
 
         $domain = $this->service->createOrUpdate($fields);
 
-        if(!$domain || (!$domain->wasRecentlyCreated && !$domain->wasChanged())) {
+        if(!$domain) {
             return \Response::error('Что-то пошло не так...');
+        }
+
+        if(!$domain->wasRecentlyCreated && !$domain->wasChanged()) {
+            return \Response::success('Ничего не было обновлено');
         }
 
         return \Response::success('Запись обновлена!', [$domain->getChanges()]);

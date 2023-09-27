@@ -2,7 +2,9 @@
 
 namespace App\Orchid\Layouts\Domain;
 
+use Orchid\Screen\Fields\Input;
 use Orchid\Screen\Fields\Label;
+use Orchid\Screen\Fields\Select;
 use Orchid\Screen\Layouts\Rows;
 
 class DomainLayout extends Rows
@@ -27,6 +29,11 @@ class DomainLayout extends Rows
             'cms' => Label::make('domain.cms')
                 ->horizontal()
                 ->title('CMS / Framework'),
+            'type' => Select::make('domain.type_id')
+                ->fromModel(\App\Models\WebsiteType::class, 'name')
+                ->empty('Не определён')
+                ->horizontal()
+                ->title('Тип сайта'),
             'title' => Label::make('domain.title')
                 ->horizontal()
                 ->title('Заголовок'),

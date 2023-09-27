@@ -74,6 +74,8 @@ class Domain extends Model
         'has_https_redirect',
         'has_catalog',
         'has_basket',
+        'type_id',
+        'auto_type_id',
         'updated_at'
     ];
 

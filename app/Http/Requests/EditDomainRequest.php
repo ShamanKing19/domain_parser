@@ -25,6 +25,8 @@ class EditDomainRequest extends BaseRequest
             'has_https_redirect' => ['bool', 'nullable'],
             'has_catalog' => ['bool', 'nullable'],
             'has_basket' => ['bool', 'nullable'],
+            'type_id' => ['int', 'exists:'.\App\Models\WebsiteType::class.',id'],
+            'auto_type_id' => ['int', 'exists:'.\App\Models\WebsiteType::class.',id'],
             'phones' => ['array', 'nullable'],
             'phones.*' => ['string', 'nullable'],
             'emails' => ['array', 'nullable'],

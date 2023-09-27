@@ -35,7 +35,7 @@ class App
             const domainList = params['domains'].split(',').map((domain) => {return {'domain': domain}});
             let parsedData = await this.parse(domainList);
             parsedData = parsedData.filter(item => !!item);
-            const response = await this.sendParsedData({'domains': parsedData});
+            const response = await this.sendParsedData(parsedData);
             console.log(JSON.stringify(response.data));
         }
     }
@@ -82,7 +82,7 @@ class App
             const parsedData = await this.parse(domainList);
 
             if(parsedData.length !== 0) {
-                const response = await this.sendParsedData({'domains': parsedData});
+                const response = await this.sendParsedData(parsedData);
                 if(!response) {
                     this.logger.logJson('broken_data/' + currentPage, parsedData);
                     await this.logger.error(`Ошибка при отправке запроса на api`, true)
@@ -156,7 +156,7 @@ class App
      * @return {Promise<AxiosResponse>}
      */
     async sendParsedData(data) {
-        return this.client.post(this.apiUrl + '/update-many', data, {
+        return this.client.post(this.apiUrl + '/update-many', {'domains': data}, {
             timeout: 0
         });
     }

@@ -184,8 +184,9 @@ class Parser
             'keywords': this.keywords ?? '',
             'phones': this.phoneList ?? [],
             'emails': this.emailList ?? [],
-            'companies': this.companies ?? []
-            // 'category': this.category ?? [],
+            'companies': this.companies ?? [],
+            // 'type_id': 1,
+            // 'auto_type_id': 1
         };
     }
 
