@@ -149,4 +149,19 @@ class DomainController extends Controller
 
         return \Response::success('Записи обновлены!', $changedFields);
     }
+
+    /**
+     * Получение записей с учётом фильтров в GET запросе
+     *
+     * @param Request $request
+     *
+     * @return Response
+     */
+    public function get(Request $request): Response
+    {
+        $filters = $request->all();
+        $domains = Domain::with(['phones', 'emails'])->where($filters)->get();
+
+        return \Response::success('', $domains);
+    }
 }

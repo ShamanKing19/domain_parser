@@ -27,4 +27,5 @@ Route::group(['prefix' => '/domain'], function() {
     Route::post('/create-many', [DomainController::class, 'storeMany']);
     Route::post('/update', [DomainController::class, 'edit']);
     Route::post('/update-many', [DomainController::class, 'editMany']);
+    Route::get('/get', [DomainController::class, 'get']);
 });

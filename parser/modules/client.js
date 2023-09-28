@@ -6,10 +6,11 @@ const Logger = require('./logger');
  */
 class Client
 {
-    constructor(url, data = {}, timeout = 3000) {
+    constructor(url, data = {}, timeout = 3000, headers = {}) {
         this.url = url;
-        this.timeout = timeout;
         this.data = data;
+        this.timeout = timeout;
+        this.customHeaders = headers;
         this.response = {};
         this.logger = new Logger();
     }
@@ -135,12 +136,14 @@ class Client
      */
     async get() {
         const config = this.getConfig();
+        let params = '';
         if(Object.keys(this.data).length !== 0) {
-            config.searchParams = this.data;
+            const sign = this.url.includes('?') ? '&' : '?';
+            params += sign + this.serialize(this.data);
         }
 
         try {
-            this.response = await got.get(this.url, config);
+            this.response = await got.get(this.url + params, config);
         } catch(e) {
             this.response = this.handleErrors(e);
         }
@@ -215,18 +218,18 @@ class Client
             https: {
                 rejectUnauthorized: false
             },
-            headers: {
+            headers: Object.assign({
                 'Connection': 'close',
                 'User-Agent': this.getUserAgent(),
                 'Sec-Ch-Ua-Mobile': '?0',
-                'Sec-Ch-Ua-Platform': "Windows",
+                'Sec-Ch-Ua-Platform': 'Windows',
                 'Sec-Fetch-Dest': 'document',
                 'Sec-Fetch-Mode': 'navigate',
                 'Sec-Fetch-Site': 'none',
                 'Sec-Fetch-User': '?1',
                 'Upgrade-Insecure-Requests': 1,
                 'Dnt': 1
-            }
+            }, this.customHeaders)
         };
     }
 
@@ -236,8 +239,22 @@ class Client
      * @returns {string}
      */
     getUserAgent() {
-
         return 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.90 Safari/537.36';
+    }
+
+    serialize(obj, prefix) {
+        let str = [],
+            p;
+        for (p in obj) {
+            if (obj.hasOwnProperty(p)) {
+                const k = prefix ? prefix + '[' + p + ']' : p,
+                    v = obj[p];
+                str.push((v !== null && typeof v === 'object') ?
+                    this.serialize(v, k) :
+                    encodeURIComponent(k) + '=' + encodeURIComponent(v));
+            }
+        }
+        return str.join('&');
     }
 }
 
