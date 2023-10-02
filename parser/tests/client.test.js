@@ -49,7 +49,6 @@ test('handle timeout', async () => {
     const url = 'https://germes-dent.ru/';
     const client = new Client(url, {}, 100);
     await client.get();
-    console.log(client.getResponse());
 
     expect(client.getStatus()).toBe(408);
 }, 10000);
@@ -68,5 +67,4 @@ test('make request to website with cyrillic url ', async () => {
 
     expect(client.getStatus()).toBe(200);
     expect(client.getBody().length).toBeGreaterThan(0);
-    console.log(client.getBody());
 });
