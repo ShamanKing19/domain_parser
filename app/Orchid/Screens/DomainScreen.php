@@ -64,27 +64,19 @@ class DomainScreen extends Screen
             $backButton->route('platform.domains.list');
         }
 
-        $buttons = [$backButton];
+        return [
+            $backButton,
 
-        /* Принудительный парсинг домена */
-        $buttons[] = Button::make('Обновить данные')
+            Button::make('Обновить данные')
                 ->icon('bs.arrow-clockwise')
-                ->method('update');
+                ->method('update'),
 
-        /* Сохранение обновляемых полей */
-        $buttons[] = Button::make('Сохранить')
-            ->icon('bs.check-circle')
-            ->method('save');
-
-        /* Кнопка с переходом на сайт */
-        if($this->domain->real_domain) {
-            $buttons[] = Link::make('Перейти на сайт')
+            Link::make('Перейти на сайт')
                 ->href($this->domain->real_domain)
                 ->target('_blank')
-                ->icon('bs.box-arrow-up-left');
-        }
-
-        return $buttons;
+                ->icon('bs.box-arrow-up-left')
+                ->canSee($this->domain->real_domain)
+        ];
     }
 
     public function layout(): iterable

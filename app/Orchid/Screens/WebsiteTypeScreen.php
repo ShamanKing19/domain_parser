@@ -28,25 +28,22 @@ class WebsiteTypeScreen extends Screen
 
     public function commandBar(): iterable
     {
-        $buttons = [
+        return [
             Link::make('Назад')
-            ->icon('bs.arrow-bar-left')
-            ->class('btn btn-link mr-10')
-            ->route('platform.website-types.list')
-        ];
+                ->icon('bs.arrow-bar-left')
+                ->class('btn btn-link mr-10')
+                ->route('platform.website-types.list'),
 
-        if($this->type->exists) {
-            $buttons[] = Button::make('Удалить')
+            Button::make('Удалить')
                 ->icon('x-circle')
                 ->confirm('Вы точно хотите удалить тип?')
-                ->method('delete');
-        }
+                ->method('delete')
+                ->canSee($this->type->exists),
 
-        $buttons[] = Button::make('Сохранить')
-            ->icon('check-circle')
-            ->method('save');
-
-        return $buttons;
+            Button::make('Сохранить')
+                ->icon('check-circle')
+                ->method('save')
+        ];
     }
 
     public function save(Request $request, WebsiteType $type)

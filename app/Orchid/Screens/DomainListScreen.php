@@ -30,35 +30,31 @@ class DomainListScreen extends Screen
     // TODO: Сделать кнопку "Спарсить все на странице"
     public function commandBar(): iterable
     {
-        $actions = [];
         $request = request();
         $filtersApplied = !empty($request->get('filter'));
         $sortApplied = !empty($request->get('sort'));
 
-        /* Сброс фильтров */
-        if($filtersApplied) {
-            $clearFiltersUrl = $request->fullUrlWithQuery(['filter' => null]);
-            $actions[] = Link::make('Сбросить фильтры')
-                ->href($clearFiltersUrl)
-                ->icon('bs.arrow-clockwise');
-        }
+        $clearFiltersUrl = $request->fullUrlWithQuery(['filter' => null]);
+        $clearSortUrl = $request->fullUrlWithQuery(['sort' => null]);
 
-        /* Сброс сортировки */
-        if($sortApplied) {
-            $clearSortUrl = $request->fullUrlWithQuery(['sort' => null]);
-            $actions[] = Link::make('Сбросить сортировку')
-                ->href($clearSortUrl)
-                ->icon('bs.arrow-clockwise');
-        }
-
-        /* Парсинг всех доменов на странице */
         $params = request()->query();
-        $actions[] = Button::make('Спарсить всю страницу')
-            ->method('parsePage')
-            ->parameters($params)
-            ->icon('bs.cpu');
 
-        return $actions;
+        return [
+            Link::make('Сбросить фильтры')
+                ->href($clearFiltersUrl)
+                ->icon('bs.arrow-clockwise')
+                ->canSee($filtersApplied),
+
+            Link::make('Сбросить сортировку')
+                ->href($clearSortUrl)
+                ->icon('bs.arrow-clockwise')
+                ->canSee($sortApplied),
+
+            Button::make('Спарсить всю страницу')
+                ->method('parsePage')
+                ->parameters($params)
+                ->icon('bs.cpu')
+        ];
     }
 
     /**
