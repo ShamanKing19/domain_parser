@@ -76,10 +76,10 @@ class DomainScreen extends Screen
                 ->method('save'),
 
             Link::make('Перейти на сайт')
-                ->href($this->domain->real_domain)
+                ->href($this->domain->real_domain ?? '')
                 ->target('_blank')
                 ->icon('bs.box-arrow-up-left')
-                ->canSee($this->domain->real_domain)
+                ->canSee(!!$this->domain->real_domain)
         ];
     }
 
