@@ -21,6 +21,7 @@
                     @endphp
                     <li data-controller="input" data-input-mask="{{ $mask ?? '' }}">
                         <input data-first-name="{{ $attrName  }}" data-input-count="{{ $count }}" {{ $attributes }}>
+                        <button class="multi__input--button__delete" type="button">Удалить</button>
                         @isset($val['id'])
                             <input type="hidden" name="{{ $attrName.'['.$val['id'].'][id]' }}" value="{{ $val['id'] }}">
                         @endisset
@@ -32,6 +33,7 @@
                 @endphp
                 <li data-controller="input" data-input-mask="{{$mask ?? ''}}">
                     <input data-first-name="{{ $attrName  }}" data-input-count="1" {{ $attributes }}>
+                    <button class="multi__input--button__delete" type="button">Удалить</button>
                 </li>
             @endif
 
@@ -87,6 +89,23 @@
             hiddenInput.remove();
         }
     });
+
+    document.addEventListener('click', function(event) {
+        const button = event.target;
+        if(!button.classList.contains('multi__input--button__delete')) {
+            return;
+        }
+
+        const buttons = document.querySelectorAll('.multi__input--button__delete');
+        const wrapper = button.parentElement;
+        if(buttons.length > 1) {
+            wrapper.remove();
+            return;
+        }
+
+        const valueInput = wrapper.querySelector('input');
+        valueInput.value = '';
+    });
 </script>
 
 <style>
@@ -98,5 +117,13 @@
         margin-bottom: 5px;
         padding: 0;
         list-style-type: none;
+        display: flex;
+    }
+
+    .multi__input--button__delete {
+        margin-left: .5rem;
+        padding: .5rem .75rem;
+        border: 1px solid rgba(21,20,26,.1);
+        background-color: #ffffff;
     }
 </style>

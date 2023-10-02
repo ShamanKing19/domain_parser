@@ -44,4 +44,14 @@ class WebsiteType extends Model
     {
         return $this->hasMany(\App\Models\Domain::class, 'type_id', 'id');
     }
+
+    /**
+     * Ключевые слова
+     *
+     * @return HasMany
+     */
+    public function keywords() : HasMany
+    {
+        return $this->hasMany(\App\Models\WebsiteTypeKeyword::class, 'type_id', 'id');
+    }
 }

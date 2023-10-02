@@ -4,6 +4,7 @@ namespace App\Orchid\Screens;
 
 use App\Models\WebsiteType;
 use App\Orchid\Layouts\WebsiteType\WebsiteTypeLayout;
+use App\Services\WebsiteTypeService;
 use Illuminate\Http\Request;
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Actions\Link;
@@ -13,6 +14,13 @@ use Orchid\Support\Facades\Toast;
 
 class WebsiteTypeScreen extends Screen
 {
+    private WebsiteTypeService $service;
+
+    public function __construct(WebsiteTypeService $service)
+    {
+        $this->service = $service;
+    }
+
     public function query(WebsiteType $type): iterable
     {
         $this->type = $type;
@@ -52,6 +60,11 @@ class WebsiteTypeScreen extends Screen
 
         try {
             $success = $type->fill($fields)->save();
+
+            if(isset($fields['keywords']) && is_array($fields['keywords'])) {
+                $this->service->attachKeywords($type, array_column($fields['keywords'], 'value'));
+            }
+
             if($type->wasRecentlyCreated) {
                 Toast::success('Запись была создана!');
                 return redirect()->route('platform.website-types.detail', ['type' => $type->id]);
