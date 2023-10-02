@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Orchid\Screens;
+namespace App\Orchid\Screens\Domain;
 
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Actions\Link;
@@ -27,7 +27,6 @@ class DomainListScreen extends Screen
         return 'Домены';
     }
 
-    // TODO: Сделать кнопку "Спарсить все на странице"
     public function commandBar(): iterable
     {
         $request = request();

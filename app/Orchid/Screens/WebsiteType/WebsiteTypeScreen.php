@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Orchid\Screens;
+namespace App\Orchid\Screens\WebsiteType;
 
 use App\Models\WebsiteType;
 use App\Orchid\Layouts\WebsiteType\WebsiteTypeLayout;

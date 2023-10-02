@@ -1,10 +1,9 @@
 <?php
 
-namespace App\Orchid\Screens;
+namespace App\Orchid\Screens\WebsiteType;
 
 use App\Models\WebsiteType;
 use App\Orchid\Layouts\WebsiteType\WebsiteTypeListLayout;
-use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Screen;
 

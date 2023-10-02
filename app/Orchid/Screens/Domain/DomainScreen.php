@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Orchid\Screens;
+namespace App\Orchid\Screens\Domain;
 
 use App\Models\Domain;
 use App\Orchid\Layouts\Company\CompanyFinancesLayout;

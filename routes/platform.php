@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use App\Orchid\Screens\DomainListScreen;
-use App\Orchid\Screens\DomainScreen;
+use App\Orchid\Screens\Domain\DomainListScreen;
+use App\Orchid\Screens\Domain\DomainScreen;
 use App\Orchid\Screens\PlatformScreen;
 use App\Orchid\Screens\ProcessingStatus\ProcessingStatusListScreen;
 use App\Orchid\Screens\ProcessingStatus\ProcessingStatusScreen;
@@ -12,8 +12,8 @@ use App\Orchid\Screens\Role\RoleListScreen;
 use App\Orchid\Screens\User\UserEditScreen;
 use App\Orchid\Screens\User\UserListScreen;
 use App\Orchid\Screens\User\UserProfileScreen;
-use App\Orchid\Screens\WebsiteTypeListScreen;
-use App\Orchid\Screens\WebsiteTypeScreen;
+use App\Orchid\Screens\WebsiteType\WebsiteTypeListScreen;
+use App\Orchid\Screens\WebsiteType\WebsiteTypeScreen;
 use Illuminate\Support\Facades\Route;
 use Tabuna\Breadcrumbs\Trail;
 
