@@ -71,6 +71,10 @@ class DomainScreen extends Screen
                 ->icon('bs.arrow-clockwise')
                 ->method('update'),
 
+            Button::make('Сохранить')
+                ->icon('bs.check-circle')
+                ->method('save'),
+
             Link::make('Перейти на сайт')
                 ->href($this->domain->real_domain)
                 ->target('_blank')

@@ -15,6 +15,7 @@ class DomainListLayout extends Table
     private array $cmsList = [];
     private array $statusList = [];
     private array $typeList = [];
+    private array $processingStatusList = [];
 
     public function __construct(DomainRepository $repository)
     {
@@ -32,6 +33,11 @@ class DomainListLayout extends Table
         $typeList = \App\Models\WebsiteType::where('id', '=', $typeIdList)->get();
         foreach($typeList as $type) {
             $this->typeList[$type->id] = $type->name;
+        }
+
+        $processingStatusList = \App\Models\ProcessingStatus::all();
+        foreach($processingStatusList as $status) {
+            $this->processingStatusList[$status->id] = $status->name;
         }
     }
 
@@ -60,7 +66,14 @@ class DomainListLayout extends Table
                 ->filter(Input::make())
                 ->sort(),
 
-            TD::make('status', 'Статус')->filter(TD::FILTER_SELECT, $this->statusList)->sort(),
+            TD::make('processing_status_id', 'Статус')
+                ->render(function(Domain $domain) {
+                    return $domain->processingStatus->name ?? '';
+                })
+                ->filter(TD::FILTER_SELECT, $this->processingStatusList)
+                ->sort(),
+
+            TD::make('status', 'HTTP Статус')->filter(TD::FILTER_SELECT, $this->statusList)->sort(),
 
             TD::make('cms', 'CMS')
                 ->filter(TD::FILTER_SELECT, $this->cmsList)

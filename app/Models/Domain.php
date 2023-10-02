@@ -36,7 +36,8 @@ class Domain extends Model
         'has_https_redirect' => Where::class,
         'has_catalog' => Where::class,
         'has_basket' => Where::class,
-        'type_id' => Where::class
+        'type_id' => Where::class,
+        'processing_status_id' => Where::class
     ];
 
     /**
@@ -55,7 +56,8 @@ class Domain extends Model
         'has_https_redirect',
         'has_catalog',
         'has_basket',
-        'type_id'
+        'type_id',
+        'processing_status_id'
     ];
 
     protected $fillable = [
@@ -76,6 +78,7 @@ class Domain extends Model
         'has_basket',
         'type_id',
         'auto_type_id',
+        'processing_status_id',
         'updated_at'
     ];
 
@@ -89,14 +92,34 @@ class Domain extends Model
         return $this->hasMany(\App\Models\Domain\Email::class, 'domain_id', 'id');
     }
 
+    /**
+     * Компании, привязанные к домену
+     *
+     * @return BelongsToMany
+     */
     public function companies() : BelongsToMany
     {
         return $this->belongsToMany(Company::class, 'domains_inns', 'domain_id', 'inn_id');
     }
 
+    /**
+     * Тип сайта, установленный вручную
+     *
+     * @return HasOne
+     */
     public function type() : HasOne
     {
         return $this->hasOne(\App\Models\WebsiteType::class, 'id', 'type_id');
+    }
+
+    /**
+     * Статус обработки
+     *
+     * @return HasOne
+     */
+    public function processingStatus() : HasOne
+    {
+        return $this->hasOne(\App\Models\ProcessingStatus::class, 'id', 'processing_status_id');
     }
 
     /**

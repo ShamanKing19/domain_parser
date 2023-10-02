@@ -5,6 +5,8 @@ declare(strict_types=1);
 use App\Orchid\Screens\DomainListScreen;
 use App\Orchid\Screens\DomainScreen;
 use App\Orchid\Screens\PlatformScreen;
+use App\Orchid\Screens\ProcessingStatus\ProcessingStatusListScreen;
+use App\Orchid\Screens\ProcessingStatus\ProcessingStatusScreen;
 use App\Orchid\Screens\Role\RoleEditScreen;
 use App\Orchid\Screens\Role\RoleListScreen;
 use App\Orchid\Screens\User\UserEditScreen;
@@ -99,3 +101,7 @@ Route::screen('domains/{domain}', DomainScreen::class)->whereNumber('id')->name(
 Route::screen('website-types', WebsiteTypeListScreen::class)->name('platform.website-types.list');
 Route::screen('website-types/{type}/edit', WebsiteTypeScreen::class)->name('platform.website-types.detail');
 Route::screen('website-types/create', WebsiteTypeScreen::class)->name('platform.website.types.create');
+
+Route::screen('processing-statuses', ProcessingStatusListScreen::class)->name('platform.processing-statuses.list');
+Route::screen('processing-statuses/{status}/edit', ProcessingStatusScreen::class)->name('platform.processing-statuses.detail');
+Route::screen('processing-statuses/create', ProcessingStatusScreen::class)->name('platform.processing-statuses.create');

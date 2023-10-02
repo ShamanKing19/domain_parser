@@ -8,7 +8,6 @@ use Orchid\Platform\Dashboard;
 use Orchid\Platform\ItemPermission;
 use Orchid\Platform\OrchidServiceProvider;
 use Orchid\Screen\Actions\Menu;
-use Orchid\Support\Color;
 
 class PlatformProvider extends OrchidServiceProvider
 {
@@ -30,7 +29,9 @@ class PlatformProvider extends OrchidServiceProvider
                 ->route('platform.domains.list')
                 ->title('Парсер'),
             Menu::make('Типы сайтов')
-                ->route('platform.website-types.list')
+                ->route('platform.website-types.list'),
+            Menu::make('Статусы обработки')
+                ->route('platform.processing-statuses.list')
         ];
     }
 
