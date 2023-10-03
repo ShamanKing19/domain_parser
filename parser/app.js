@@ -27,6 +27,9 @@ class App
             const parsedDataList = await this.parse([{'domain': params['domain']}]);
             const parsedData = parsedDataList.shift();
             const response = await this.sendParsedDomain(parsedData);
+            if(!response.data['status'] && parsedData) {
+                await this.logger.logJson('broken_api_data/' + params['domain'], parsedData);
+            }
             console.log(JSON.stringify(response.data)); // Для возврата ответа при вызове из админки через exec()
             return;
         }

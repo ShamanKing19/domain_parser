@@ -47,8 +47,8 @@ class DomainService
      */
     public function create(array $fields)
     {
-        $fields = $this->truncateStrings($fields);
-        $domain = \App\Models\Domain::create($fields);
+        $fields = $this->prepareFields($fields);
+        $domain = Domain::create($fields);
         if(is_null($domain)) {
             return false;
         }
@@ -79,11 +79,11 @@ class DomainService
     {
         $now = Date::now();
         foreach($fieldsList as $key => $fields) {
-            $fieldsList[$key] = $this->truncateStrings($fields);
+            $fieldsList[$key] = $this->prepareFields($fields);
             $fieldsList[$key]['updated_at'] = $now;
         }
 
-        return \App\Models\Domain::insert($fieldsList);
+        return Domain::insert($fieldsList);
     }
 
     /**
@@ -101,8 +101,7 @@ class DomainService
             return null;
         }
 
-        $fields['updated_at'] = Date::now();
-        $fields = $this->truncateStrings($fields);
+        $fields = $this->prepareFields($fields);
 
         if(!empty($fields['phones'])) {
             $domain->phones()->delete();
@@ -225,13 +224,32 @@ class DomainService
     }
 
     /**
+     * Подготовка полей к сохранению
+     *
+     * @param array $fields
+     *
+     * @return array
+     */
+    private function prepareFields(array $fields) : array
+    {
+        $this->truncateStrings($fields);
+        $fields['updated_at'] = Date::now();
+        if($fields['domain']) {
+            $urlInfo = parse_url($fields['domain']);
+            $fields['domain'] = $urlInfo['host'] ?? $urlInfo['path'];
+        }
+
+        return $fields;
+    }
+
+    /**
      * Обрезание строк для
      *
      * @param array $fields
      *
      * @return array
      */
-    public function truncateStrings(array $fields) : array
+    private function truncateStrings(array $fields) : array
     {
         $stringFields = ['title', 'keywords'];
         foreach($stringFields as $field) {

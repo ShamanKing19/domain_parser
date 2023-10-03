@@ -14,6 +14,7 @@ use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Screen;
 use Orchid\Support\Facades\Alert;
 use Orchid\Support\Facades\Layout;
+use Orchid\Support\Facades\Toast;
 
 class DomainScreen extends Screen
 {
@@ -70,6 +71,12 @@ class DomainScreen extends Screen
             Button::make('Обновить данные')
                 ->icon('bs.arrow-clockwise')
                 ->method('update'),
+
+            Button::make('Удалить')
+                ->icon('x-circle')
+                ->confirm('Вы точно хотите удалить домен?')
+                ->method('delete')
+                ->canSee($this->domain->exists),
 
             Button::make('Сохранить')
                 ->icon('bs.check-circle')
@@ -135,5 +142,16 @@ class DomainScreen extends Screen
         }
 
         Alert::success('Данные успешно обновлены!');
+    }
+
+    public function delete(Domain $domain)
+    {
+        $success = $domain->delete();
+        if($success) {
+            Toast::success('Запись успешно удалена!');
+            return redirect()->route('platform.domains.list');
+        }
+
+        Alert::error('Что-то пошло не так при удалении...');
     }
 }

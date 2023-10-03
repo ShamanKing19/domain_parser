@@ -2,16 +2,31 @@
 
 namespace App\Orchid\Screens\Domain;
 
+use App\Models\Domain;
+use App\Orchid\Layouts\Domain\DomainListLayout;
+use App\Orchid\Layouts\Domain\ImportDomainsLayout;
+use App\Services\DomainService;
+use App\Services\DomainsFileReaderService;
+use Illuminate\Http\Request;
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Actions\Link;
+use Orchid\Screen\Actions\ModalToggle;
 use Orchid\Screen\Screen;
 use Orchid\Support\Facades\Alert;
+use Orchid\Support\Facades\Layout;
 
 class DomainListScreen extends Screen
 {
+    private DomainService $service;
+
+    public function __construct(DomainService $service)
+    {
+        $this->service = $service;
+    }
+
     public function query(): iterable
     {
-        $domains = \App\Models\Domain::with(['emails', 'companies', 'companies.financeYears'])->filters()->defaultSort('id')->paginate(20);
+        $domains = Domain::with(['emails', 'companies', 'companies.financeYears'])->filters()->defaultSort('id')->paginate(20);
         $domains->map(function($domain) {
             $emails = $domain->emails()->get('email')->implode('email', ', ');
             $domain['emails_string'] = $emails;
@@ -49,6 +64,11 @@ class DomainListScreen extends Screen
                 ->icon('bs.arrow-clockwise')
                 ->canSee($sortApplied),
 
+            ModalToggle::make('Импорт')
+                ->modal('import')
+                ->method('import')
+                ->icon('bs.plus-circle'),
+
             Button::make('Спарсить всю страницу')
                 ->method('parsePage')
                 ->parameters($params)
@@ -79,10 +99,49 @@ class DomainListScreen extends Screen
         Alert::withoutEscaping()->error('<pre style="background-color: rgba(0, 0, 0, 0);">'.json_encode($response, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE).'</pre>');
     }
 
+    public function import(Request $request)
+    {
+        $domainList = [];
+        $requestDomainList = $request->post('domain_list');
+        if(!empty($requestDomainList)) {
+            $domainList = array_filter(array_merge($domainList, array_column($requestDomainList, 'value')));
+        }
+
+        $file = $request->file('file');
+        if(!empty($file)) {
+            $fileService = new DomainsFileReaderService($file);
+            $domainList = array_merge($domainList, $fileService->parse());
+        }
+
+        $domainsCount = count($domainList);
+        $createdCount = 0;
+        if($domainsCount === 0) {
+            return;
+        }
+
+        foreach($domainList as $domain) {
+            $domain = $this->service->createOrUpdate(['domain' => $domain]);
+            if($domain && $domain->wasRecentlyCreated) {
+                $createdCount++;
+            }
+        }
+
+        if($createdCount === $domainsCount) {
+            Alert::success("Добавлено $createdCount/$domainsCount");
+        } elseif ($createdCount > 0 && $createdCount < $domainsCount) {
+            Alert::warning("Добавлено $createdCount/$domainsCount");
+        } else {
+            Alert::error("Добавлено $createdCount/$domainsCount");
+        }
+    }
+
     public function layout(): iterable
     {
         return [
-            \App\Orchid\Layouts\Domain\DomainListLayout::class
+            DomainListLayout::class,
+            Layout::modal('import', [
+                ImportDomainsLayout::class
+            ])->title('Импорт'),
         ];
     }
 }
