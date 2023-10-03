@@ -99,8 +99,17 @@ class DomainListScreen extends Screen
         Alert::withoutEscaping()->error('<pre style="background-color: rgba(0, 0, 0, 0);">'.json_encode($response, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE).'</pre>');
     }
 
+    /**
+     * Импорт доменов
+     *
+     * @param Request $request
+     *
+     * @return void
+     * @throws \Exception
+     */
     public function import(Request $request) : void
     {
+        set_time_limit(0);
         $domainList = [];
         $requestDomainList = $request->post('domain_list');
         if(!empty($requestDomainList)) {

@@ -234,7 +234,7 @@ class DomainService
     {
         $this->truncateStrings($fields);
         $fields['updated_at'] = Date::now();
-        if($fields['domain']) {
+        if(!empty($fields['domain'])) {
             $urlInfo = parse_url($fields['domain']);
             $fields['domain'] = $urlInfo['host'] ?? $urlInfo['path'];
         }
