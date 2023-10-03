@@ -232,7 +232,7 @@ class DomainService
      */
     private function prepareFields(array $fields) : array
     {
-        $this->truncateStrings($fields);
+        $fields = $this->truncateStrings($fields);
         $fields['updated_at'] = Date::now();
         if(!empty($fields['domain'])) {
             $urlInfo = parse_url($fields['domain']);

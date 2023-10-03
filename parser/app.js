@@ -97,7 +97,8 @@ class App
                 }
             }
 
-            await this.logger.log(`${this.timeSpent(start)} - (${parsedData.length}/${domainList.length}) - Обработано ${currentPage} из ${lastPage} страниц (${currentPage * this.itemsPerPage}/${domainsCount})`, true);
+            const validData = parsedData.filter(data => data['status'] >= 200 && data['status'] < 400);
+            await this.logger.log(`${this.timeSpent(start)} - (${validData.length}/${domainList.length}) - Обработано ${currentPage} из ${lastPage} страниц (${currentPage * this.itemsPerPage}/${domainsCount})`, true);
 
             currentPage++;
             domainList = await nextPageDomainsList;
@@ -118,7 +119,7 @@ class App
 
         // 1. Проверка статусов
         parsers = await Promise.all(parsers.map(parser => parser.init()));
-        parsers = parsers.filter(parser => parser.hasResponse());
+        // parsers = parsers.filter(parser => parser.isAvailable());
         // console.log('1 -', this.timeSpent(start), `- (${parsers.length}/${domainList.length})`, '- status');
 
         // 2. Проверка https редиректов

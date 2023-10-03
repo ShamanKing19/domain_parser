@@ -195,6 +195,7 @@ class Client
         }
 
         if(!response.statusCode && response.statusCode !== 0) {
+            response.statusCode = 0;
             console.log(this.url, e);
         }
 

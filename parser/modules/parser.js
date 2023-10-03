@@ -66,7 +66,7 @@ class Parser
      *
      * @return {boolean}
      */
-    hasResponse() {
+    isAvailable() {
         return this.client.isAvailable();
     }
 
@@ -92,6 +92,10 @@ class Parser
      * @return {Promise<Parser>}
      */
     async checkRedirect() {
+        if(!this.isAvailable()) {
+            return this;
+        }
+
         const domain = this.getDomain();
         const client = await this.makeHttpRequest(domain);
         this.hasHttpsRedirect = client.checkHttpsRedirect()
@@ -109,6 +113,10 @@ class Parser
      * @return {Parser}
      */
     parse() {
+        if(!this.isAvailable()) {
+            return this;
+        }
+
         const headers = this.client.getHeaders();
         const html = this.getHtml();
 
@@ -139,6 +147,10 @@ class Parser
      * @return {Promise<Parser>}
      */
     async checkBitrixEcom() {
+        if(!this.isAvailable()) {
+            return this;
+        }
+
         this.hasCatalog = false;
         this.hasCart = false;
         if(this.cms === this.cmsBitrix) {
