@@ -19,13 +19,14 @@ class DomainContactsLayout extends Rows
         $emails = $domain->emails->pluck('email');
         $phones = $domain->phones->pluck('phone');
 
+
         $emailRows = $emails->map(fn($email) => Label::make('email')->value($email));
         $phoneRows = $phones->map(fn($phone) => Label::make('phone')->value($phone));
 
         return [
-            Label::make('emails-label')->title('Почты'),
+            Label::make('emails-label')->canSee($emails->isNotEmpty())->title('Почты'),
             ...$emailRows,
-            Label::make('phones-label')->title('Номера телефонов'),
+            Label::make('phones-label')->canSee($phones->isNotEmpty())->title('Номера телефонов'),
             ...$phoneRows
         ];
     }

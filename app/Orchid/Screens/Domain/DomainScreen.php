@@ -90,29 +90,6 @@ class DomainScreen extends Screen
         ];
     }
 
-    public function layout(): iterable
-    {
-        $tabs = [
-            'Общая информация' => new DomainLayout(),
-            'Контакты' => new DomainContactsLayout(),
-        ];
-
-        if($this->companies->isNotEmpty()) {
-            foreach($this->companies as $company) {
-                $tab = [new CompanyLayout($company)];
-                if($company->financeYears()->exists()) {
-                    $tab[] = new CompanyFinancesLayout($company);
-                }
-
-                $tabs['ИНН: ' . $company->inn] = $tab;
-            }
-        }
-
-        return [
-            Layout::tabs($tabs)
-        ];
-    }
-
     public function update(Domain $domain) : void
     {
         $nodePath = config('parser.node_path');
@@ -153,5 +130,31 @@ class DomainScreen extends Screen
         }
 
         Alert::error('Что-то пошло не так при удалении...');
+    }
+
+    public function layout(): iterable
+    {
+        $tabs = [
+            'Общая информация' => new DomainLayout()
+        ];
+
+        if($this->domain->emails()->exists() || $this->domain->phones()->exists()) {
+            $tabs['Контакты'] = new DomainContactsLayout();
+        }
+
+        if($this->companies->isNotEmpty()) {
+            foreach($this->companies as $company) {
+                $tab = [new CompanyLayout($company)];
+                if($company->financeYears()->exists()) {
+                    $tab[] = new CompanyFinancesLayout($company);
+                }
+
+                $tabs['ИНН: ' . $company->inn] = $tab;
+            }
+        }
+
+        return [
+            Layout::tabs($tabs)
+        ];
     }
 }
