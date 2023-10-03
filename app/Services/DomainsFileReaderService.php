@@ -41,10 +41,20 @@ class DomainsFileReaderService
         return $rows;
     }
 
-    // TODO: Implement
-    private function parseCsv() : array
+    private function parseCsv(string $separator = ';') : array
     {
-        return [];
+        if(($handle = fopen($this->file->path(), 'r', $separator)) === false) {
+            return [];
+        }
+
+        $domains = [];
+        while(($row = fgetcsv($handle, 1000)) !== false) {
+            $data = explode($separator, $row);
+            $domains[] = $data[0];
+        }
+
+        fclose($handle);
+        return $domains;
     }
 
     // TODO: Implement

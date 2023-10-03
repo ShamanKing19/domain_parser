@@ -81,7 +81,7 @@ class DomainListScreen extends Screen
      *
      * @return void
      */
-    public function parsePage()
+    public function parsePage() : void
     {
         $data = current($this->query()['domains']);
         $domainsString = $data->pluck('domain')->implode(',');
@@ -99,7 +99,7 @@ class DomainListScreen extends Screen
         Alert::withoutEscaping()->error('<pre style="background-color: rgba(0, 0, 0, 0);">'.json_encode($response, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE).'</pre>');
     }
 
-    public function import(Request $request)
+    public function import(Request $request) : void
     {
         $domainList = [];
         $requestDomainList = $request->post('domain_list');
