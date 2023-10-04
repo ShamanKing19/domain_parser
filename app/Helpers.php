@@ -45,7 +45,7 @@ class Helpers
      * @param string $accusativeMessage название в винительном падеже (вижу кого? что?) (5-9)
      * @return string отформатированное название
      */
-    public function declinateWord(int $number, string $nominativeMessage, string $genitiveMessage, string $accusativeMessage) : string
+    public static function declinateWord(int $number, string $nominativeMessage, string $genitiveMessage, string $accusativeMessage) : string
     {
         $exceptions = range(11, 20);
         if($number % 10 === 1 && !in_array($number % 100, $exceptions, true)) {

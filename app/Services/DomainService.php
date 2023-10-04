@@ -18,6 +18,62 @@ class DomainService
     }
 
     /**
+     * Импорт доменов в базу
+     * TODO: Апгрейдить метод createMany так, чтобы если на пачке вылазила ошибка, тогда пройтись по записям уже
+     * по одной и использовать уже её вместо этого метода
+     *
+     * @param array $domainList
+     *
+     * @return int
+     */
+    public function import(array $domainList) : int
+    {
+        $createdCount = 0;
+        foreach($domainList as $domain) {
+            $domain = $this->createOrUpdate(['domain' => $domain]);
+            if($domain && $domain->wasRecentlyCreated) {
+                $createdCount++;
+            }
+        }
+
+        return $createdCount;
+    }
+
+    /**
+     * Парсинг доменов
+     *
+     * @param array<string> $domainList
+     *
+     * @return array|null
+     */
+    public function parse(array $domainList) : ?array
+    {
+        $domainsString = implode(',', $domainList);
+
+        $nodePath = config('parser.node_path');
+        $parserPath = config('parser.parser_path');
+        exec("$nodePath $parserPath --domains=\"$domainsString\"", $result, $errorCode);
+        if($errorCode === 0) {
+            return null;
+        }
+
+        $response = implode('', $result);
+        return json_decode($response, true);
+    }
+
+    /**
+     * Удаление нескольких записей
+     *
+     * @param array $idList
+     *
+     * @return int
+     */
+    public function remove(array $idList) : int
+    {
+        return Domain::destroy($idList);
+    }
+
+    /**
      * Создание или обновление существующей записи
      *
      * @param array $fields

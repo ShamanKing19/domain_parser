@@ -88,31 +88,24 @@ class DomainListScreen extends Screen
 
     /**
      * Парсинг всех записей на странице
-     * TODO: Вынести в сервис
      *
      * @return void
      */
     public function parsePage() : void
     {
         $data = current($this->query()['domains']);
-        $domainsString = $data->pluck('domain')->implode(',');
-
-        $nodePath = config('parser.node_path');
-        $parserPath = config('parser.parser_path');
-        exec("$nodePath $parserPath --domains=\"$domainsString\"", $result, $errorCode);
-        if($errorCode === 0) {
+        $domainsList = $data->pluck('domain')->toArray();
+        $result = $this->service->parse($domainsList);
+        if(!$result) {
             Alert::success('Данные успешно обновлены!');
             return;
         }
 
-        $response = implode('', $result);
-        $response = json_decode($response, true);
-        Alert::withoutEscaping()->error('<pre style="background-color: rgba(0, 0, 0, 0);">'.json_encode($response, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE).'</pre>');
+        Alert::withoutEscaping()->error('<pre style="background-color: rgba(0, 0, 0, 0);">'.json_encode($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE).'</pre>');
     }
 
     /**
      * Импорт доменов
-     * TODO: Вынести в сервис
      *
      * @param Request $request
      *
@@ -135,17 +128,7 @@ class DomainListScreen extends Screen
         }
 
         $domainsCount = count($domainList);
-        $createdCount = 0;
-        if($domainsCount === 0) {
-            return;
-        }
-
-        foreach($domainList as $domain) {
-            $domain = $this->service->createOrUpdate(['domain' => $domain]);
-            if($domain && $domain->wasRecentlyCreated) {
-                $createdCount++;
-            }
-        }
+        $createdCount = $this->service->import($domainList);
 
         if($createdCount === $domainsCount) {
             Alert::success("Добавлено $createdCount/$domainsCount");
@@ -158,7 +141,6 @@ class DomainListScreen extends Screen
 
     /**
      * Удаление выбранных доменов
-     * TODO: Вынести в сервис
      *
      * @param Request $request
      *
@@ -171,7 +153,7 @@ class DomainListScreen extends Screen
             Alert::error('Не было выбрано ни одной записи');
         }
 
-        $deletedCount = Domain::destroy($idList);
+        $deletedCount = $this->service->remove($idList);
         $message = \App\Helpers::declinateWord(
             $deletedCount,
             "Была удалена $deletedCount запись",
