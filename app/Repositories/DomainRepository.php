@@ -20,6 +20,18 @@ class DomainRepository
     }
 
     /**
+     * Получение списка доменов по списку id
+     *
+     * @param array $idList
+     *
+     * @return array
+     */
+    public function getListById(array $idList) : array
+    {
+        return Domain::whereIn('id', $idList)->select('domain')->pluck('domain')->toArray();
+    }
+
+    /**
      * @param string $domain
      *
      * @return Domain|null

@@ -5,6 +5,7 @@ namespace App\Orchid\Screens\Domain;
 use App\Models\Domain;
 use App\Orchid\Layouts\Domain\DomainListLayout;
 use App\Orchid\Layouts\Domain\ImportDomainsLayout;
+use App\Repositories\DomainRepository;
 use App\Services\DomainService;
 use App\Services\DomainsFileReaderService;
 use Illuminate\Http\Request;
@@ -19,10 +20,12 @@ use Orchid\Support\Facades\Layout;
 class DomainListScreen extends Screen
 {
     private DomainService $service;
+    private DomainRepository $repository;
 
-    public function __construct(DomainService $service)
+    public function __construct(DomainService $service, DomainRepository $repository)
     {
         $this->service = $service;
+        $this->repository = $repository;
     }
 
     public function query(): iterable
@@ -73,7 +76,7 @@ class DomainListScreen extends Screen
             DropDown::make()
                 ->icon('bs.three-dots')
                 ->list([
-                    Button::make('Спарсить всю страницу')
+                    Button::make('Спарсить')
                         ->method('parsePage')
                         ->parameters($params)
                         ->icon('bs.cpu'),
@@ -91,10 +94,16 @@ class DomainListScreen extends Screen
      *
      * @return void
      */
-    public function parsePage() : void
+    public function parsePage(Request $request) : void
     {
-        $data = current($this->query()['domains']);
-        $domainsList = $data->pluck('domain')->toArray();
+        $domainIdList = $request->post('domain_id_list');
+        if(!empty($domainIdList)) {
+            $domainsList = $this->repository->getListById($domainIdList);
+        } else {
+            $data = current($this->query()['domains']);
+            $domainsList = $data->pluck('domain')->toArray();
+        }
+
         $result = $this->service->parse($domainsList);
         if(!$result) {
             Alert::success('Данные успешно обновлены!');
