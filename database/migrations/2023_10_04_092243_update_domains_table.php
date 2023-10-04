@@ -9,20 +9,16 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('domains', function (Blueprint $table) {
-            $table->foreignId('processing_status_id')
+            $table->unsignedFloat('income', 20)
                 ->nullable()
-                ->after('auto_type_id')
-                ->references('id')
-                ->on('processing_statuses')
-                ->nullOnDelete();
+                ->after('processing_status_id');
         });
     }
 
     public function down(): void
     {
         Schema::table('domains', function (Blueprint $table) {
-            $table->dropForeign(['processing_status_id']);
-            $table->dropColumn('processing_status_id');
+            $table->dropColumn('income');
         });
     }
 };

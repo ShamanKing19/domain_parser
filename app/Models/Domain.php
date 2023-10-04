@@ -11,6 +11,7 @@ use Orchid\Filters\Filterable;
 use Orchid\Filters\Types\Like;
 use Orchid\Filters\Types\Where;
 use Orchid\Filters\Types\WhereIn;
+use Orchid\Filters\Types\WhereMaxMin;
 use Orchid\Screen\AsMultiSource;
 
 class Domain extends Model
@@ -37,7 +38,8 @@ class Domain extends Model
         'has_catalog' => Where::class,
         'has_basket' => Where::class,
         'type_id' => Where::class,
-        'processing_status_id' => Where::class
+        'processing_status_id' => Where::class,
+        'income' => WhereMaxMin::class
     ];
 
     /**
@@ -57,7 +59,8 @@ class Domain extends Model
         'has_catalog',
         'has_basket',
         'type_id',
-        'processing_status_id'
+        'processing_status_id',
+        'income'
     ];
 
     protected $fillable = [
@@ -79,6 +82,7 @@ class Domain extends Model
         'type_id',
         'auto_type_id',
         'processing_status_id',
+        'income',
         'updated_at'
     ];
 

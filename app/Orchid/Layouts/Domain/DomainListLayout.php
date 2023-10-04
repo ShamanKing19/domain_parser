@@ -125,10 +125,7 @@ class DomainListLayout extends Table
                 ->filter(Input::make())
                 ->sort(),
 
-            TD::make('last_year_income', 'Выручка')
-                ->render(function(Domain $domain) {
-                    return $domain->last_year_income;
-                })
+            TD::make('income', 'Выручка')
                 ->sort(),
 
             TD::make('emails_string', 'Почты')

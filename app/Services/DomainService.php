@@ -184,6 +184,11 @@ class DomainService
         if($newCompanyIdList) {
             $domain->companies()->syncWithoutDetaching($newCompanyIdList);
         }
+
+        // Установка значения колонки с выручкой за последний финансовый год
+        if($income = $domain->getLastYearIncomeAttribute()) {
+            $domain->update(['income' => $income]);
+        }
     }
 
     /**
