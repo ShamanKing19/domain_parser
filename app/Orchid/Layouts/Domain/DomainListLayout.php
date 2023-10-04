@@ -5,6 +5,7 @@ namespace App\Orchid\Layouts\Domain;
 use App\Models\Domain;
 use App\Repositories\DomainRepository;
 use Orchid\Screen\Actions\Link;
+use Orchid\Screen\Fields\CheckBox;
 use Orchid\Screen\Fields\Input;
 use Orchid\Screen\Layouts\Table;
 use Orchid\Screen\TD;
@@ -45,6 +46,8 @@ class DomainListLayout extends Table
     protected function columns() : iterable
     {
         return [
+            TD::make('checkbox', '#')->render(fn(Domain $domain) => CheckBox::make('domain_id_list[]')->value($domain->id)->checked(false)),
+
             TD::make('id')
                 ->render(function(Domain $domain) {
                     return Link::make($domain->id)->route('platform.domains.detail', ['domain' => $domain->id]);
@@ -61,7 +64,9 @@ class DomainListLayout extends Table
 
             TD::make('real_domain', 'Конечная ссылка')
                 ->render(function (Domain $domain) {
-                    return Link::make($domain->real_domain)->href($domain->real_domain ?? '')->target('blank');
+                    if(!empty($domain->real_domain)) {
+                        return Link::make($domain->real_domain)->href($domain->real_domain ?? '')->target('blank');
+                    }
                 })
                 ->filter(Input::make())
                 ->sort(),

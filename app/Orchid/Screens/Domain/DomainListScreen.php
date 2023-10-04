@@ -9,6 +9,7 @@ use App\Services\DomainService;
 use App\Services\DomainsFileReaderService;
 use Illuminate\Http\Request;
 use Orchid\Screen\Actions\Button;
+use Orchid\Screen\Actions\DropDown;
 use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Actions\ModalToggle;
 use Orchid\Screen\Screen;
@@ -69,15 +70,25 @@ class DomainListScreen extends Screen
                 ->method('import')
                 ->icon('bs.plus-circle'),
 
-            Button::make('Спарсить всю страницу')
-                ->method('parsePage')
-                ->parameters($params)
-                ->icon('bs.cpu')
+            DropDown::make()
+                ->icon('bs.three-dots')
+                ->list([
+                    Button::make('Спарсить всю страницу')
+                        ->method('parsePage')
+                        ->parameters($params)
+                        ->icon('bs.cpu'),
+
+                    Button::make('Удалить')
+                        ->icon('trash')
+                        ->confirm('Вы точно хотите удалить выбранные записи?')
+                        ->method('removeSelected')
+                ])
         ];
     }
 
     /**
      * Парсинг всех записей на странице
+     * TODO: Вынести в сервис
      *
      * @return void
      */
@@ -101,6 +112,7 @@ class DomainListScreen extends Screen
 
     /**
      * Импорт доменов
+     * TODO: Вынести в сервис
      *
      * @param Request $request
      *
@@ -142,6 +154,31 @@ class DomainListScreen extends Screen
         } else {
             Alert::error("Добавлено $createdCount/$domainsCount");
         }
+    }
+
+    /**
+     * Удаление выбранных доменов
+     * TODO: Вынести в сервис
+     *
+     * @param Request $request
+     *
+     * @return void
+     */
+    public function removeSelected(Request $request)
+    {
+        $idList = $request->post('domain_id_list');
+        if(empty($idList)) {
+            Alert::error('Не было выбрано ни одной записи');
+        }
+
+        $deletedCount = Domain::destroy($idList);
+        $message = \App\Helpers::declinateWord(
+            $deletedCount,
+            "Была удалена $deletedCount запись",
+            "Было удалено $deletedCount записи",
+            "Было удалено $deletedCount записей"
+        );
+        Alert::success($message);
     }
 
     public function layout(): iterable
