@@ -26,7 +26,6 @@ class ExportListenerLayout extends Listener
     protected function layouts(): iterable
     {
         $request = request();
-
         return [
             Layout::rows([
                 Select::make('crm_category_id')

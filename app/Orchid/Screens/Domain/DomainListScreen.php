@@ -153,16 +153,8 @@ class DomainListScreen extends Screen
             $domainList = array_merge($domainList, $fileService->parse());
         }
 
-        $domainsCount = count($domainList);
         $createdCount = $this->service->import($domainList);
-
-        if($createdCount === $domainsCount) {
-            Alert::success("Добавлено $createdCount/$domainsCount");
-        } elseif ($createdCount > 0 && $createdCount < $domainsCount) {
-            Alert::warning("Добавлено $createdCount/$domainsCount");
-        } else {
-            Alert::error("Добавлено $createdCount/$domainsCount");
-        }
+        $this->showResultAlert(count($domainList), $createdCount, 'Добавлено');
     }
 
     /**
@@ -180,13 +172,7 @@ class DomainListScreen extends Screen
         }
 
         $deletedCount = $this->service->remove($idList);
-        $message = \App\Helpers::declinateWord(
-            $deletedCount,
-            "Была удалена $deletedCount запись",
-            "Было удалено $deletedCount записи",
-            "Было удалено $deletedCount записей"
-        );
-        Alert::success($message);
+        $this->showResultAlert($deletedCount, $deletedCount, 'Удалено');
     }
 
     /**
@@ -217,16 +203,7 @@ class DomainListScreen extends Screen
             }
         }
 
-        $domainsCount = count($domainIdList);
-        $createdCount = count($dealIdList);
-
-        if($createdCount === $domainsCount) {
-            Alert::success("Добавлено $createdCount/$domainsCount");
-        } elseif ($createdCount > 0 && $createdCount < $domainsCount) {
-            Alert::warning("Добавлено $createdCount/$domainsCount");
-        } else {
-            Alert::error("Добавлено $createdCount/$domainsCount");
-        }
+        $this->showResultAlert(count($domainIdList), count($dealIdList), 'Создано сделок:');
     }
 
     /**
@@ -259,7 +236,29 @@ class DomainListScreen extends Screen
             // TODO: Вернуть, когда придумаю как передавать сюда выбранные домены
 //            Layout::modal('export', [
 //                ExportListenerLayout::class,
-//            ])->async('asyncGetExportFieldValues')->title('Экспорт'),
+//            ])
+//                ->async('asyncGetExportFieldValues')
+//                ->method('export')
+//                ->title('Экспорт'),
         ];
+    }
+
+    /**
+     * Отображение статуса
+     *
+     * @param int $all
+     * @param int $done
+     *
+     * @return void
+     */
+    private function showResultAlert(int $all, int $done, string $message = '') : void
+    {
+        if($done === $all) {
+            Alert::success($message ? "$message $done/$all" : "$done/$all");
+        } elseif ($done > 0 && $done < $all) {
+            Alert::warning($message ? "$message $done/$all" : "$done/$all");
+        } else {
+            Alert::error($message ? "$message $done/$all" : "$done/$all");
+        }
     }
 }
