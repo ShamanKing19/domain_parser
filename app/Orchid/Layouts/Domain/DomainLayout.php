@@ -16,7 +16,7 @@ class DomainLayout extends Rows
                 ->horizontal()
                 ->title('id'),
 
-            Label::make('domain.domain')
+            Input::make('domain.domain')
                 ->horizontal()
                 ->title('Домен'),
 

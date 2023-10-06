@@ -299,6 +299,10 @@ class DomainService
             $urlInfo = parse_url($fields['domain']);
             $fields['domain'] = $urlInfo['host'] ?? $urlInfo['path'];
         }
+        if(!empty($fields['real_domain'])) {
+            $clearUrl = explode('?', $fields['real_domain'])[0];
+            $fields['real_domain'] = trim($clearUrl, '/');
+        }
 
         return $fields;
     }
