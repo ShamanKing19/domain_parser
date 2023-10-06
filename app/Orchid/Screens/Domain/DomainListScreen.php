@@ -4,8 +4,10 @@ namespace App\Orchid\Screens\Domain;
 
 use App\Models\Domain;
 use App\Orchid\Layouts\Domain\DomainListLayout;
+use App\Orchid\Layouts\Domain\ExportListenerLayout;
 use App\Orchid\Layouts\Domain\ImportDomainsLayout;
 use App\Repositories\DomainRepository;
+use App\Services\B24ExportService;
 use App\Services\DomainService;
 use App\Services\DomainsFileReaderService;
 use Illuminate\Http\Request;
@@ -19,13 +21,15 @@ use Orchid\Support\Facades\Layout;
 
 class DomainListScreen extends Screen
 {
-    private DomainService $service;
     private DomainRepository $repository;
+    private DomainService $service;
+    private B24ExportService $exportService;
 
-    public function __construct(DomainService $service, DomainRepository $repository)
+    public function __construct(DomainRepository $repository, DomainService $service, B24ExportService $exportService)
     {
-        $this->service = $service;
         $this->repository = $repository;
+        $this->service = $service;
+        $this->exportService = $exportService;
     }
 
     public function query(): iterable
@@ -37,7 +41,10 @@ class DomainListScreen extends Screen
         });
 
         return [
-            'domains' => $domains
+            'domains' => $domains,
+            'crm_category_list' => $this->exportService->getDealCategoryList(),
+            'crm_user_list' => $this->exportService->getUserList(),
+            'crm_stage_list' => $this->exportService->getDealStageList(),
         ];
     }
 
@@ -80,6 +87,16 @@ class DomainListScreen extends Screen
                         ->method('parsePage')
                         ->parameters($params)
                         ->icon('bs.cpu'),
+
+                    Button::make('Экспорт')
+                        ->method('export')
+                        ->icon('bs.arrow-through-heart'),
+
+                    // TODO: Придумать как получать в модалке выбранные id доменов (тогда можно будет использовать асинхронную подгрузку настроек для экспорта в попапе)
+//                    ModalToggle::make('Экспорт')
+//                        ->modal('export')
+//                        ->method('export')
+//                        ->icon('bs.plus-circle'),
 
                     Button::make('Удалить')
                         ->icon('trash')
@@ -172,13 +189,77 @@ class DomainListScreen extends Screen
         Alert::success($message);
     }
 
+    /**
+     * @param Request $request
+     *
+     * @return void
+     */
+    public function export(Request $request) : void
+    {
+        $domainIdList = $request->post('domain_id_list');
+        if(empty($domainIdList)) {
+            Alert::warning('Не выбрано ни одной записи');
+            return;
+        }
+
+        $categoryId = (int)$request->post('crm_category_id');
+        $stageId = $request->post('stage_id');
+        $assignedById = (int)$request->post('assigned_by_id');
+
+        $domainList = Domain::whereIn('id', $domainIdList)->get();
+
+        $dealIdList = [];
+        foreach($domainList as $domain) {
+            $contactId = $this->exportService->createContact($domain, $assignedById);
+            $dealId = $this->exportService->createDeal($domain, $categoryId, $stageId, $assignedById, $contactId);
+            if($dealId) {
+                $dealIdList[] = $dealId;
+            }
+        }
+
+        $domainsCount = count($domainIdList);
+        $createdCount = count($dealIdList);
+
+        if($createdCount === $domainsCount) {
+            Alert::success("Добавлено $createdCount/$domainsCount");
+        } elseif ($createdCount > 0 && $createdCount < $domainsCount) {
+            Alert::warning("Добавлено $createdCount/$domainsCount");
+        } else {
+            Alert::error("Добавлено $createdCount/$domainsCount");
+        }
+    }
+
+    /**
+     * Данные для экспорта
+     * (функция нужна для модалки, подгружаемой асинхронно)
+     *
+     * @param B24ExportService $service
+     *
+     * @return array[]
+     */
+    public function asyncGetExportFieldValues(B24ExportService $service) : array
+    {
+        return [
+            'crm_category_list' => $service->getDealCategoryList(),
+            'crm_user_list' => $service->getUserList(),
+            'crm_stage_list' => $service->getDealStageList(),
+        ];
+    }
+
     public function layout(): iterable
     {
         return [
+            ExportListenerLayout::class,
             DomainListLayout::class,
+
             Layout::modal('import', [
                 ImportDomainsLayout::class
             ])->title('Импорт'),
+
+            // TODO: Вернуть, когда придумаю как передавать сюда выбранные домены
+//            Layout::modal('export', [
+//                ExportListenerLayout::class,
+//            ])->async('asyncGetExportFieldValues')->title('Экспорт'),
         ];
     }
 }
