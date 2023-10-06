@@ -363,6 +363,9 @@ class Parser
         };
 
         Object.assign(cmsExamples, {
+            'wordpress': {
+                'x-powered-by': 'wp engine'
+            },
             'ukit': {
                 'x-cms': 'ukit'
             },
@@ -389,6 +392,9 @@ class Parser
             },
             'magento': {
                 'set-cookie': 'x-magento'
+            },
+            'shopify': {
+                'powered-by': 'shopify'
             }
         });
 
@@ -447,7 +453,8 @@ class Parser
             'amiro_sys_': 'amiro',
             'content="CMS EDGESTILE SiteEdit">': 'siteedit',
             'meta name="generator" content="OkayCMS': 'okay',
-            '/_nuxt': 'nuxt'
+            '/_nuxt': 'nuxt',
+            '<div id="__next"': 'next'
         };
 
         for(const string in cmsExamples) {

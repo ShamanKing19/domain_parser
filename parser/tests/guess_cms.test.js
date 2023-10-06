@@ -11,6 +11,7 @@ const cmsHeadersMap = {
     'phpshop': ['https://42na.ru/', 'https://64-shop.ru/', 'http://a-ofis.ru/', 'http://accubat.ru/'],
     'modx': ['https://www.9474444.com/', 'https://agromolkom.ru/'],
     'magento': ['https://2009920.ru/'],
+    'shopify': ['https://evengreener.com/'],
 };
 
 for(const cms in cmsHeadersMap) {
@@ -55,6 +56,7 @@ const cmsMap = {
     'modx': ['https://3kdveri.ru/', 'https://www.9474444.com/', 'https://agromolkom.ru/'],
     'magento': ['https://accuma.ru/', 'https://2009920.ru/'],
     'nuxt': ['https://skillline.ru/'],
+    'next': ['https://bryantcodes.art/']
 };
 
 for(const cms in cmsMap) {
