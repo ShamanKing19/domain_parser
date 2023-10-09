@@ -102,6 +102,7 @@ class UserProfileScreen extends Screen
                 'required',
                 Rule::unique(User::class, 'email')->ignore($request->user()),
             ],
+            'user.b24_webhook' => ['nullable', 'string']
         ]);
 
         $request->user()
