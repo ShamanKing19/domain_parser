@@ -150,11 +150,17 @@ class DomainService
      *
      * @return Domain|null
      */
-    public function update(int $id, array $fields)
+    public function update(int $id, array $fields) : ?Domain
     {
         $domain = Domain::find($id);
         if(is_null($domain)) {
             return null;
+        }
+
+        $fields['status'] = $fields['status'] ?? 0;
+        if($this->isStatusValid($domain->status) && !$this->isStatusValid($fields['status'])) {
+            $domain->update(['status' => $fields['status']]);
+            return $domain;
         }
 
         $fields = $this->prepareFields($fields);
@@ -324,5 +330,17 @@ class DomainService
         }
 
         return $fields;
+    }
+
+    /**
+     * Проверка: успешный ли статус ответа
+     *
+     * @param int $status
+     *
+     * @return bool
+     */
+    public function isStatusValid(int $status) : bool
+    {
+        return $status >= 200 && $status < 400;
     }
 }
