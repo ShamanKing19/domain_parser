@@ -25,11 +25,12 @@ class DomainListScreen extends Screen
     private DomainService $service;
     private B24ExportService $exportService;
 
-    public function __construct(DomainRepository $repository, DomainService $service, B24ExportService $exportService)
+//    public function __construct(DomainRepository $repository, DomainService $service, B24ExportService $exportService)
+    public function __construct(DomainRepository $repository, DomainService $service)
     {
         $this->repository = $repository;
         $this->service = $service;
-        $this->exportService = $exportService;
+//        $this->exportService = $exportService;
     }
 
     public function query(): iterable
@@ -39,6 +40,10 @@ class DomainListScreen extends Screen
             $emails = $domain->emails()->get('email')->implode('email', ', ');
             $domain['emails_string'] = $emails;
         });
+
+        // TODO: Переделать через DI
+        $webhook = request()->user()->getBitrix24Webhook();
+        $this->exportService = new B24ExportService($webhook);
 
         return [
             'domains' => $domains,

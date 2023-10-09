@@ -15,12 +15,12 @@ class ExportListenerLayout extends Listener
         'crm_category_id'
     ];
 
-    private B24ExportService $service;
-
-    public function __construct(B24ExportService $service)
-    {
-        $this->service = $service;
-    }
+//    private B24ExportService $service;
+//
+//    public function __construct(B24ExportService $service)
+//    {
+//        $this->service = $service;
+//    }
 
 
     protected function layouts(): iterable
@@ -51,6 +51,10 @@ class ExportListenerLayout extends Listener
 
     public function handle(Repository $repository, Request $request): Repository
     {
+        // TODO: Переделать через DI
+        $webhook = $request->user()->getBitrix24Webhook();
+        $this->service = new B24ExportService($webhook);
+
         $categoryId = $request->post('crm_category_id');
 
         $categoryList = $this->service->getDealCategoryList();

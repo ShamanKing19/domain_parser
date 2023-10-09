@@ -8,9 +8,9 @@ class B24ExportService
     /** @var string Вебхук bitrix24 */
     private string $baseUrl;
 
-    public function __construct()
+    public function __construct(string $webhook)
     {
-        $this->baseUrl = config('parser.bitrix24_webhook');
+        $this->baseUrl = $webhook;
     }
 
     /**
@@ -21,6 +21,10 @@ class B24ExportService
     public function getUserList() : array
     {
         $userList = $this->makeRequest('user.get');
+        if(!$userList) {
+            return [];
+        }
+
         $userItems = [];
         foreach($userList as $user) {
             $fullName = implode(' ', array_filter([$user['LAST_NAME'], $user['NAME']]));
@@ -38,6 +42,10 @@ class B24ExportService
     public function getDealCategoryList() : array
     {
         $categoryList =  $this->makeRequest('crm.dealcategory.list');
+        if(!$categoryList) {
+            return [];
+        }
+
         $categoryItems = [];
         foreach($categoryList as $category) {
             $categoryItems[$category['ID']] = $category['NAME'];
@@ -56,6 +64,10 @@ class B24ExportService
         $stageList = $this->makeRequest('crm.dealcategory.stage.list', [
             'ID' => $categoryId
         ]);
+
+        if(!$stageList) {
+            return [];
+        }
 
         $stageItems = [];
         foreach($stageList as $stage) {
@@ -142,17 +154,21 @@ class B24ExportService
      * @param string $methodName Название rest метода bitrix24
      * @param array $params
      *
-     * @return array|int
+     * @return array|int|null
      */
     private function makeRequest(string $methodName, array $params = [])
     {
-        $request = Http::get($this->baseUrl . '/' . $methodName, $params);
-        $response = $request->json();
-        if($response) {
-            return $response['result'];
-        }
+        try {
+            $request = Http::get($this->baseUrl . '/' . $methodName, $params);
+            $response = $request->json();
+            if($response) {
+                return $response['result'];
+            }
 
-        return [];
+            return [];
+        } catch (\Exception $e) {
+            return null;
+        }
     }
 
 }
