@@ -69,9 +69,6 @@ class DomainListScreen extends Screen
                         ->parameters($params)
                         ->icon('bs.cpu'),
 
-                    Button::make('Экспорт')
-                        ->icon('bs.arrow-through-heart'),
-
                     Button::make('Удалить')
                         ->icon('trash')
                         ->confirm('Вы точно хотите удалить выбранные записи?')
