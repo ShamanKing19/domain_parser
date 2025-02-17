@@ -4,7 +4,6 @@ namespace App\Orchid\Screens\Domain;
 
 use App\Models\Domain;
 use App\Orchid\Layouts\Domain\DomainListLayout;
-use App\Orchid\Layouts\Domain\ExportListenerLayout;
 use App\Orchid\Layouts\Domain\ImportDomainsLayout;
 use App\Repositories\DomainRepository;
 use App\Services\B24ExportService;
@@ -231,7 +230,6 @@ class DomainListScreen extends Screen
     public function layout(): iterable
     {
         return [
-            ExportListenerLayout::class,
             DomainListLayout::class,
 
             Layout::modal('import', [
