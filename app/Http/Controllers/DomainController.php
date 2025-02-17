@@ -29,12 +29,28 @@ class DomainController extends Controller
      * // TODO: Вынести в репозиторий
      *
      * @param Request $request
+     *
      * @return Response
      */
     public function index(Request $request): Response
     {
-        $itemsPerPage = $request->get('count') ?: \App\Models\Domain::getModel()->getPerPage();
-        $domains = \App\Models\Domain::paginate($itemsPerPage, ['id', 'domain']);
+        $itemsPerPage = $request->get('count') ?: Domain::getModel()->getPerPage();
+        $domains = Domain::paginate($itemsPerPage, ['id', 'domain']);
+
+        return \Response::success('', $domains);
+    }
+
+    /**
+     * Получение записей с учётом фильтров в GET запросе
+     *
+     * @param Request $request
+     *
+     * @return Response
+     */
+    public function get(Request $request): Response
+    {
+        $filters = $request->all();
+        $domains = Domain::with(['phones', 'emails'])->where($filters)->get();
 
         return \Response::success('', $domains);
     }
@@ -48,7 +64,7 @@ class DomainController extends Controller
      */
     public function view(Domain $domain): Response
     {
-        return \Response::success('' , $domain->load(['phones', 'emails', 'inns']));
+        return \Response::success('', $domain->load(['phones', 'emails', 'inns']));
     }
 
     /**
@@ -96,7 +112,7 @@ class DomainController extends Controller
     {
         $fields = $request->all();
         $success = $this->service->createMany($fields);
-        if(!$success) {
+        if (!$success) {
             return \Response::error('Что-то пошло не так при создании записей');
         }
 
@@ -117,11 +133,11 @@ class DomainController extends Controller
 
         $domain = $this->service->createOrUpdate($fields);
 
-        if(!$domain) {
+        if (!$domain) {
             return \Response::error('Что-то пошло не так...');
         }
 
-        if(!$domain->wasRecentlyCreated && !$domain->wasChanged()) {
+        if (!$domain->wasRecentlyCreated && !$domain->wasChanged()) {
             return \Response::success('Ничего не было обновлено');
         }
 
@@ -140,28 +156,13 @@ class DomainController extends Controller
         $allFields = $request->validated();
 
         $changedFields = [];
-        foreach($allFields['domains'] as $fields) {
+        foreach ($allFields['domains'] as $fields) {
             $domain = $this->service->createOrUpdate($fields);
-            if($domain) {
+            if ($domain) {
                 $changedFields[$domain->id] = $domain->getChanges();
             }
         }
 
         return \Response::success('Записи обновлены!', $changedFields);
-    }
-
-    /**
-     * Получение записей с учётом фильтров в GET запросе
-     *
-     * @param Request $request
-     *
-     * @return Response
-     */
-    public function get(Request $request): Response
-    {
-        $filters = $request->all();
-        $domains = Domain::with(['phones', 'emails'])->where($filters)->get();
-
-        return \Response::success('', $domains);
     }
 }

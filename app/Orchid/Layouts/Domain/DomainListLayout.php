@@ -2,7 +2,10 @@
 
 namespace App\Orchid\Layouts\Domain;
 
+use App\Helpers;
 use App\Models\Domain;
+use App\Models\ProcessingStatus;
+use App\Models\WebsiteType;
 use App\Repositories\DomainRepository;
 use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Fields\CheckBox;
@@ -21,42 +24,41 @@ class DomainListLayout extends Table
     public function __construct(DomainRepository $repository)
     {
         $cmsList = $repository->getCmsList();
-        foreach($cmsList as $cms) {
+        foreach ($cmsList as $cms) {
             $this->cmsList[$cms] = $cms;
         }
 
         $statusList = $repository->getStatusList();
-        foreach($statusList as $status) {
+        foreach ($statusList as $status) {
             $this->statusList[$status] = $status;
         }
 
         $typeIdList = $repository->getTypeList();
-        $typeList = \App\Models\WebsiteType::where('id', '=', $typeIdList)->get();
-        foreach($typeList as $type) {
+        $typeList = WebsiteType::where('id', '=', $typeIdList)->get();
+        foreach ($typeList as $type) {
             $this->typeList[$type->id] = $type->name;
         }
 
-        $processingStatusList = \App\Models\ProcessingStatus::all();
-        foreach($processingStatusList as $status) {
+        $processingStatusList = ProcessingStatus::all();
+        foreach ($processingStatusList as $status) {
             $this->processingStatusList[$status->id] = $status->name;
         }
     }
 
-
-    protected function columns() : iterable
+    protected function columns(): iterable
     {
         return [
             TD::make('checkbox', '#')->render(fn(Domain $domain) => CheckBox::make('domain_id_list[]')->value($domain->id)->checked(false)),
 
             TD::make('id')
-                ->render(function(Domain $domain) {
+                ->render(function (Domain $domain) {
                     return Link::make($domain->id)->route('platform.domains.detail', ['domain' => $domain->id]);
                 })
                 ->filter(Input::make())
                 ->sort(),
 
             TD::make('domain', 'Домен')
-                ->render(function(Domain $domain) {
+                ->render(function (Domain $domain) {
                     return Link::make($domain->domain)->route('platform.domains.detail', ['domain' => $domain->id]);
                 })
                 ->filter(Input::make())
@@ -64,7 +66,7 @@ class DomainListLayout extends Table
 
             TD::make('real_domain', 'Конечная ссылка')
                 ->render(function (Domain $domain) {
-                    if(!empty($domain->real_domain)) {
+                    if (!empty($domain->real_domain)) {
                         return Link::make($domain->real_domain)->href($domain->real_domain ?? '')->target('blank');
                     }
                 })
@@ -72,7 +74,7 @@ class DomainListLayout extends Table
                 ->sort(),
 
             TD::make('processing_status_id', 'Статус')
-                ->render(function(Domain $domain) {
+                ->render(function (Domain $domain) {
                     return $domain->processingStatus->name ?? '';
                 })
                 ->filter(TD::FILTER_SELECT, $this->processingStatusList)
@@ -85,30 +87,30 @@ class DomainListLayout extends Table
                 ->sort(),
 
             TD::make('type_id', 'Тип')
-                ->render(function(Domain $domain) {
+                ->render(function (Domain $domain) {
                     return $domain->type->name ?? '';
                 })
                 ->filter(TD::FILTER_SELECT, $this->typeList)
                 ->sort(),
 
             TD::make('title', 'Заголовок')
-                ->render(function(Domain $domain) {
-                    return $domain->title ? \App\Helpers::truncate($domain->title, 60, '...') : '';
+                ->render(function (Domain $domain) {
+                    return $domain->title ? Helpers::truncate($domain->title, 60, '...') : '';
                 })
                 ->filter(Input::make())
                 ->sort(),
 
             TD::make('description', 'Описание')
-                ->render(function(Domain $domain) {
-                    return $domain->description ? \App\Helpers::truncate($domain->description, 60, '...') : '';
+                ->render(function (Domain $domain) {
+                    return $domain->description ? Helpers::truncate($domain->description, 60, '...') : '';
                 })
                 ->filter(Input::make())
                 ->sort()
                 ->defaultHidden(),
 
             TD::make('keywords', 'Ключевые слова')
-                ->render(function(Domain $domain) {
-                    return $domain->keywords ? \App\Helpers::truncate($domain->keywords, 60, '...') : '';
+                ->render(function (Domain $domain) {
+                    return $domain->keywords ? Helpers::truncate($domain->keywords, 60, '...') : '';
                 })
                 ->filter(Input::make())
                 ->sort()
@@ -134,8 +136,8 @@ class DomainListLayout extends Table
                 ->sort(),
 
             TD::make('emails_string', 'Почты')
-                ->render(function(Domain $domain) {
-                    return $domain->emails_string ? \App\Helpers::truncate($domain->emails_string, 60, '...') : '';
+                ->render(function (Domain $domain) {
+                    return $domain->emails_string ? Helpers::truncate($domain->emails_string, 60, '...') : '';
                 })
         ];
     }

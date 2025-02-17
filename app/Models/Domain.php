@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Models\Domain\Email;
+use App\Models\Domain\Phone;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -18,10 +20,8 @@ class Domain extends Model
 {
     use HasFactory, AsMultiSource, Filterable;
 
-    protected $table = 'domains';
-
     public $timestamps = false;
-
+    protected $table = 'domains';
     protected $perPage = 500;
 
     protected $allowedFilters = [
@@ -86,24 +86,14 @@ class Domain extends Model
         'updated_at'
     ];
 
-    public function phones() : HasMany
+    public function phones(): HasMany
     {
-        return $this->hasMany(\App\Models\Domain\Phone::class, 'domain_id', 'id');
+        return $this->hasMany(Phone::class, 'domain_id', 'id');
     }
 
-    public function emails() : HasMany
+    public function emails(): HasMany
     {
-        return $this->hasMany(\App\Models\Domain\Email::class, 'domain_id', 'id');
-    }
-
-    /**
-     * Компании, привязанные к домену
-     *
-     * @return BelongsToMany
-     */
-    public function companies() : BelongsToMany
-    {
-        return $this->belongsToMany(Company::class, 'domains_inns', 'domain_id', 'inn_id');
+        return $this->hasMany(Email::class, 'domain_id', 'id');
     }
 
     /**
@@ -111,9 +101,9 @@ class Domain extends Model
      *
      * @return HasOne
      */
-    public function type() : HasOne
+    public function type(): HasOne
     {
-        return $this->hasOne(\App\Models\WebsiteType::class, 'id', 'type_id');
+        return $this->hasOne(WebsiteType::class, 'id', 'type_id');
     }
 
     /**
@@ -121,9 +111,9 @@ class Domain extends Model
      *
      * @return HasOne
      */
-    public function processingStatus() : HasOne
+    public function processingStatus(): HasOne
     {
-        return $this->hasOne(\App\Models\ProcessingStatus::class, 'id', 'processing_status_id');
+        return $this->hasOne(ProcessingStatus::class, 'id', 'processing_status_id');
     }
 
     /**
@@ -131,11 +121,21 @@ class Domain extends Model
      *
      * @return Company|null
      */
-    public function getCompanyAttribute() : Company|null
+    public function getCompanyAttribute(): Company|null
     {
-        return $this->companies()->get()->sortBy(function($value) {
+        return $this->companies()->get()->sortBy(function ($value) {
             return $value->last_finance_year_income;
         }, SORT_REGULAR, true)->first();
+    }
+
+    /**
+     * Компании, привязанные к домену
+     *
+     * @return BelongsToMany
+     */
+    public function companies(): BelongsToMany
+    {
+        return $this->belongsToMany(Company::class, 'domains_inns', 'domain_id', 'inn_id');
     }
 
     /**

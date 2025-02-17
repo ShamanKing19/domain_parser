@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
+use App\Models\WebsiteType;
 
 class StoreDomainRequest extends BaseRequest
 {
@@ -24,8 +24,8 @@ class StoreDomainRequest extends BaseRequest
             'has_https_redirect' => ['bool'],
             'has_catalog' => ['bool'],
             'has_basket' => ['bool'],
-            'type_id' => ['int', 'exists:'.\App\Models\WebsiteType::class.',id'],
-            'auto_type_id' => ['int', 'exists:'.\App\Models\WebsiteType::class.',id'],
+            'type_id' => ['int', 'exists:' . WebsiteType::class . ',id'],
+            'auto_type_id' => ['int', 'exists:' . WebsiteType::class . ',id'],
             'phones' => ['array'],
             'phones.*' => ['string'],
             'emails' => ['array'],

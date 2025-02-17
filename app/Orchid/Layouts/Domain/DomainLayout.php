@@ -2,6 +2,8 @@
 
 namespace App\Orchid\Layouts\Domain;
 
+use App\Models\ProcessingStatus;
+use App\Models\WebsiteType;
 use Orchid\Screen\Fields\Input;
 use Orchid\Screen\Fields\Label;
 use Orchid\Screen\Fields\Select;
@@ -33,13 +35,13 @@ class DomainLayout extends Rows
                 ->title('CMS / Framework'),
 
             Select::make('domain.processing_status_id')
-                ->fromModel(\App\Models\ProcessingStatus::class, 'name')
+                ->fromModel(ProcessingStatus::class, 'name')
                 ->empty('Не обработан')
                 ->horizontal()
                 ->title('Статус обработки'),
 
             Select::make('domain.type_id')
-                ->fromModel(\App\Models\WebsiteType::class, 'name')
+                ->fromModel(WebsiteType::class, 'name')
                 ->empty('Не определён')
                 ->horizontal()
                 ->title('Тип сайта'),

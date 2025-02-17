@@ -12,10 +12,8 @@ class WebsiteType extends Model
 {
     use HasFactory, AsMultiSource, Filterable;
 
-    protected $table = 'website_types';
-
     public $timestamps = false;
-
+    protected $table = 'website_types';
     protected $fillable = [
         'name'
     ];
@@ -30,9 +28,9 @@ class WebsiteType extends Model
      *
      * @return HasMany
      */
-    public function domains() : HasMany
+    public function domains(): HasMany
     {
-        return $this->hasMany(\App\Models\Domain::class, 'auto_type_id', 'id');
+        return $this->hasMany(Domain::class, 'auto_type_id', 'id');
     }
 
     /**
@@ -40,9 +38,9 @@ class WebsiteType extends Model
      *
      * @return HasMany
      */
-    public function manualDomains() : HasMany
+    public function manualDomains(): HasMany
     {
-        return $this->hasMany(\App\Models\Domain::class, 'type_id', 'id');
+        return $this->hasMany(Domain::class, 'type_id', 'id');
     }
 
     /**
@@ -50,8 +48,8 @@ class WebsiteType extends Model
      *
      * @return HasMany
      */
-    public function keywords() : HasMany
+    public function keywords(): HasMany
     {
-        return $this->hasMany(\App\Models\WebsiteTypeKeyword::class, 'type_id', 'id');
+        return $this->hasMany(WebsiteTypeKeyword::class, 'type_id', 'id');
     }
 }

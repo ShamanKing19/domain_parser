@@ -44,16 +44,6 @@ class UserProfileScreen extends Screen
     }
 
     /**
-     * Display header description.
-     *
-     * @return string|null
-     */
-    public function description(): ?string
-    {
-        return 'Update your account details such as name, email address and password';
-    }
-
-    /**
      * Button commands.
      *
      * @return Action[]
@@ -92,12 +82,39 @@ class UserProfileScreen extends Screen
     }
 
     /**
+     * Display header description.
+     *
+     * @return string|null
+     */
+    public function description(): ?string
+    {
+        return 'Update your account details such as name, email address and password';
+    }
+
+    /**
+     * @param Request $request
+     */
+    public function changePassword(Request $request): void
+    {
+        $request->validate([
+            'old_password' => 'required|password:web',
+            'password' => 'required|confirmed',
+        ]);
+
+        tap($request->user(), function ($user) use ($request) {
+            $user->password = Hash::make($request->get('password'));
+        })->save();
+
+        Toast::info(__('Password changed.'));
+    }
+
+    /**
      * @param Request $request
      */
     public function save(Request $request): void
     {
         $request->validate([
-            'user.name'  => 'required|string',
+            'user.name' => 'required|string',
             'user.email' => [
                 'required',
                 Rule::unique(User::class, 'email')->ignore($request->user()),
@@ -110,22 +127,5 @@ class UserProfileScreen extends Screen
             ->save();
 
         Toast::info(__('Profile updated.'));
-    }
-
-    /**
-     * @param Request $request
-     */
-    public function changePassword(Request $request): void
-    {
-        $request->validate([
-            'old_password' => 'required|password:web',
-            'password'     => 'required|confirmed',
-        ]);
-
-        tap($request->user(), function ($user) use ($request) {
-            $user->password = Hash::make($request->get('password'));
-        })->save();
-
-        Toast::info(__('Password changed.'));
     }
 }

@@ -9,10 +9,8 @@ class WebsiteTypeKeyword extends Model
 {
     use HasFactory;
 
-    protected $table = 'website_type_keywords';
-
     public $timestamps = false;
-
+    protected $table = 'website_type_keywords';
     protected $fillable = [
         'type_id',
         'word'

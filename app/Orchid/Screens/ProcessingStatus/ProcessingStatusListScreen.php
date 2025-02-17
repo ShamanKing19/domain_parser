@@ -2,6 +2,7 @@
 
 namespace App\Orchid\Screens\ProcessingStatus;
 
+use App\Models\ProcessingStatus;
 use App\Orchid\Layouts\ProcessingStatus\ProcessingStatusListLayout;
 use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Screen;
@@ -11,7 +12,7 @@ class ProcessingStatusListScreen extends Screen
     public function query(): iterable
     {
         return [
-            'statuses' => \App\Models\ProcessingStatus::filters()->defaultSort('id')->paginate(20)
+            'statuses' => ProcessingStatus::filters()->defaultSort('id')->paginate(20)
         ];
     }
 

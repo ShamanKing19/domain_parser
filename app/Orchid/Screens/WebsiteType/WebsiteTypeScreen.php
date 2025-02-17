@@ -5,6 +5,7 @@ namespace App\Orchid\Screens\WebsiteType;
 use App\Models\WebsiteType;
 use App\Orchid\Layouts\WebsiteType\WebsiteTypeLayout;
 use App\Services\WebsiteTypeService;
+use Exception;
 use Illuminate\Http\Request;
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Actions\Link;
@@ -24,6 +25,7 @@ class WebsiteTypeScreen extends Screen
     public function query(WebsiteType $type): iterable
     {
         $this->type = $type;
+
         return [
             'type' => $this->type
         ];
@@ -61,22 +63,24 @@ class WebsiteTypeScreen extends Screen
         try {
             $success = $type->fill($fields)->save();
 
-            if(isset($fields['keywords']) && is_array($fields['keywords'])) {
+            if (isset($fields['keywords']) && is_array($fields['keywords'])) {
                 $this->service->attachKeywords($type, array_column($fields['keywords'], 'value'));
             }
 
-            if($type->wasRecentlyCreated) {
+            if ($type->wasRecentlyCreated) {
                 Toast::success('Запись была создана!');
+
                 return redirect()->route('platform.website-types.detail', ['type' => $type->id]);
             }
 
-            if($success) {
+            if ($success) {
                 Alert::success('Данные успешно обновлены!' . $type->wasRecentlyCreated);
+
                 return;
             }
 
             Alert::error('Что-то пошло не так при обновлении...');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Alert::error($e->getMessage());
         }
     }
@@ -84,8 +88,9 @@ class WebsiteTypeScreen extends Screen
     public function delete(WebsiteType $type)
     {
         $success = $type->delete();
-        if($success) {
+        if ($success) {
             Toast::success('Запись успешно удалена!');
+
             return redirect()->route('platform.website-types.list');
         }
 

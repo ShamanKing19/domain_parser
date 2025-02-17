@@ -14,10 +14,10 @@ class WebsiteTypeListLayout extends Table
     protected function columns(): iterable
     {
         return [
-            TD::make('id', 'ID')->render(function(WebsiteType $type) {
+            TD::make('id', 'ID')->render(function (WebsiteType $type) {
                 return Link::make($type->id)->route('platform.website-types.detail', $type->id);
             })->sort(),
-            TD::make('name', 'Тип')->render(function(WebsiteType $type) {
+            TD::make('name', 'Тип')->render(function (WebsiteType $type) {
                 return Link::make($type->name)->route('platform.website-types.detail', $type->id);
             })->sort(),
         ];

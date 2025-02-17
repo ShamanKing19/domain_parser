@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Orchid\Layouts\ProcessingStatus;
 
 use App\Models\ProcessingStatus;
@@ -13,10 +14,10 @@ class ProcessingStatusListLayout extends Table
     protected function columns(): iterable
     {
         return [
-            TD::make('id', 'ID')->render(function(ProcessingStatus $type) {
+            TD::make('id', 'ID')->render(function (ProcessingStatus $type) {
                 return Link::make($type->id)->route('platform.processing-statuses.detail', $type->id);
             })->sort(),
-            TD::make('name', 'Статус')->render(function(ProcessingStatus $type) {
+            TD::make('name', 'Статус')->render(function (ProcessingStatus $type) {
                 return Link::make($type->name)->route('platform.processing-statuses.detail', $type->id);
             })->sort(),
         ];

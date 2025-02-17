@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Orchid\Layouts\WebsiteType;
 
 use App\Models\WebsiteType;
@@ -13,7 +14,7 @@ class WebsiteTypeLayout extends Rows
     {
         /** @var WebsiteType $type */
         $type = $this->query->get('type');
-        $keywords = $type->keywords()->get()->map(function($item, $key) {
+        $keywords = $type->keywords()->get()->map(function ($item, $key) {
             return [
                 'id' => $key,
                 'value' => $item->word

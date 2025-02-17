@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Company\FinanceSegment;
 use App\Models\Company\FinanceYear;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -13,10 +14,8 @@ class Company extends Model
 {
     use HasFactory;
 
-    protected $table = 'company_info';
-
     public $timestamps = false;
-
+    protected $table = 'company_info';
     protected $fillable = [
         'inn',
         'name',
@@ -39,29 +38,14 @@ class Company extends Model
         'updated_at'
     ];
 
-    public function segment() : HasOne
+    public function segment(): HasOne
     {
-        return $this->hasOne(\App\Models\Company\FinanceSegment::class, 'id', 'segment_id');
+        return $this->hasOne(FinanceSegment::class, 'id', 'segment_id');
     }
 
-    public function financeYears() : HasMany
-    {
-        return $this->hasMany(FinanceYear::class, 'inn_id', 'id');
-    }
-
-    public function domains() : BelongsToMany
+    public function domains(): BelongsToMany
     {
         return $this->belongsToMany(Domain::class, 'domains_inns', 'inn_id', 'domain_id');
-    }
-
-    /**
-     * Последний год финансовой отчётности
-     *
-     * @return FinanceYear|false
-     */
-    public function getLastFinanceYear() : FinanceYear|null
-    {
-        return $this->financeYears()->where('year', '=', $this->last_finance_year)->first();
     }
 
     /**
@@ -69,7 +53,7 @@ class Company extends Model
      *
      * @return float
      */
-    public function getLastFinanceYearIncomeAttribute() : float
+    public function getLastFinanceYearIncomeAttribute(): float
     {
         $year = $this->getLastFinanceYear();
 
@@ -77,11 +61,26 @@ class Company extends Model
     }
 
     /**
+     * Последний год финансовой отчётности
+     *
+     * @return FinanceYear|false
+     */
+    public function getLastFinanceYear(): FinanceYear|null
+    {
+        return $this->financeYears()->where('year', '=', $this->last_finance_year)->first();
+    }
+
+    public function financeYears(): HasMany
+    {
+        return $this->hasMany(FinanceYear::class, 'inn_id', 'id');
+    }
+
+    /**
      * Чистая прибыль последнего года финансовой отчётности
      *
      * @return float
      */
-    public function getLastFinanceYearProfitAttribute() : float
+    public function getLastFinanceYearProfitAttribute(): float
     {
         $year = $this->getLastFinanceYear();
 

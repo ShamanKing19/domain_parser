@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Repositories;
 
 use App\Models\Domain;
@@ -14,7 +15,7 @@ class DomainRepository
      *
      * @return Domain|null
      */
-    public function getById(int $id) : Domain|null
+    public function getById(int $id): Domain|null
     {
         return Domain::find($id);
     }
@@ -26,7 +27,7 @@ class DomainRepository
      *
      * @return array
      */
-    public function getListById(array $idList) : array
+    public function getListById(array $idList): array
     {
         return Domain::whereIn('id', $idList)->select('domain')->pluck('domain')->toArray();
     }
@@ -36,7 +37,7 @@ class DomainRepository
      *
      * @return Domain|null
      */
-    public function getByDomain(string $domain) : Domain|null
+    public function getByDomain(string $domain): Domain|null
     {
         return Domain::where('domain', '=', $domain)->first();
     }
@@ -48,10 +49,23 @@ class DomainRepository
      *
      * @return Collection
      */
-    public function getDomains(int $count) : Collection
+    public function getDomains(int $count): Collection
     {
         $itemsPerPage = $this->getItemsPerPage($count);
+
         return Domain::paginate($itemsPerPage, ['id', 'domain'])->getCollection();
+    }
+
+    /**
+     * Получение количество элементов на странице
+     *
+     * @param int $count
+     *
+     * @return int
+     */
+    private function getItemsPerPage(int $count): int
+    {
+        return $count === 0 || $count < 0 ? Domain::getModel()->getPerPage() : $count;
     }
 
     /**
@@ -62,22 +76,11 @@ class DomainRepository
      *
      * @return Collection
      */
-    public function getDomainsByCms(string $cms, int $count) : Collection
+    public function getDomainsByCms(string $cms, int $count): Collection
     {
         $itemsPerPage = $this->getItemsPerPage($count);
-        return Domain::where('cms', '=', $cms)->paginate($itemsPerPage)->getCollection();
-    }
 
-    /**
-     * Получение количество элементов на странице
-     *
-     * @param int $count
-     *
-     * @return int
-     */
-    private function getItemsPerPage(int $count) : int
-    {
-        return $count === 0 || $count < 0 ? Domain::getModel()->getPerPage() : $count;
+        return Domain::where('cms', '=', $cms)->paginate($itemsPerPage)->getCollection();
     }
 
     /**
@@ -85,7 +88,7 @@ class DomainRepository
      *
      * @return array
      */
-    public function getCmsList() : array
+    public function getCmsList(): array
     {
         return Domain::select('cms')->groupBy('cms')->pluck('cms')->filter()->toArray();
     }
@@ -95,7 +98,7 @@ class DomainRepository
      *
      * @return array
      */
-    public function getStatusList() : array
+    public function getStatusList(): array
     {
         return Domain::select('status')->groupBy('status')->pluck('status')->filter()->toArray();
     }
@@ -105,7 +108,7 @@ class DomainRepository
      *
      * @return array
      */
-    public function getTypeList() : array
+    public function getTypeList(): array
     {
         return Domain::select('type_id')->groupBy('type_id')->pluck('type_id')->filter()->toArray();
     }

@@ -24,17 +24,11 @@ class UserEditLayout extends Rows
                 ->required()
                 ->title(__('Name'))
                 ->placeholder(__('Name')),
-
             Input::make('user.email')
                 ->type('email')
                 ->required()
                 ->title(__('Email'))
                 ->placeholder(__('Email')),
-
-            Input::make('user.b24_webhook')
-                ->type('text')
-                ->title('Вебхук для bitrix24')
-                ->placeholder('https://skillline.bitrix24.ru/rest/{userId}/{uniqueKey}/'),
         ];
     }
 }

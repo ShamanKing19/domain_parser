@@ -8,6 +8,8 @@ use App\Orchid\Layouts\Role\RolePermissionLayout;
 use App\Orchid\Layouts\User\UserEditLayout;
 use App\Orchid\Layouts\User\UserPasswordLayout;
 use App\Orchid\Layouts\User\UserRoleLayout;
+use Exception;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
@@ -39,7 +41,7 @@ class UserEditScreen extends Screen
         $user->load(['roles']);
 
         return [
-            'user'       => $user,
+            'user' => $user,
             'permission' => $user->getStatusPermission(),
         ];
     }
@@ -52,16 +54,6 @@ class UserEditScreen extends Screen
     public function name(): ?string
     {
         return $this->user->exists ? 'Edit User' : 'Create User';
-    }
-
-    /**
-     * Display header description.
-     *
-     * @return string|null
-     */
-    public function description(): ?string
-    {
-        return 'Details such as name, email and password';
     }
 
     /**
@@ -155,10 +147,20 @@ class UserEditScreen extends Screen
     }
 
     /**
-     * @param User    $user
+     * Display header description.
+     *
+     * @return string|null
+     */
+    public function description(): ?string
+    {
+        return 'Details such as name, email and password';
+    }
+
+    /**
+     * @param User $user
      * @param Request $request
      *
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      */
     public function save(User $user, Request $request)
     {
@@ -177,7 +179,7 @@ class UserEditScreen extends Screen
             ->toArray();
 
         $userData = $request->get('user');
-        if ($user->exists && (string) $userData['password'] === '') {
+        if ($user->exists && (string)$userData['password'] === '') {
             // When updating existing user null password means "do not change current password"
             unset($userData['password']);
         } else {
@@ -201,9 +203,9 @@ class UserEditScreen extends Screen
     /**
      * @param User $user
      *
-     * @throws \Exception
+     * @return RedirectResponse
      *
-     * @return \Illuminate\Http\RedirectResponse
+     * @throws Exception
      *
      */
     public function remove(User $user)
@@ -218,7 +220,7 @@ class UserEditScreen extends Screen
     /**
      * @param User $user
      *
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      */
     public function loginAs(User $user)
     {

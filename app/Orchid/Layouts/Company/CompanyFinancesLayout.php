@@ -5,16 +5,12 @@ namespace App\Orchid\Layouts\Company;
 use App\Models\Company;
 use Orchid\Screen\Layouts\Table;
 use Orchid\Screen\TD;
-use Orchid\Screen\Repository;
 
 class CompanyFinancesLayout extends Table
 {
-    private Company $company;
-
     public function __construct(Company $company)
     {
-        $this->company = $company;
-        $this->target = 'company_' . $this->company->inn;
+        $this->target = 'company_' . $company->inn;
     }
 
     protected function columns(): iterable

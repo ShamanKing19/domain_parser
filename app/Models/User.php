@@ -21,8 +21,8 @@ class User extends Authenticatable
     ];
 
     protected $casts = [
-        'permissions'          => 'array',
-        'email_verified_at'    => 'datetime',
+        'permissions' => 'array',
+        'email_verified_at' => 'datetime',
     ];
 
     protected $allowedFilters = [
@@ -45,7 +45,7 @@ class User extends Authenticatable
      *
      * @return string
      */
-    public function getBitrix24Webhook() : string
+    public function getBitrix24Webhook(): string
     {
         return $this->b24_webhook ?? '';
     }

@@ -9,9 +9,7 @@ class Phone extends Model
 {
     use HasFactory;
 
-    protected $table = 'domain_phones';
-
     public $timestamps = false;
-
+    protected $table = 'domain_phones';
     protected $fillable = ['phone'];
 }

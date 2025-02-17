@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
+use App\Models\WebsiteType;
 
 class EditManyDomainRequest extends BaseRequest
 {
@@ -26,8 +26,8 @@ class EditManyDomainRequest extends BaseRequest
             'domains.*.has_https_redirect' => ['bool', 'nullable'],
             'domains.*.has_catalog' => ['bool', 'nullable'],
             'domains.*.has_basket' => ['bool', 'nullable'],
-            'domains.*.type_id' => ['int', 'exists:'.\App\Models\WebsiteType::class.',id'],
-            'domains.*.auto_type_id' => ['int', 'exists:'.\App\Models\WebsiteType::class.',id'],
+            'domains.*.type_id' => ['int', 'exists:' . WebsiteType::class . ',id'],
+            'domains.*.auto_type_id' => ['int', 'exists:' . WebsiteType::class . ',id'],
             'domains.*.phones' => ['array', 'nullable'],
             'domains.*.phones.*' => ['string', 'nullable'],
             'domains.*.emails' => ['array', 'nullable'],

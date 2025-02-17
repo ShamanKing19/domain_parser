@@ -3,10 +3,8 @@
 namespace App\Orchid\Screens\ProcessingStatus;
 
 use App\Models\ProcessingStatus;
-use App\Models\WebsiteType;
 use App\Orchid\Layouts\ProcessingStatus\ProcessingStatusLayout;
-use App\Orchid\Layouts\WebsiteType\WebsiteTypeLayout;
-use App\Services\WebsiteTypeService;
+use Exception;
 use Illuminate\Http\Request;
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Actions\Link;
@@ -19,6 +17,7 @@ class ProcessingStatusScreen extends Screen
     public function query(ProcessingStatus $status): iterable
     {
         $this->status = $status;
+
         return [
             'status' => $this->status
         ];
@@ -55,19 +54,21 @@ class ProcessingStatusScreen extends Screen
 
         try {
             $success = $status->fill($fields)->save();
-            if($status->wasRecentlyCreated) {
+            if ($status->wasRecentlyCreated) {
                 Toast::success('Запись была создана!');
+
                 return redirect()->route('platform.processing-statuses.detail', ['status' => $status->id]);
             }
 
-            if($success) {
+            if ($success) {
                 Alert::success('Данные успешно обновлены!' . $status->wasRecentlyCreated);
+
                 return;
             }
 
             Alert::error('Что-то пошло не так при обновлении...');
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Alert::error($e->getMessage());
         }
     }
@@ -75,8 +76,9 @@ class ProcessingStatusScreen extends Screen
     public function delete(ProcessingStatus $status)
     {
         $success = $status->delete();
-        if($success) {
+        if ($success) {
             Toast::success('Запись успешно удалена!');
+
             return redirect()->route('platform.processing-statuses.list');
         }
 

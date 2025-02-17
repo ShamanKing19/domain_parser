@@ -9,9 +9,7 @@ class Email extends Model
 {
     use HasFactory;
 
-    protected $table = 'domain_emails';
-
     public $timestamps = false;
-
+    protected $table = 'domain_emails';
     protected $fillable = ['email'];
 }

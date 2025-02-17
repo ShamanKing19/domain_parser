@@ -10,10 +10,8 @@ class FinanceYear extends Model
 {
     use HasFactory, AsMultiSource;
 
-    protected $table = 'company_finances';
-
     public $timestamps = false;
-
+    protected $table = 'company_finances';
     protected $fillable = [
         'inn_id',
         'year',

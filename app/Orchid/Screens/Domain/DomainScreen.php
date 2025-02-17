@@ -23,7 +23,6 @@ class DomainScreen extends Screen
     private Domain $domain;
     private Collection $companies;
 
-
     public function query(Domain $domain): iterable
     {
         $this->domain = $domain;
@@ -34,7 +33,7 @@ class DomainScreen extends Screen
             'domain' => $this->domain
         ];
 
-        foreach($this->companies as $company) {
+        foreach ($this->companies as $company) {
             $result['company_' . $company->inn] = $company->financeYears()->paginate();
         }
 
@@ -46,9 +45,9 @@ class DomainScreen extends Screen
         return $this->domain->domain;
     }
 
-    public function description() : ?string
+    public function description(): ?string
     {
-       return $this->domain->title;
+        return $this->domain->title;
     }
 
     public function commandBar(): iterable
@@ -59,7 +58,7 @@ class DomainScreen extends Screen
             ->icon('bs.arrow-bar-left')
             ->class('btn btn-link mr-10');
 
-        if($previousUrl && $previousUrl !== url()->current()) {
+        if ($previousUrl && $previousUrl !== url()->current()) {
             $backButton->href($previousUrl);
         } else {
             $backButton->route('platform.domains.list');
@@ -90,31 +89,33 @@ class DomainScreen extends Screen
         ];
     }
 
-    public function update(Domain $domain) : void
+    public function update(Domain $domain): void
     {
         $nodePath = config('parser.node_path');
         $parserPath = config('parser.parser_path');
         exec("$nodePath $parserPath --domain=$domain->domain", $result, $errorCode);
-        if($errorCode === 0) {
+        if ($errorCode === 0) {
             Alert::success('Данные успешно обновлены!');
+
             return;
         }
 
         $response = implode('', $result);
         $response = json_decode($response, true);
-        Alert::withoutEscaping()->error('<pre style="background-color: rgba(0, 0, 0, 0);">'.json_encode($response, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE).'</pre>');
+        Alert::withoutEscaping()->error('<pre style="background-color: rgba(0, 0, 0, 0);">' . json_encode($response, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . '</pre>');
     }
 
     public function save(Request $request, Domain $domain)
     {
         $fields = $request->post('domain');
-        if(isset($fields['type_id'])) {
+        if (isset($fields['type_id'])) {
             $fields['auto_type_id'] = $fields['type_id'];
         }
 
         $result = $domain->fill($fields)->save();
-        if(!$result) {
+        if (!$result) {
             Alert::error('Что-то пошло не так при обновлении...');
+
             return;
         }
 
@@ -124,8 +125,9 @@ class DomainScreen extends Screen
     public function delete(Domain $domain)
     {
         $success = $domain->delete();
-        if($success) {
+        if ($success) {
             Toast::success('Запись успешно удалена!');
+
             return redirect()->route('platform.domains.list');
         }
 
@@ -138,14 +140,14 @@ class DomainScreen extends Screen
             'Общая информация' => new DomainLayout()
         ];
 
-        if($this->domain->emails()->exists() || $this->domain->phones()->exists()) {
+        if ($this->domain->emails()->exists() || $this->domain->phones()->exists()) {
             $tabs['Контакты'] = new DomainContactsLayout();
         }
 
-        if($this->companies->isNotEmpty()) {
-            foreach($this->companies as $company) {
+        if ($this->companies->isNotEmpty()) {
+            foreach ($this->companies as $company) {
                 $tab = [new CompanyLayout($company)];
-                if($company->financeYears()->exists()) {
+                if ($company->financeYears()->exists()) {
                     $tab[] = new CompanyFinancesLayout($company);
                 }
 

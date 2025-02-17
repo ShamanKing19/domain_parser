@@ -3,8 +3,6 @@
 namespace App\Orchid\Layouts\Company;
 
 use App\Models\Company;
-use App\Models\Domain;
-use Orchid\Screen\Field;
 use Orchid\Screen\Fields\Label;
 use Orchid\Screen\Layouts\Rows;
 
@@ -22,6 +20,7 @@ class CompanyLayout extends Rows
     protected function fields(): iterable
     {
         $company = $this->company;
+
         return [
             Label::make('inn')->title('ИНН')->value($company->inn),
             Label::make('name')->title('Наименование')->value($company->name),
