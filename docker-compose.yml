@@ -30,4 +30,4 @@ services:
             - MYSQL_USER=parser_db
             - MYSQL_PASSWORD=shit
         volumes:
-            - "/var/lib/mysql:/var/lib/mysql"
+            - './docker/mysql:/var/lib/mysql'
